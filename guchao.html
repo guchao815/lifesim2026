@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh" id="html-root">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>guchao — 生活艺术家</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YKKHZCKP8M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-YKKHZCKP8M');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500&family=Fraunces:ital,wght@0,300;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--surface:#f7f8f9;--border:#ebebeb;
+  --text:#141414;--muted:#888;--faint:#bbb;
+  --green:#3d8c6f;--green-bg:#edf6f2;
+  --blue:#4a7fa5;--amber:#d4854a;--amber-bg:#fdf3ec;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-weight:300;line-height:1.7}
+body::before{content:'';display:block;height:2px;background:linear-gradient(90deg,var(--green) 0%,var(--blue) 55%,var(--amber) 100%)}
+.lang-switch{position:fixed;top:1.25rem;right:1.25rem;z-index:999;display:flex;background:var(--bg);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,0.07)}
+.lang-btn{background:transparent;border:none;padding:0.35rem 0.85rem;font-size:12px;cursor:pointer;font-family:inherit;color:var(--muted);transition:all 0.18s;letter-spacing:0.04em}
+.lang-btn.active{background:var(--text);color:var(--bg)}
+.wrap{max-width:660px;margin:0 auto;padding:0 1.75rem}
+nav{display:flex;justify-content:space-between;align-items:center;padding:1.75rem 0 1.5rem;margin-bottom:4rem}
+.nav-name{font-size:1rem;font-weight:500;color:var(--text)}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-size:0.78rem;color:var(--muted);text-decoration:none;transition:color 0.2s}
+.nav-links a:hover{color:var(--green)}
+.hero{margin-bottom:4.5rem;opacity:0;animation:fadeUp 0.8s ease forwards 0.05s}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-bg);color:var(--green);font-size:0.7rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;padding:0.3rem 0.75rem;border-radius:100px;margin-bottom:1.5rem}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(2.4rem,5.5vw,3.4rem);font-weight:300;line-height:1.18;margin-bottom:1.5rem;letter-spacing:-0.02em}
+.hero h1 em{font-style:italic;color:var(--green)}
+.hero-body{font-size:1rem;color:var(--muted);max-width:520px;margin-bottom:2rem;line-height:1.8}
+.btn-row{display:flex;gap:0.75rem;flex-wrap:wrap}
+.btn-primary{background:var(--text);color:var(--bg);border:none;border-radius:8px;padding:0.7rem 1.4rem;font-size:0.82rem;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none;transition:opacity 0.2s;display:inline-block}
+.btn-primary:hover{opacity:0.82}
+.btn-secondary{background:transparent;border:1px solid var(--border);border-radius:8px;padding:0.7rem 1.4rem;font-size:0.82rem;color:var(--muted);cursor:pointer;font-family:inherit;text-decoration:none;transition:all 0.2s;display:inline-block}
+.btn-secondary:hover{border-color:var(--green);color:var(--green)}
+section{margin-bottom:4rem}
+.slabel{font-size:0.68rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint);margin-bottom:1.5rem}
+.interest-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.75rem}
+.interest-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.25rem;transition:border-color 0.2s}
+.interest-card:hover{border-color:var(--green)}
+.interest-icon{font-size:1.25rem;margin-bottom:0.4rem}
+.interest-title{font-size:0.85rem;font-weight:500;color:var(--text);margin-bottom:0.2rem}
+.interest-desc{font-size:0.75rem;color:var(--muted);line-height:1.5}
+.about-text{font-size:0.95rem;color:var(--muted);line-height:1.85;margin-bottom:1rem}
+.about-text strong{color:var(--text);font-weight:500}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:1.25rem}
+.tag{font-size:0.7rem;font-weight:500;letter-spacing:0.04em;padding:0.28rem 0.75rem;border-radius:100px;background:var(--surface);border:1px solid var(--border);color:var(--muted)}
+.links-list{list-style:none}
+.links-list li{display:flex;justify-content:space-between;align-items:center;padding:1rem 0;border-bottom:1px solid var(--border);transition:padding-left 0.2s}
+.links-list li:first-child{border-top:1px solid var(--border)}
+.links-list li:hover{padding-left:4px}
+.link-name{font-size:0.9rem;color:var(--text);text-decoration:none}
+.link-name:hover{color:var(--green)}
+.link-pill{font-size:0.72rem;color:var(--faint);letter-spacing:0.04em}
+.game-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:border-color 0.2s}
+.game-card:hover{border-color:var(--green)}
+.game-card-top{height:4px;background:linear-gradient(90deg,var(--green),var(--blue),var(--amber))}
+.game-card-body{padding:1.75rem}
+.game-tag{font-size:0.68rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);margin-bottom:0.6rem}
+.game-title{font-family:'Fraunces',serif;font-size:1.3rem;font-weight:300;line-height:1.3;margin-bottom:0.75rem;color:var(--text)}
+.game-title em{font-style:italic}
+.game-desc{font-size:0.85rem;color:var(--muted);line-height:1.75;margin-bottom:1.25rem}
+.game-btn{display:inline-block;background:var(--green);color:#fff;border:none;border-radius:8px;padding:0.65rem 1.25rem;font-size:0.82rem;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none;transition:opacity 0.2s}
+.game-btn:hover{opacity:0.85}
+footer{padding:2.5rem 0 3rem;border-top:1px solid var(--border)}
+.footer-text{font-size:0.78rem;color:var(--faint)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="lang-switch">
+  <button class="lang-btn active" id="btn-zh" onclick="setLang('zh')">中文</button>
+  <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+</div>
+<div class="wrap">
+  <nav>
+    <span class="nav-name">guchao</span>
+    <ul class="nav-links">
+      <li><a href="#life" id="nav-life">生活</a></li>
+      <li><a href="#about" id="nav-about">关于</a></li>
+      <li><a href="#contact" id="nav-contact">联系</a></li>
+    </ul>
+  </nav>
+  <section class="hero">
+    <div class="hero-badge"><span class="badge-dot"></span><span id="hero-badge">生活艺术家 · 东南亚</span></div>
+    <h1 id="hero-title">生活即艺术。<br><em>我只是认真在看。</em></h1>
+    <p class="hero-body" id="hero-body">在大厂做过战略和业务，后来离开，常驻东南亚。我相信认真地观察和记录生活本身，就是一种创作。</p>
+    <div class="btn-row">
+      <a href="lifesim.html" class="btn-primary" id="btn-primary">探索人生模拟游戏</a>
+      <a href="/cdn-cgi/l/email-protection#137466707b727c2b222653747e727a7f3d707c7e" class="btn-secondary" id="btn-secondary">打个招呼</a>
+    </div>
+  </section>
+  <section id="life">
+    <p class="slabel" id="label-life">我认真对待的事</p>
+    <div class="interest-grid">
+      <div class="interest-card"><div class="interest-icon">🎾</div><div class="interest-title" id="t-tennis">网球</div><div class="interest-desc" id="d-tennis">让我保持诚实和专注的运动。</div></div>
+      <div class="interest-card"><div class="interest-icon">✈️</div><div class="interest-title" id="t-travel">旅行</div><div class="interest-desc" id="d-travel">慢慢走，喝当地的咖啡，偶尔迷路。</div></div>
+      <div class="interest-card"><div class="interest-icon">✍️</div><div class="interest-title" id="t-write">写作</div><div class="interest-desc" id="d-write">记录所见，在忘记感受之前。</div></div>
+      <div class="interest-card"><div class="interest-icon">🧘</div><div class="interest-title" id="t-med">冥想</div><div class="interest-desc" id="d-med">每天留一点时间，只是在。</div></div>
+      <div class="interest-card"><div class="interest-icon">🐱</div><div class="interest-title" id="t-cat">养猫</div><div class="interest-desc" id="d-cat">他叫大咪，对活在当下的理解比我深。</div></div>
+    </div>
+  </section>
+  <section id="about">
+    <p class="slabel" id="label-about">关于我</p>
+    <p class="about-text" id="about-1">在大厂做过多年<strong>战略和业务</strong>，后来选择离开，常驻东南亚。打网球、慢旅行、冥想、写作——我相信认真观察生活本身，就是一种创作。</p>
+    <p class="about-text" id="about-2">家里养了一只猫，他叫大咪。他对活在当下的理解，可能比我深。</p>
+    <p class="about-text" id="about-3">这个网站是一个正在进行中的实验——关于如何用故事连接人。</p>
+    <div class="tag-row">
+      <span class="tag" id="tag-1">网球</span>
+      <span class="tag" id="tag-2">旅行</span>
+      <span class="tag" id="tag-3">写作</span>
+      <span class="tag" id="tag-4">冥想</span>
+      <span class="tag" id="tag-5">科技</span>
+      <span class="tag" id="tag-6">东南亚</span>
+      <span class="tag" id="tag-7">猫</span>
+    </div>
+  </section>
+  <section id="contact">
+    <p class="slabel" id="label-contact">找到我</p>
+    <ul class="links-list">
+      <li>
+        <a href="/cdn-cgi/l/email-protection#1c7b697f747d73242d295c7b717d7570327f7371" class="link-name"><span class="__cf_email__" data-cfemail="244351474c454b1c1511644349454d480a474b49">[email&#160;protected]</span></a>
+        <span class="link-pill">Email →</span>
+      </li>
+    </ul>
+  </section>
+  <section id="lifesim">
+    <p class="slabel" id="label-exp">一个实验</p>
+    <div class="game-card">
+      <div class="game-card-top"></div>
+      <div class="game-card-body">
+        <p class="game-tag">人生模拟游戏</p>
+        <h2 class="game-title" id="game-title">没有标准答案。<br><em>但我们总会得到些什么。</em></h2>
+        <p class="game-desc" id="game-desc">基于真实经历改编的沉浸式故事游戏。带着你的困惑，走一遍别人走过的路，找到属于你的那个东西。</p>
+        <a href="lifesim.html" class="game-btn" id="game-btn">进入游戏 →</a>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <p class="footer-text" id="footer-text">生活即艺术。</p>
+  </footer>
+</div>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+var LANG = 'zh';
+var T = {
+  zh: {
+    docTitle: 'guchao — 生活艺术家',
+    badge: '生活艺术家 · 东南亚',
+    heroTitle: '生活即艺术。<br><em>我只是认真在看。</em>',
+    heroBody: '在大厂做过战略和业务，后来离开，常驻东南亚。我相信认真地观察和记录生活本身，就是一种创作。',
+    btnP: '探索人生模拟游戏', btnS: '打个招呼',
+    navLife: '生活', navAbout: '关于', navContact: '联系',
+    labelLife: '我认真对待的事',
+    tTennis: '网球', dTennis: '让我保持诚实和专注的运动。',
+    tTravel: '旅行', dTravel: '慢慢走，喝当地的咖啡，偶尔迷路。',
+    tWrite: '写作', dWrite: '记录所见，在忘记感受之前。',
+    tMed: '冥想', dMed: '每天留一点时间，只是在。',
+    tCat: '养猫', dCat: '他叫大咪，对活在当下的理解比我深。',
+    labelAbout: '关于我',
+    about1: '在大厂做过多年<strong>战略和业务</strong>，后来选择离开，常驻东南亚。打网球、慢旅行、冥想、写作——我相信认真观察生活本身，就是一种创作。',
+    about2: '家里养了一只猫，他叫大咪。他对活在当下的理解，可能比我深。',
+    about3: '这个网站是一个正在进行中的实验——关于如何用故事连接人。',
+    tags: ['网球','旅行','写作','冥想','科技','东南亚','猫'],
+    labelContact: '找到我',
+    labelExp: '一个实验',
+    gameTitle: '没有标准答案。<br><em>但我们总会得到些什么。</em>',
+    gameDesc: '基于真实经历改编的沉浸式故事游戏。带着你的困惑，走一遍别人走过的路，找到属于你的那个东西。',
+    gameBtn: '进入游戏 →',
+    footer: '生活即艺术。'
+  },
+  en: {
+    docTitle: 'guchao — Lifestyle Artist',
+    badge: 'Lifestyle Artist · South East Asia',
+    heroTitle: 'Life is the art.<br><em>I just pay attention.</em>',
+    heroBody: 'I spent years in strategy and business at big tech, then chose to leave. Based in South East Asia. I believe paying close attention to life is its own kind of art.',
+    btnP: 'Explore Life Simulation', btnS: 'Say hello',
+    navLife: 'Life', navAbout: 'About', navContact: 'Contact',
+    labelLife: 'Things I take seriously',
+    tTennis: 'Tennis', dTennis: 'The sport that keeps me honest and focused.',
+    tTravel: 'Travel', dTravel: 'Slow travel, local coffee, getting a little lost.',
+    tWrite: 'Writing', dWrite: 'Recording what I see before I forget how it felt.',
+    tMed: 'Meditation', dMed: 'A little time each day to just be.',
+    tCat: 'My cat', dCat: 'His name is Dami. His grasp of presence is deeper than mine.',
+    labelAbout: 'About',
+    about1: 'Spent years in <strong>strategy and business</strong> at big tech, then chose to leave. Now based in South East Asia. Tennis, slow travel, meditation, writing — I believe paying close attention to life is its own kind of art.',
+    about2: 'I have a cat named Dami. His understanding of living in the present is probably deeper than mine.',
+    about3: 'This site is an ongoing experiment — in how stories connect people.',
+    tags: ['Tennis','Travel','Writing','Meditation','Tech','South East Asia','Cat'],
+    labelContact: 'Find me',
+    labelExp: 'An experiment',
+    gameTitle: 'No right answers.<br><em>But we always take something away.</em>',
+    gameDesc: 'An immersive story game based on real experiences. Bring your questions, walk a path someone else has walked, and find something that belongs to you.',
+    gameBtn: 'Enter →',
+    footer: 'Life is the art.'
+  }
+};
+
+function setLang(lang) {
+  LANG = lang;
+  document.getElementById('html-root').lang = lang;
+  document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  render();
+}
+
+function g(id) { return document.getElementById(id); }
+
+function render() {
+  var t = T[LANG];
+  document.title = t.docTitle;
+  g('hero-badge').textContent = t.badge;
+  g('hero-title').innerHTML = t.heroTitle;
+  g('hero-body').textContent = t.heroBody;
+  g('btn-primary').textContent = t.btnP;
+  g('btn-secondary').textContent = t.btnS;
+  g('nav-life').textContent = t.navLife;
+  g('nav-about').textContent = t.navAbout;
+  g('nav-contact').textContent = t.navContact;
+  g('label-life').textContent = t.labelLife;
+  g('t-tennis').textContent = t.tTennis; g('d-tennis').textContent = t.dTennis;
+  g('t-travel').textContent = t.tTravel; g('d-travel').textContent = t.dTravel;
+  g('t-write').textContent = t.tWrite;   g('d-write').textContent = t.dWrite;
+  g('t-med').textContent = t.tMed;       g('d-med').textContent = t.dMed;
+  g('t-cat').textContent = t.tCat;       g('d-cat').textContent = t.dCat;
+  g('label-about').textContent = t.labelAbout;
+  g('about-1').innerHTML = t.about1;
+  g('about-2').textContent = t.about2;
+  g('about-3').textContent = t.about3;
+  for (var i = 1; i <= 7; i++) g('tag-' + i).textContent = t.tags[i - 1];
+  g('label-contact').textContent = t.labelContact;
+  g('label-exp').textContent = 
