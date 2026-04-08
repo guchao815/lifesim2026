@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>guchao — 生活艺术家</title>
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-YKKHZCKP8M"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -41,8 +40,6 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1.75re
 .hero h1 em{font-style:italic;color:var(--green)}
 .hero-body{font-size:1rem;color:var(--muted);max-width:520px;margin-bottom:2rem;line-height:1.8}
 .btn-row{display:flex;gap:0.75rem;flex-wrap:wrap}
-.btn-primary{background:var(--text);color:var(--bg);border:none;border-radius:8px;padding:0.7rem 1.4rem;font-size:0.82rem;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none;transition:opacity 0.2s;display:inline-block}
-.btn-primary:hover{opacity:0.82}
 .btn-secondary{background:transparent;border:1px solid var(--border);border-radius:8px;padding:0.7rem 1.4rem;font-size:0.82rem;color:var(--muted);cursor:pointer;font-family:inherit;text-decoration:none;transition:all 0.2s;display:inline-block}
 .btn-secondary:hover{border-color:var(--green);color:var(--green)}
 section{margin-bottom:4rem}
@@ -98,8 +95,7 @@ footer{padding:2.5rem 0 3rem;border-top:1px solid var(--border)}
     <h1 id="hero-title">生活即艺术。<br><em>我只是认真在看。</em></h1>
     <p class="hero-body" id="hero-body">在大厂做过战略和业务，后来离开，常驻东南亚。我相信认真地观察和记录生活本身，就是一种创作。</p>
     <div class="btn-row">
-      <a href="lifesim.html" class="btn-primary" id="btn-primary">探索人生模拟游戏</a>
-      <a href="/cdn-cgi/l/email-protection#137466707b727c2b222653747e727a7f3d707c7e" class="btn-secondary" id="btn-secondary">打个招呼</a>
+      <a href="mailto:guchao815@gmail.com" class="btn-secondary" id="btn-secondary">打个招呼</a>
     </div>
   </section>
   <section id="life">
@@ -131,7 +127,7 @@ footer{padding:2.5rem 0 3rem;border-top:1px solid var(--border)}
     <p class="slabel" id="label-contact">找到我</p>
     <ul class="links-list">
       <li>
-        <a href="/cdn-cgi/l/email-protection#1c7b697f747d73242d295c7b717d7570327f7371" class="link-name"><span class="__cf_email__" data-cfemail="244351474c454b1c1511644349454d480a474b49">[email&#160;protected]</span></a>
+        <a href="mailto:guchao815@gmail.com" class="link-name">guchao815@gmail.com</a>
         <span class="link-pill">Email →</span>
       </li>
     </ul>
@@ -152,7 +148,9 @@ footer{padding:2.5rem 0 3rem;border-top:1px solid var(--border)}
     <p class="footer-text" id="footer-text">生活即艺术。</p>
   </footer>
 </div>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+
+
+<script>
 var LANG = 'zh';
 var T = {
   zh: {
@@ -160,7 +158,7 @@ var T = {
     badge: '生活艺术家 · 东南亚',
     heroTitle: '生活即艺术。<br><em>我只是认真在看。</em>',
     heroBody: '在大厂做过战略和业务，后来离开，常驻东南亚。我相信认真地观察和记录生活本身，就是一种创作。',
-    btnP: '探索人生模拟游戏', btnS: '打个招呼',
+    btnS: '打个招呼',
     navLife: '生活', navAbout: '关于', navContact: '联系',
     labelLife: '我认真对待的事',
     tTennis: '网球', dTennis: '让我保持诚实和专注的运动。',
@@ -185,7 +183,7 @@ var T = {
     badge: 'Lifestyle Artist · South East Asia',
     heroTitle: 'Life is the art.<br><em>I just pay attention.</em>',
     heroBody: 'I spent years in strategy and business at big tech, then chose to leave. Based in South East Asia. I believe paying close attention to life is its own kind of art.',
-    btnP: 'Explore Life Simulation', btnS: 'Say hello',
+    btnS: 'Say hello',
     navLife: 'Life', navAbout: 'About', navContact: 'Contact',
     labelLife: 'Things I take seriously',
     tTennis: 'Tennis', dTennis: 'The sport that keeps me honest and focused.',
@@ -207,23 +205,18 @@ var T = {
   }
 };
 
-function setLang(lang) {
-  LANG = lang;
-  document.getElementById('html-root').lang = lang;
-  document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
-  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
-  render();
-}
-
 function g(id) { return document.getElementById(id); }
 
-function render() {
-  var t = T[LANG];
+function setLang(lang) {
+  LANG = lang;
+  document.documentElement.lang = lang;
+  g('btn-zh').classList.toggle('active', lang === 'zh');
+  g('btn-en').classList.toggle('active', lang === 'en');
+  var t = T[lang];
   document.title = t.docTitle;
   g('hero-badge').textContent = t.badge;
   g('hero-title').innerHTML = t.heroTitle;
   g('hero-body').textContent = t.heroBody;
-  g('btn-primary').textContent = t.btnP;
   g('btn-secondary').textContent = t.btnS;
   g('nav-life').textContent = t.navLife;
   g('nav-about').textContent = t.navAbout;
@@ -238,6 +231,15 @@ function render() {
   g('about-1').innerHTML = t.about1;
   g('about-2').textContent = t.about2;
   g('about-3').textContent = t.about3;
-  for (var i = 1; i <= 7; i++) g('tag-' + i).textContent = t.tags[i - 1];
+  for (var i = 1; i <= 7; i++) g('tag-' + i).textContent = t.tags[i-1];
   g('label-contact').textContent = t.labelContact;
-  g('label-exp').textContent = 
+  g('label-exp').textContent = t.labelExp;
+  g('game-title').innerHTML = t.gameTitle;
+  g('game-desc').textContent = t.gameDesc;
+  g('game-btn').textContent = t.gameBtn;
+  g('footer-text').textContent = t.footer;
+}
+</script>
+
+</body>
+</html>
