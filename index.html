@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh" id="html-root">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,6 +31,21 @@
     color: var(--ink);
     overflow-x: hidden;
   }
+
+
+  /* ── LANG SWITCH ── */
+  .lang-switch {
+    position: fixed; top: 1.25rem; right: 1.25rem; z-index: 999;
+    display: flex; background: var(--warm-bg);
+    border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
+  }
+  .lang-btn {
+    background: transparent; border: none;
+    padding: 0.35rem 0.85rem; font-size: 11px; cursor: pointer;
+    font-family: inherit; color: var(--ink-mute);
+    transition: all 0.18s; letter-spacing: 0.06em;
+  }
+  .lang-btn.active { background: var(--ink); color: var(--warm-bg); }
 
   /* ── BEAT SECTIONS ── */
   .beat {
@@ -275,8 +290,8 @@
 
   /* ── FADE-IN ANIMATION ── */
   .fade-up {
-    opacity: 0;
-    transform: translateY(24px);
+    opacity: 1;
+    transform: translateY(0);
     transition: opacity 0.8s ease, transform 0.8s ease;
   }
 
@@ -356,6 +371,8 @@
 </head>
 <body>
 
+<div class="lang-switch"><button class="lang-btn active" id="btn-zh" onclick="setLang('zh')">中文</button><button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button></div>
+
 <!-- ── BEAT 1: HERO ── -->
 <section class="beat" id="beat1">
   <div class="blob" style="width:420px;height:420px;background:#fff5e8;top:-150px;right:-110px;"></div>
@@ -377,9 +394,9 @@
       <div class="planet-ring"></div>
     </div>
 
-    <p class="greeting fade-up" style="transition-delay:0.1s">欢迎来到</p>
-    <h1 class="main-title fade-up" style="transition-delay:0.2s">好好生活星球</h1>
-    <p class="one-liner fade-up" style="transition-delay:0.3s">这里有一个你还没见过的自己</p>
+    <p class="greeting fade-up" style="transition-delay:0.1s" id="planet-greeting">欢迎来到</p>
+    <h1 class="main-title fade-up" style="transition-delay:0.2s" id="planet-title">好好生活星球</h1>
+    <p class="one-liner fade-up" style="transition-delay:0.3s" id="planet-oneliner">这里有一个你还没见过的自己</p>
 
     <div class="member-badge fade-up" style="transition-delay:0.4s">
       <div class="member-dots">
@@ -387,17 +404,17 @@
         <div class="mdot" style="background:#4aaa88;"></div>
         <div class="mdot" style="background:#7a70d8;"></div>
       </div>
-      <p class="member-text">已经有 <strong>2,847 人</strong> 决定试试好好生活</p>
+      <p class="member-text" id="planet-members">已经有 <strong>2,847 人</strong> 决定试试好好生活</p>
     </div>
 
     <a href="https://goodlifeplanet.community/guchao.html" class="founder-link fade-up" style="transition-delay:0.5s">
-      <span class="founder-label">发起者 · founder</span>
+      <span class="founder-label" id="planet-founder-label">发起者 · founder</span>
       <span class="founder-name">guchao →</span>
     </a>
   </div>
 
   <div class="scroll-hint">
-    <span>往下看</span>
+    <span id="planet-scroll">往下看</span>
     <div class="scroll-arrow"></div>
   </div>
 </section>
@@ -408,7 +425,7 @@
   <div class="blob" style="width:220px;height:220px;background:#fff8ee;bottom:-70px;right:-50px;"></div>
 
   <div class="z1">
-    <div class="world-text fade-up">
+    <div class="world-text fade-up" id="planet-worldview">
       <p>这里没有打卡，没有排行，<br>没有任何东西要你「更好」。</p>
       <p>这里有一些地方可以去。<br>没有顺序，没有对错，<br>随便乘哪条线都行。</p>
     </div>
@@ -421,9 +438,9 @@
   <div class="blob" style="width:200px;height:200px;background:#f0f0ff;bottom:-60px;left:-50px;opacity:0.6;"></div>
 
   <div class="z1">
-    <p class="req fade-up">唯一的要求是——<br>带着自己来。</p>
-    <p class="req-sub fade-up" style="transition-delay:0.1s">不用准备什么，现在就可以进去</p>
-    <a href="#map" class="enter-btn fade-up" style="transition-delay:0.2s">进来逛逛</a>
+    <p class="req fade-up" id="planet-req">唯一的要求是——<br>带着自己来。</p>
+    <p class="req-sub fade-up" style="transition-delay:0.1s" id="planet-reqsub">不用准备什么，现在就可以进去</p>
+    <a href="#map" class="enter-btn fade-up" style="transition-delay:0.2s" id="planet-enterbtn">进来逛逛</a>
   </div>
 </section>
 
@@ -433,8 +450,8 @@
   <div class="blob" style="width:200px;height:200px;background:#eef5ff;bottom:-60px;right:-40px;border-radius:50%;"></div>
 
   <div class="map-header fade-up">
-    <p class="map-label">想去哪里，随便选一条线出发</p>
-    <h2 class="map-title">好好生活星球 · 线路图</h2>
+    <p class="map-label" id="planet-maplabel">想去哪里，随便选一条线出发</p>
+    <h2 class="map-title" id="planet-maptitle">好好生活星球 · 线路图</h2>
   </div>
 
   <div class="map-wrap fade-up" style="transition-delay:0.15s">
@@ -471,8 +488,7 @@
       <text x="382" y="300" text-anchor="middle" font-size="11" fill="#9a7040" font-family="sans-serif" font-weight="500">出发</text>
 
       <!-- 人生模拟剧场 -->
-      <a href="https://goodlifeplanet.community/lifesim.html" target="_blank" style="cursor:pointer;">
-      <g transform="translate(118, 118)" style="cursor:pointer;" onclick="window.open('https://goodlifeplanet.community/lifesim.html','_blank')">
+      <g transform="translate(118, 118)" style="cursor:pointer;" onclick="showFacility('renShengMoNiJuChang')">
         <ellipse cx="0" cy="18" rx="46" ry="14" fill="#e8905a22" stroke="#e8905a" stroke-width="1" opacity="0.5"/>
         <ellipse cx="0" cy="14" rx="46" ry="26" fill="#fff3ec" stroke="#e8905a" stroke-width="1.2"/>
         <ellipse cx="0" cy="-8" rx="46" ry="26" fill="#fff3ec" stroke="#e8905a" stroke-width="1.2"/>
@@ -489,10 +505,9 @@
         <text x="0" y="48" text-anchor="middle" font-size="10" fill="#e8905a" font-family="sans-serif">① 线 · 可体验</text>
         <ellipse cx="0" cy="0" rx="46" ry="58" fill="transparent"/>
       </g>
-      </a>
 
       <!-- 平镜湖 · 待开放 -->
-      <g transform="translate(132, 344)" opacity="0.35">
+      <g transform="translate(132, 344)" opacity="0.35" style="cursor:pointer;" onclick="showFacility('pingJingHu')">
         <ellipse cx="0" cy="18" rx="44" ry="12" fill="#88888822" stroke="#888" stroke-width="1" opacity="0.4"/>
         <ellipse cx="0" cy="10" rx="44" ry="22" fill="#f0f0f0" stroke="#aaa" stroke-width="1.2"/>
         <ellipse cx="0" cy="-8" rx="44" ry="22" fill="#f0f0f0" stroke="#aaa" stroke-width="1.2"/>
@@ -509,7 +524,7 @@
       </g>
 
       <!-- 念头照相馆 · 待开放 -->
-      <g transform="translate(255, 450)" opacity="0.35">
+      <g transform="translate(255, 450)" opacity="0.35" style="cursor:pointer;" onclick="showFacility('nianTouZhaoXiangGuan')">
         <ellipse cx="0" cy="20" rx="44" ry="12" fill="#88888822" stroke="#aaa" stroke-width="1" opacity="0.4"/>
         <ellipse cx="0" cy="12" rx="44" ry="22" fill="#f0f0f0" stroke="#aaa" stroke-width="1.2"/>
         <ellipse cx="0" cy="-8" rx="44" ry="22" fill="#f0f0f0" stroke="#aaa" stroke-width="1.2"/>
@@ -526,7 +541,7 @@
       </g>
 
       <!-- 无相屋 · 待开放 -->
-      <g transform="translate(566, 398)" opacity="0.35">
+      <g transform="translate(566, 398)" opacity="0.35" style="cursor:pointer;" onclick="showFacility('wuXiangWu')">
         <ellipse cx="0" cy="18" rx="44" ry="12" fill="#88888822" stroke="#aaa" stroke-width="1" opacity="0.4"/>
         <ellipse cx="0" cy="10" rx="44" ry="22" fill="#f0f0f0" stroke="#aaa" stroke-width="1.2"/>
         <ellipse cx="0" cy="-8" rx="44" ry="22" fill="#f0f0f0" stroke="#aaa" stroke-width="1.2"/>
@@ -544,7 +559,7 @@
       </g>
 
       <!-- 无限游戏乐园 · 待开放 -->
-      <g transform="translate(578, 165)" opacity="0.35">
+      <g transform="translate(578, 165)" opacity="0.35" style="cursor:pointer;" onclick="showFacility('wuXianYouXiLeyuan')">
         <ellipse cx="0" cy="22" rx="46" ry="13" fill="#88888822" stroke="#aaa" stroke-width="1" opacity="0.4"/>
         <ellipse cx="0" cy="14" rx="46" ry="24" fill="#f0f0f0" stroke="#aaa" stroke-width="1.2"/>
         <ellipse cx="0" cy="-10" rx="46" ry="24" fill="#f0f0f0" stroke="#aaa" stroke-width="1.2"/>
@@ -566,7 +581,7 @@
       </g>
 
       <!-- 观景号列车 · 待开放 -->
-      <g transform="translate(524, 108)" opacity="0.35">
+      <g transform="translate(524, 108)" opacity="0.35" style="cursor:pointer;" onclick="showFacility('guanJingHaoLieChe')">
         <ellipse cx="0" cy="20" rx="46" ry="13" fill="#88888822" stroke="#aaa" stroke-width="1" opacity="0.4"/>
         <ellipse cx="0" cy="12" rx="46" ry="22" fill="#f0f0f0" stroke="#aaa" stroke-width="1.2"/>
         <ellipse cx="0" cy="-8" rx="46" ry="22" fill="#f0f0f0" stroke="#aaa" stroke-width="1.2"/>
@@ -594,7 +609,7 @@
   </div>
 
   <div class="map-footer fade-up" style="transition-delay:0.25s">
-    <p>唯一的要求是——带着自己来</p>
+    <p id="planet-mapfooter">唯一的要求是——带着自己来</p>
   </div>
 </section>
 
@@ -605,9 +620,178 @@
         entry.target.classList.add('visible');
       }
     });
-  }, { threshold: 0.15 });
-
+  }, { threshold: 0.05 });
   document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // 保底：页面加载完成后，如果第一屏元素还没显示，强制显示
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      document.querySelectorAll('.fade-up').forEach(function(el) {
+        var rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight) {
+          el.classList.add('visible');
+        }
+      });
+    }, 100);
+  });
+
+  var LANG = 'zh';
+  var T = {
+    zh: {
+      greeting: '欢迎来到',
+      title: '好好生活星球',
+      oneliner: '这里有一个你还没见过的自己',
+      members: '已经有 <strong>2,847 人</strong> 决定试试好好生活',
+      founderLabel: '发起者 · founder',
+      worldview: '<p>这里没有打卡，没有排行，<br>没有任何东西要你「更好」。</p><p>这里有一些地方可以去。<br>没有顺序，没有对错，<br>随便乘哪条线都行。</p>',
+      req: '唯一的要求是——<br>带着自己来。',
+      reqsub: '不用准备什么，现在就可以进去',
+      enterbtn: '进来逛逛',
+      maplabel: '想去哪里，随便选一条线出发',
+      maptitle: '好好生活星球 · 线路图',
+      mapfooter: '唯一的要求是——带着自己来',
+      scroll: '往下看'
+    },
+    en: {
+      greeting: 'Welcome to',
+      title: 'Good Life Planet',
+      oneliner: 'Here lives a self you\'ve never met',
+      members: '<strong>2,847 people</strong> have decided to try living well',
+      founderLabel: 'Founder',
+      worldview: '<p>No streaks, no rankings,<br>nothing here asks you to be "better".</p><p>There are some places to explore.<br>No order, no right or wrong —<br>take any line you like.</p>',
+      req: 'The only requirement —<br>bring yourself.',
+      reqsub: 'No preparation needed. Come as you are.',
+      enterbtn: 'Come explore',
+      maplabel: 'Where would you like to go?',
+      maptitle: 'Good Life Planet · Transit Map',
+      mapfooter: 'The only requirement — bring yourself',
+      scroll: 'Scroll down'
+    }
+  };
+
+  function setLang(lang) {
+    LANG = lang;
+    document.getElementById('html-root') && (document.getElementById('html-root').lang = lang);
+    document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    var t = T[lang];
+    document.getElementById('planet-greeting').textContent = t.greeting;
+    document.getElementById('planet-title').textContent = t.title;
+    document.getElementById('planet-oneliner').textContent = t.oneliner;
+    document.getElementById('planet-members').innerHTML = t.members;
+    document.getElementById('planet-founder-label').textContent = t.founderLabel;
+    document.getElementById('planet-worldview').innerHTML = t.worldview;
+    document.getElementById('planet-req').innerHTML = t.req;
+    document.getElementById('planet-reqsub').textContent = t.reqsub;
+    document.getElementById('planet-enterbtn').textContent = t.enterbtn;
+    document.getElementById('planet-maplabel').textContent = t.maplabel;
+    document.getElementById('planet-maptitle').textContent = t.maptitle;
+    document.getElementById('planet-mapfooter').textContent = t.mapfooter;
+    document.getElementById('planet-scroll').textContent = t.scroll;
+  }
 </script>
+
+<!-- ── FACILITY OVERLAY ── -->
+<div id="facility-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(60,45,30,0.45);z-index:1000;align-items:center;justify-content:center;">
+  <div id="facility-card" style="background:#fffdf9;border-radius:24px;border:1px solid #ede5d8;padding:40px 36px 32px;max-width:420px;width:90%;position:relative;font-family:'Noto Sans SC',sans-serif;">
+    <button onclick="closeOverlay()" style="position:absolute;top:16px;right:20px;background:none;border:none;font-size:20px;color:#b8a898;cursor:pointer;">✕</button>
+    <p id="overlay-line" style="font-size:11px;letter-spacing:0.14em;margin-bottom:12px;font-weight:300;"></p>
+    <h3 id="overlay-title" style="font-family:'Noto Serif SC',serif;font-size:22px;font-weight:400;color:#3d3228;margin-bottom:14px;line-height:1.4;"></h3>
+    <p id="overlay-desc" style="font-size:14px;color:#6a5c50;line-height:1.9;margin-bottom:28px;font-weight:300;"></p>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <button id="overlay-btn" onclick="handleInterest()" style="padding:12px 28px;border-radius:40px;border:1px solid #e8d0a8;background:#fdebd0;color:#7a5c3c;font-size:13px;font-family:inherit;cursor:pointer;transition:all 0.2s;letter-spacing:0.04em;"></button>
+      <span id="overlay-count" style="font-size:12px;color:#c8b8a8;"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  var FACILITIES = {
+    renShengMoNiJuChang: {
+      zh: { line: '① 线 · 可体验', title: '人生模拟剧场', desc: '走进去，活一段不是你的人生。基于真实经历改编，没有标准答案，只有你自己的感受。', btn: '进入体验 →', btnDone: '已登记 ✓', isLive: true, link: 'https://goodlifeplanet.community/lifesim.html' },
+      en: { line: 'Line 1 · Available', title: 'Life Simulation Theatre', desc: 'Step in and live a life that isn\'t yours. Based on real experiences, no right answers — only what you feel.', btn: 'Enter →', btnDone: 'Registered ✓', isLive: true, link: 'https://goodlifeplanet.community/lifesim.html' }
+    },
+    pingJingHu: {
+      zh: { line: '② 线 · 待开放', title: '平镜湖', desc: '情绪来了，去湖边坐坐。通过引导，让翻涌的情绪慢慢落定，照见本我，照见小我。', btn: '我想去这里', btnDone: '已登记 ✓', isLive: false },
+      en: { line: 'Line 2 · Coming soon', title: 'Mirror Lake', desc: 'When emotions rise, sit by the lake. Through gentle guidance, let the waves settle and see yourself clearly.', btn: 'I want to go here', btnDone: 'Registered ✓', isLive: false }
+    },
+    nianTouZhaoXiangGuan: {
+      zh: { line: '③ 线 · 待开放', title: '念头照相馆', desc: '那个念头又来了——按下快门，记录它。慢慢地，散落的念头会拼出一张更清晰的地图。', btn: '我想去这里', btnDone: '已登记 ✓', isLive: false },
+      en: { line: 'Line 3 · Coming soon', title: 'Thought Photo Studio', desc: 'That thought is back — capture it. Slowly, scattered thoughts will form a clearer map of who you are.', btn: 'I want to go here', btnDone: 'Registered ✓', isLive: false }
+    },
+    wuXiangWu: {
+      zh: { line: '④ 线 · 待开放', title: '无相屋', desc: '我们看到的人、事、物，都只是全貌的一小部分。这里帮你不断丰富认知，慢慢触及真相。', btn: '我想去这里', btnDone: '已登记 ✓', isLive: false },
+      en: { line: 'Line 4 · Coming soon', title: 'Formless House', desc: 'What we see of people and things is only a fragment. This place helps you widen your perception toward the whole.', btn: 'I want to go here', btnDone: 'Registered ✓', isLive: false }
+    },
+    wuXianYouXiLeyuan: {
+      zh: { line: '⑤ 线 · 待开放', title: '无限游戏乐园', desc: '人生是一场游戏，但有限游戏为了赢，无限游戏为了继续玩。这里让你感受两者的不同。', btn: '我想去这里', btnDone: '已登记 ✓', isLive: false },
+      en: { line: 'Line 5 · Coming soon', title: 'Infinite Game Park', desc: 'Life is a game — finite games are played to win, infinite games are played to keep playing. Feel the difference here.', btn: 'I want to go here', btnDone: 'Registered ✓', isLive: false }
+    },
+    guanJingHaoLieChe: {
+      zh: { line: '⑥ 线 · 待开放', title: '观景号列车', desc: '坐上列车，慢慢进入一个真实的地方。不是vlog，是对一个地方的人文和环境的深度感受。', btn: '我想去这里', btnDone: '已登记 ✓', isLive: false },
+      en: { line: 'Line 6 · Coming soon', title: 'Scenic Train', desc: 'Board the train and slowly enter a real place. Not a vlog — a deep encounter with the people and spirit of somewhere.', btn: 'I want to go here', btnDone: 'Registered ✓', isLive: false }
+    }
+  };
+
+  var currentFacility = null;
+  var interests = JSON.parse(localStorage.getItem('planet_interests') || '{}');
+
+  function showFacility(key) {
+    currentFacility = key;
+    var f = FACILITIES[key][LANG || 'zh'];
+    var overlay = document.getElementById('facility-overlay');
+    document.getElementById('overlay-line').textContent = f.line;
+    document.getElementById('overlay-line').style.color = f.isLive ? '#e8905a' : '#b8a898';
+    document.getElementById('overlay-title').textContent = f.title;
+    document.getElementById('overlay-desc').textContent = f.desc;
+    var btn = document.getElementById('overlay-btn');
+    var done = interests[key];
+    btn.textContent = done ? f.btnDone : f.btn;
+    btn.style.background = done ? '#f0f0f0' : '#fdebd0';
+    btn.style.color = done ? '#aaa' : '#7a5c3c';
+    btn.style.borderColor = done ? '#ddd' : '#e8d0a8';
+    btn.disabled = done || false;
+    var count = interests[key + '_count'] || 0;
+    document.getElementById('overlay-count').textContent = count > 0 ? (LANG === 'en' ? count + ' interested' : count + ' 人感兴趣') : '';
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeOverlay() {
+    document.getElementById('facility-overlay').style.display = 'none';
+    document.body.style.overflow = '';
+    // 如果是剧场且没点感兴趣，直接跳转
+    if (currentFacility === 'renShengMoNiJuChang') {
+      // 不自动跳，等用户点按钮
+    }
+  }
+
+  function handleInterest() {
+    if (!currentFacility) return;
+    var f = FACILITIES[currentFacility][LANG || 'zh'];
+    if (f.isLive) {
+      window.open(f.link, '_blank');
+      closeOverlay();
+      return;
+    }
+    interests[currentFacility] = true;
+    interests[currentFacility + '_count'] = (interests[currentFacility + '_count'] || 0) + 1;
+    localStorage.setItem('planet_interests', JSON.stringify(interests));
+    var btn = document.getElementById('overlay-btn');
+    btn.textContent = f.btnDone;
+    btn.style.background = '#f0f0f0';
+    btn.style.color = '#aaa';
+    btn.style.borderColor = '#ddd';
+    btn.disabled = true;
+    document.getElementById('overlay-count').textContent = LANG === 'en'
+      ? interests[currentFacility + '_count'] + ' interested'
+      : interests[currentFacility + '_count'] + ' 人感兴趣';
+  }
+
+  document.getElementById('facility-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeOverlay();
+  });
+</script>
+
 </body>
 </html>
