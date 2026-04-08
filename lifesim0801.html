@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="zh" id="html-root">
+<head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YKKHZCKP8M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-YKKHZCKP8M');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人生模拟游戏</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f3ee;--surface:#fdfaf6;--surface2:#f0ebe3;
+  --border:#e2d9ce;--border2:#cec3b5;
+  --text:#2a2420;--muted:#7a6e63;--faint:#b0a497;
+  --sage:#6b8f71;--sage-light:#e8f2ea;
+  --terracotta:#b5715a;--terra-light:#faf0eb;--sand:#c9b89a;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.lang-switch{position:fixed;top:1.25rem;right:1.25rem;z-index:999;display:flex;background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,0.07)}
+.lang-btn{background:transparent;border:none;padding:0.35rem 0.85rem;font-size:12px;cursor:pointer;font-family:inherit;color:var(--muted);transition:all 0.18s;letter-spacing:0.04em}
+.lang-btn.active{background:var(--text);color:var(--bg)}
+
+/* ── 首页 ── */
+#page-home{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem 1.5rem;text-align:center;animation:fadeIn 0.8s ease}
+.home-label{font-size:11px;letter-spacing:0.16em;color:var(--faint);text-transform:uppercase;margin-bottom:1.75rem}
+.home-title{font-size:clamp(1.9rem,5.5vw,2.8rem);font-weight:300;line-height:1.25;margin-bottom:0.85rem;color:var(--text)}
+.home-title em{font-style:italic;color:var(--terracotta)}
+.home-sub{font-size:14px;color:var(--muted);line-height:1.8;max-width:400px;margin:0 auto 2.5rem}
+
+/* 两个入口卡片 */
+.entry-row{display:flex;flex-direction:column;gap:10px;width:100%;max-width:440px;margin-bottom:2rem}
+.entry-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.25rem 1.35rem;text-align:left;cursor:pointer;transition:all 0.2s;position:relative}
+.entry-card:hover{border-color:var(--sage);background:var(--sage-light);transform:translateY(-1px)}
+.entry-top{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem}
+.entry-icon{font-size:1.1rem}
+.entry-name{font-size:0.92rem;font-weight:500;color:var(--text)}
+.entry-desc{font-size:0.78rem;color:var(--muted);line-height:1.6;padding-left:1.75rem}
+.entry-arrow{position:absolute;right:1.25rem;top:50%;transform:translateY(-50%);color:var(--faint);transition:all 0.2s}
+.entry-card:hover .entry-arrow{color:var(--sage);transform:translateY(-50%) translateX(3px)}
+
+/* 匹配输入（点击后展开） */
+.match-box{width:100%;max-width:440px;display:none;flex-direction:column;gap:10px;margin-bottom:2rem;animation:fadeIn 0.3s ease}
+.match-box.open{display:flex}
+.confuse-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;font-size:14px;color:var(--text);font-family:inherit;resize:none;outline:none;line-height:1.7;transition:border-color 0.2s}
+.confuse-input::placeholder{color:var(--faint)}
+.confuse-input:focus{border-color:var(--sage)}
+.match-actions{display:flex;gap:8px}
+.match-submit{flex:1;background:var(--text);color:var(--bg);border:none;border-radius:8px;padding:0.75rem;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:opacity 0.2s}
+.match-submit:hover{opacity:0.82}
+.match-cancel{background:transparent;border:1px solid var(--border2);border-radius:8px;padding:0.75rem 1rem;font-size:13px;color:var(--muted);cursor:pointer;font-family:inherit}
+.match-cancel:hover{border-color:var(--sage);color:var(--sage)}
+
+/* 探索面板（点击后展开） */
+.explore-box{width:100%;max-width:440px;display:none;flex-direction:column;margin-bottom:2rem;animation:fadeIn 0.3s ease}
+.explore-box.open{display:flex}
+.explore-title{font-size:11px;color:var(--faint);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.85rem;text-align:left}
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:0.85rem}
+.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 0.9rem;text-align:left;position:relative;overflow:hidden;transition:all 0.2s}
+.cat-card.live{cursor:pointer}
+.cat-card.live:hover{border-color:var(--sage);background:var(--sage-light);transform:translateY(-2px)}
+.cat-card.soon{opacity:0.5;cursor:default}
+.cat-icon{font-size:1.25rem;margin-bottom:0.5rem;display:block}
+.cat-name{font-size:0.85rem;font-weight:500;color:var(--text);margin-bottom:0.25rem}
+.cat-desc{font-size:0.72rem;color:var(--muted);line-height:1.55}
+.cat-badge{position:absolute;top:0.6rem;right:0.6rem;font-size:0.56rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;padding:0.15rem 0.45rem;border-radius:100px}
+.badge-live{background:var(--sage-light);color:var(--sage)}
+.badge-soon{background:var(--surface2);color:var(--faint)}
+.explore-back{background:transparent;border:none;font-size:12px;color:var(--faint);cursor:pointer;font-family:inherit;padding:0.4rem}
+.explore-back:hover{color:var(--muted)}
+
+/* 计数器 */
+.counter-row{display:flex;max-width:440px;width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.counter-item{flex:1;padding:0.85rem 0.5rem;text-align:center;border-right:1px solid var(--border)}
+.counter-item:last-child{border-right:none}
+.counter-num{font-size:1.4rem;font-weight:500;color:var(--text);line-height:1;margin-bottom:0.25rem}
+.counter-label{font-size:0.65rem;color:var(--muted);letter-spacing:0.05em}
+
+/* ── 初心页 ── */
+#page-manifesto{min-height:100vh;display:none;flex-direction:column;justify-content:center;align-items:center;padding:2rem;background:var(--bg);animation:fadeIn 0.6s ease}
+.mf-wrap{width:100%;max-width:460px}
+.mf-top{text-align:center;margin-bottom:2rem}
+.mf-eyebrow{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--faint);margin-bottom:0.6rem}
+.mf-heading{font-size:1.4rem;font-weight:300;color:var(--text);line-height:1.3;margin-bottom:0.4rem}
+.mf-sub{font-size:13px;color:var(--faint)}
+.mf-list{margin-bottom:2rem}
+.mf-item{display:flex;gap:0.85rem;padding:0.85rem 0;border-bottom:1px solid var(--border);align-items:flex-start;animation:fadeIn 0.4s ease both}
+.mf-item:first-child{border-top:1px solid var(--border)}
+.mf-num{font-size:11px;color:var(--sage);font-weight:500;min-width:18px;padding-top:2px}
+.mf-text{font-size:13.5px;color:var(--muted);line-height:1.75}
+.mf-text strong{color:var(--text);font-weight:500}
+.mf-enter{width:100%;background:var(--sage);color:#fff;border:none;border-radius:10px;padding:0.85rem;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:0.75rem}
+.mf-enter:hover{opacity:0.85}
+.mf-skip{width:100%;background:transparent;border:none;font-size:13px;color:var(--faint);cursor:pointer;font-family:inherit}
+.mf-skip:hover{color:var(--muted)}
+
+/* ── 自我描述 ── */
+#page-profile{min-height:100vh;display:none;flex-direction:column;justify-content:center;align-items:center;padding:2rem;background:var(--bg);animation:fadeIn 0.6s ease}
+.profile-wrap{width:100%;max-width:460px}
+.profile-progress{display:flex;gap:5px;justify-content:center;margin-bottom:2rem}
+.pdot{width:6px;height:6px;border-radius:50%;background:var(--border)}
+.pdot.done{background:var(--sage)}
+.pdot.active{background:var(--sand)}
+.profile-q{font-size:18px;font-weight:400;color:var(--text);line-height:1.45;margin-bottom:0.5rem;text-align:center}
+.profile-hint{font-size:13px;color:var(--faint);text-align:center;margin-bottom:1.5rem}
+.profile-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.75rem;justify-content:center}
+.chip{background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:0.5rem 1.1rem;font-size:14px;color:var(--muted);cursor:pointer;transition:all 0.18s;font-family:inherit}
+.chip:hover{border-color:var(--sage);color:var(--sage)}
+.chip.sel{background:var(--sage);border-color:var(--sage);color:#fff}
+.chip.multi.sel{background:var(--sage-light);border-color:var(--sage);color:var(--sage)}
+.profile-actions{display:flex;gap:8px;justify-content:center}
+.profile-next{background:var(--text);color:var(--bg);border:none;border-radius:8px;padding:0.7rem 1.75rem;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
+.profile-next:hover{opacity:0.82}
+.profile-skip{background:transparent;border:none;font-size:13px;color:var(--faint);cursor:pointer;font-family:inherit;padding:0.6rem 1rem}
+
+/* ── 匹配页 ── */
+#page-match{min-height:100vh;display:none;flex-direction:column;justify-content:center;align-items:center;padding:2rem;text-align:center;background:var(--bg)}
+.dots span{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--sand);margin:0 3px;animation:pulse 1.2s ease-in-out infinite}
+.dots span:nth-child(2){animation-delay:0.2s}
+.dots span:nth-child(3){animation-delay:0.4s}
+.match-thinking{margin-bottom:2.5rem}
+.match-label{font-size:11px;letter-spacing:0.16em;color:var(--faint);text-transform:uppercase;margin-bottom:2rem;margin-top:1.5rem}
+.match-card{width:100%;max-width:460px;background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;text-align:left;margin-bottom:1.25rem;cursor:pointer;transition:all 0.2s}
+.match-card.sel{border-color:var(--sage)}
+.match-img{width:100%;height:155px;object-fit:cover;opacity:0.85;display:block}
+.match-body{padding:1.25rem}
+.match-tag{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--sage);margin-bottom:0.5rem}
+.match-title{font-size:1.1rem;font-weight:500;line-height:1.3;margin-bottom:0.5rem;color:var(--text)}
+.match-desc{font-size:13px;color:var(--muted);line-height:1.7}
+.match-meta{display:flex;gap:0.5rem;margin-top:0.85rem;font-size:11px;color:var(--faint);flex-wrap:wrap}
+.match-all{width:100%;max-width:460px;text-align:left;margin-bottom:1.25rem}
+.match-all-label{font-size:11px;color:var(--faint);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.75rem}
+.match-mini{display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all 0.2s}
+.match-mini:hover{border-color:var(--sage);background:var(--sage-light)}
+.match-mini-img{width:44px;height:44px;border-radius:6px;object-fit:cover;flex-shrink:0}
+.match-mini-tag{font-size:10px;color:var(--sage);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:2px}
+.match-mini-title{font-size:13px;color:var(--text)}
+.start-btn{width:100%;max-width:460px;background:var(--sage);color:#fff;border:none;border-radius:10px;padding:0.9rem;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit}
+.start-btn:hover{opacity:0.85}
+.back-btn{margin-top:0.75rem;background:transparent;border:none;font-size:13px;color:var(--faint);cursor:pointer;font-family:inherit;padding:0.5rem}
+.back-btn:hover{color:var(--muted)}
+
+/* ── 游戏页 ── */
+#page-game{display:none;background:var(--bg)}
+#game-wrap{max-width:640px;margin:0 auto}
+.scene-frame{position:relative;width:100%;min-height:420px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;animation:fadeIn 0.6s ease}
+.scene-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.72}
+.scene-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(247,243,238,1) 0%,rgba(247,243,238,0.7) 45%,rgba(247,243,238,0.05) 100%)}
+.top-bar{position:absolute;top:0;left:0;right:0;z-index:2;padding:1.25rem 1.5rem 0;display:flex;justify-content:space-between;align-items:center}
+.prog-wrap{flex:1;height:1.5px;background:rgba(0,0,0,0.1);border-radius:2px;overflow:hidden;margin-right:1rem}
+.prog-fill{height:100%;background:var(--sage);border-radius:2px;transition:width 0.7s ease}
+.loop-badge{font-size:10px;letter-spacing:0.1em;color:var(--muted);white-space:nowrap}
+.scene-content{position:relative;z-index:2;padding:1.5rem 1.5rem 1.25rem}
+.scene-tag{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--sage);margin-bottom:0.75rem}
+.scene-body{font-size:15px;color:var(--text);line-height:1.9;margin-bottom:1.25rem}
+.scene-body strong{font-weight:500}
+.scene-body em{color:var(--terracotta);font-style:italic}
+.nudge{font-size:12.5px;color:var(--muted);font-style:italic;margin-bottom:1.25rem;padding:0.75rem 1rem;background:var(--terra-light);border-radius:8px;border-left:2px solid var(--terracotta);line-height:1.7}
+.pause-line{font-size:12.5px;color:var(--muted);font-style:italic;margin-bottom:1.25rem;padding:0.6rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);text-align:center;line-height:1.7}
+.choices{display:flex;flex-direction:column;gap:10px;padding:0 1.5rem 2rem;background:var(--bg)}
+.choice{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.15rem;cursor:pointer;text-align:left;font-size:14px;color:var(--text);line-height:1.65;transition:all 0.2s;font-family:inherit}
+.choice:hover{background:var(--sage-light);border-color:var(--sage);transform:translateX(4px)}
+.choice.comfort{background:var(--surface2);color:var(--muted)}
+.choice.comfort:hover{border-color:var(--border2);transform:translateX(2px)}
+.choice-label{font-size:10px;font-weight:500;color:var(--faint);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px}
+.ending-frame{position:relative;width:100%;min-height:280px;overflow:hidden;animation:fadeIn 0.6s ease;display:flex;flex-direction:column;justify-content:flex-end}
+.ending-frame .scene-img{opacity:0.5}
+.ending-frame .scene-overlay{background:linear-gradient(to top,rgba(247,243,238,1) 0%,rgba(247,243,238,0.75) 50%,rgba(247,243,238,0) 100%)}
+.ending-content{position:relative;z-index:2;padding:1.75rem 1.5rem 0}
+.ending-label{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--sage);margin-bottom:0.75rem}
+.ending-title{font-size:22px;font-weight:400;color:var(--text);line-height:1.3}
+.ending-body{padding:1.25rem 1.5rem 1.5rem;background:var(--bg)}
+.ending-story{font-size:14.5px;color:var(--muted);line-height:1.95;margin-bottom:1rem}
+.ending-story em{color:var(--text);font-style:normal;font-weight:500}
+.ending-divider{height:1px;background:var(--border);margin:1.25rem 0}
+.ending-insight{font-size:13.5px;color:var(--terracotta);line-height:1.8;font-style:italic;margin-bottom:1.75rem;padding:1rem 1.25rem;background:var(--terra-light);border-radius:10px}
+.consult-area{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.25rem;position:relative;overflow:hidden}
+.consult-area::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--sage),var(--sand),var(--terracotta))}
+.consult-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--sage);margin-bottom:0.6rem}
+.consult-title{font-size:15px;font-weight:500;color:var(--text);margin-bottom:0.5rem;line-height:1.4}
+.consult-desc{font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:1.1rem}
+.consult-btn{display:inline-flex;align-items:center;gap:6px;background:var(--sage);color:#fff;border:none;border-radius:8px;padding:0.65rem 1.25rem;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;text-decoration:none}
+.consult-btn:hover{opacity:0.85}
+.consult-author{display:flex;align-items:center;gap:0.6rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+.consult-avatar{width:32px;height:32px;border-radius:50%;background:var(--sage-light);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--sage);font-weight:500;flex-shrink:0;cursor:pointer;transition:transform 0.2s}
+.consult-avatar:hover{transform:scale(1.1)}
+.consult-author-name{font-size:12px;font-weight:500;color:var(--text)}
+.consult-author-role{font-size:11px;color:var(--faint)}
+.comments-area{margin-bottom:1.25rem}
+.comments-title{font-size:12px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);margin-bottom:1rem}
+.comment-list{display:flex;flex-direction:column;gap:10px;margin-bottom:1rem}
+.comment-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.9rem 1rem}
+.comment-meta{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.4rem}
+.comment-av{width:22px;height:22px;border-radius:50%;background:var(--sage-light);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--sage);font-weight:500}
+.comment-name{font-size:11px;color:var(--faint)}
+.comment-body{font-size:13px;color:var(--muted);line-height:1.65}
+.comment-input-row{display:flex;gap:8px;align-items:flex-end}
+.comment-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;font-size:13px;color:var(--text);font-family:inherit;resize:none;outline:none;line-height:1.6}
+.comment-input::placeholder{color:var(--faint)}
+.comment-input:focus{border-color:var(--sage)}
+.comment-send{background:var(--sage);color:#fff;border:none;border-radius:8px;padding:0.65rem 1rem;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.submit-area{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem}
+.submit-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint);margin-bottom:0.4rem}
+.submit-title{font-size:14px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:0.75rem}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:3rem}
+.btn-p{background:var(--text);color:var(--bg);border:none;border-radius:8px;padding:0.7rem 1.4rem;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit}
+.btn-p:hover{opacity:0.8}
+.btn-g{background:transparent;border:1px solid var(--border2);border-radius:8px;padding:0.7rem 1.25rem;font-size:13px;color:var(--muted);cursor:pointer;font-family:inherit}
+.btn-g:hover{border-color:var(--sage);color:var(--sage)}
+/* 作者弹层 */
+.author-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(42,36,32,0.45);align-items:center;justify-content:center;padding:1.5rem}
+.author-overlay.open{display:flex}
+.author-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;max-width:420px;width:100%;overflow:hidden;position:relative;animation:slideUp 0.25s ease}
+.ac-cover{height:72px;background:linear-gradient(135deg,var(--sage-light),var(--terra-light));position:relative}
+.ac-cover-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--sage),var(--sand),var(--terracotta))}
+.ac-av{width:52px;height:52px;border-radius:50%;background:var(--sage-light);border:3px solid var(--surface);display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:500;color:var(--sage);position:absolute;bottom:-26px;left:1.5rem}
+.ac-body{padding:2rem 1.5rem 1.5rem}
+.ac-name{font-size:1rem;font-weight:500;color:var(--text);margin-bottom:0.2rem}
+.ac-role{font-size:0.7rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--sage);margin-bottom:1rem}
+.ac-bio{font-size:0.86rem;color:var(--muted);line-height:1.85;margin-bottom:1.1rem}
+.ac-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.1rem}
+.ac-tag{font-size:0.66rem;font-weight:500;padding:0.22rem 0.65rem;border-radius:100px;color:var(--muted);background:var(--surface2);border:1px solid var(--border)}
+.ac-links{display:flex;gap:8px;flex-wrap:wrap}
+.ac-link{display:inline-flex;align-items:center;gap:5px;font-size:0.76rem;color:var(--sage);text-decoration:none;padding:0.38rem 0.85rem;border:1px solid var(--sage-light);border-radius:8px;background:var(--sage-light)}
+.ac-close{position:absolute;top:0.75rem;right:0.75rem;background:rgba(0,0,0,0.12);border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:0.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+
+/* ── 邮件收集 ── */
+.email-area{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.35rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.email-area-text{flex:1;min-width:160px}
+.email-area-label{font-size:12px;font-weight:500;color:var(--text);margin-bottom:0.2rem}
+.email-area-sub{font-size:11.5px;color:var(--faint);line-height:1.5}
+.email-area-right{display:flex;gap:7px;width:100%;max-width:280px;flex-shrink:0}
+.email-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.85rem;font-size:13px;color:var(--text);font-family:inherit;outline:none;min-width:0;transition:border-color 0.2s}
+.email-input::placeholder{color:var(--faint)}
+.email-input:focus{border-color:var(--sage)}
+.email-send{background:var(--sage);color:#fff;border:none;border-radius:8px;padding:0.6rem 1rem;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;transition:opacity 0.2s;flex-shrink:0}
+.email-send:hover{opacity:0.85}
+.email-done{font-size:12.5px;color:var(--sage);display:flex;align-items:center;gap:5px}
+@media(max-width:500px){.email-area{flex-direction:column;align-items:flex-start}.email-area-right{max-width:100%}}
+</style>
+</head>
+<body>
+<div class="lang-switch">
+  <button class="lang-btn active" id="btn-zh" onclick="setLang('zh')">中文</button>
+  <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+</div>
+<!-- 作者弹层 -->
+<div class="author-overlay" id="author-overlay" onclick="closeAuthor(event)">
+  <div class="author-card">
+    <div class="ac-cover"><div class="ac-cover-bar"></div><div class="ac-av" id="ac-av">M</div></div>
+    <button class="ac-close" onclick="closeAuthorDirect()">✕</button>
+    <div class="ac-body">
+      <div class="ac-name" id="ac-name">Mark</div>
+      <div class="ac-role" id="ac-role"></div>
+      <div class="ac-bio" id="ac-bio"></div>
+      <div class="ac-tags" id="ac-tags"></div>
+      <div class="ac-links" id="ac-links"></div>
+    </div>
+  </div>
+</div>
+<!-- 首页 -->
+<div id="page-home">
+  <p class="home-label" id="hl-label">Beta · 人生模拟游戏</p>
+  <h1 class="home-title" id="hl-title">没有标准答案<br><em>但我们总会得到些什么</em></h1>
+  <p class="home-sub" id="hl-sub">每一个游戏，都来自一段真实经历。</p>
+  <div class="entry-row">
+    <div class="entry-card" id="entry-match" onclick="openMatchBox()">
+      <div class="entry-top"><span class="entry-icon">💭</span><span class="entry-name" id="en1">我有一个困惑，帮我匹配</span></div>
+      <div class="entry-desc" id="ed1">说说你最近在想什么，我们来找一个最贴近你处境的故事。</div>
+      <span class="entry-arrow">→</span>
+    </div>
+    <div class="entry-card" id="entry-explore" onclick="openExploreBox()">
+      <div class="entry-top"><span class="entry-icon">🗺️</span><span class="entry-name" id="en2">我想自由探索</span></div>
+      <div class="entry-desc" id="ed2">按主题浏览，找一个你感兴趣的故事。</div>
+      <span class="entry-arrow">→</span>
+    </div>
+  </div>
+  <!-- 匹配输入框（隐藏，点击后展开） -->
+  <div class="match-box" id="match-box">
+    <textarea class="confuse-input" id="confuse-input" rows="3" placeholder="比如：我总是很难迈出第一步……"></textarea>
+    <div class="match-actions">
+      <button class="match-submit" id="match-submit" onclick="doMatch()">为我匹配故事</button>
+      <button class="match-cancel" onclick="closeMatchBox()" id="match-cancel">取消</button>
+    </div>
+  </div>
+  <!-- 探索面板（隐藏，点击后展开） -->
+  <div class="explore-box" id="explore-box">
+    <p class="explore-title" id="explore-title">选择一个主题</p>
+    <div class="cat-grid" id="cat-grid"></div>
+    <button class="explore-back" onclick="closeExploreBox()" id="explore-back">← 返回</button>
+  </div>
+  <!-- 计数器 -->
+  <div class="counter-row">
+    <div class="counter-item"><div class="counter-num" id="cnt-v">—</div><div class="counter-label" id="cnt-vl">位访问者</div></div>
+    <div class="counter-item"><div class="counter-num" id="cnt-p">—</div><div class="counter-label" id="cnt-pl">次游戏体验</div></div>
+    <div class="counter-item"><div class="counter-num">3</div><div class="counter-label" id="cnt-al">位创作者</div></div>
+  </div>
+</div>
+<!-- 初心页 -->
+<div id="page-manifesto">
+  <div class="mf-wrap">
+    <div class="mf-top">
+      <p class="mf-eyebrow" id="mf-eyebrow">设计者的话</p>
+      <h2 class="mf-heading" id="mf-heading">在你开始之前</h2>
+      <p class="mf-sub" id="mf-sub">十句话，关于这个游戏为什么存在</p>
+    </div>
+    <div class="mf-list" id="mf-list"></div>
+    <button class="mf-enter" id="mf-enter" onclick="goToProfile()">开始体验</button>
+    <button class="mf-skip" id="mf-skip" onclick="goToProfile()">直接进入 →</button>
+  </div>
+</div>
+<!-- 自我描述 -->
+<div id="page-profile">
+  <div class="profile-wrap">
+    <div class="profile-progress" id="profile-progress"></div>
+    <div id="profile-content"></div>
+  </div>
+</div>
+<!-- 匹配页 -->
+<div id="page-match">
+  <div class="match-thinking"><div class="dots"><span></span><span></span><span></span></div></div>
+  <p class="match-label" id="match-label">为你找到了一个故事</p>
+  <div class="match-card sel" id="featured-card">
+    <img class="match-img" id="featured-img" src="" alt="">
+    <div class="match-body">
+      <p class="match-tag" id="featured-tag"></p>
+      <h2 class="match-title" id="featured-title"></h2>
+      <p class="match-desc" id="featured-desc"></p>
+      <div class="match-meta" id="featured-meta"></div>
+    </div>
+  </div>
+  <div class="match-all" id="match-all" style="display:none">
+    <p class="match-all-label" id="match-all-label">或者选另一个故事</p>
+    <div id="other-cards"></div>
+  </div>
+  <button class="start-btn" id="start-btn" onclick="startGame()">进入这个故事</button>
+  <button class="back-btn" id="back-btn" onclick="goHome()">← 返回</button>
+</div>
+<!-- 游戏页 -->
+<div id="page-game"><div id="game-wrap"><div id="stage"></div></div></div>
+
+<script>
+var LANG='zh', userProfile={}, selIdx=0, loopCount=0, curScene='start', curGame=null;
+
+function T(o){if(typeof o==='string')return o;if(o&&typeof o==='object')return LANG==='en'?(o.en||o.zh):(o.zh||o.en);return '';}
+
+function setLang(lang){
+  LANG=lang;
+  document.getElementById('html-root').lang=lang;
+  document.getElementById('btn-zh').classList.toggle('active',lang==='zh');
+  document.getElementById('btn-en').classList.toggle('active',lang==='en');
+  renderText();
+  var pgs=['page-manifesto','page-profile','page-match','page-game','page-home'];
+  pgs.forEach(function(p){
+    var el=document.getElementById(p);
+    if(el&&el.style.display!=='none'){
+      if(p==='page-manifesto')renderManifesto();
+      if(p==='page-profile')renderProfile();
+      if(p==='page-home'){renderText();renderCatGrid();updateCounters();}
+      if(p==='page-game'&&curGame)render();
+    }
+  });
+}
+
+function renderText(){
+  var zh=LANG==='zh';
+  var E={
+    label:'Beta \u00b7 Life Simulation',
+    title:'No right answers.<br><em>But we always take something away.</em>',
+    sub:'Every game here starts from a real experience.',
+    en1:'I have a question \u2014 help me match',
+    ed1:"Tell us what's on your mind. We'll find the story closest to your situation.",
+    en2:'I want to explore freely',
+    ed2:'Browse by theme and find a story that interests you.',
+    ph:'e.g. I always hesitate before taking the first step\u2026',
+    submit:'Match a story for me',
+    cancel:'Cancel',
+    etitle:'Choose a theme',
+    eback:'\u2190 Back',
+    mlabel:"Here's a story for you",
+    startbtn:'Enter this story',
+    backbtn:'\u2190 Back',
+    otherl:'Or choose another story',
+    cvl:'visitors', cpl:'plays', cal:'contributors'
+  };
+  function s(id,txt){var el=document.getElementById(id);if(el)el.innerHTML=txt;}
+  s('hl-label',zh?'Beta \u00b7 \u4eba\u751f\u6a21\u62df\u6e38\u620f':E.label);
+  s('hl-title',zh?'\u6ca1\u6709\u6807\u51c6\u7b54\u6848<br><em>\u4f46\u6211\u4eec\u603b\u4f1a\u5f97\u5230\u4e9b\u4ec0\u4e48</em>':E.title);
+  s('hl-sub',zh?'\u6bcf\u4e00\u4e2a\u6e38\u620f\uff0c\u90fd\u6765\u81ea\u4e00\u6bb5\u771f\u5b9e\u7ecf\u5386\u3002':E.sub);
+  s('en1',zh?'\u6211\u6709\u4e00\u4e2a\u56f0\u60d1\uff0c\u5e2e\u6211\u5339\u914d':E.en1);
+  s('ed1',zh?'\u8bf4\u8bf4\u4f60\u6700\u8fd1\u5728\u60f3\u4ec0\u4e48\uff0c\u6211\u4eec\u6765\u627e\u4e00\u4e2a\u6700\u8d34\u8fd1\u4f60\u5904\u5883\u7684\u6545\u4e8b\u3002':E.ed1);
+  s('en2',zh?'\u6211\u60f3\u81ea\u7531\u63a2\u7d22':E.en2);
+  s('ed2',zh?'\u6309\u4e3b\u9898\u6d4f\u89c8\uff0c\u627e\u4e00\u4e2a\u4f60\u611f\u5174\u8da3\u7684\u6545\u4e8b\u3002':E.ed2);
+  var ci=document.getElementById('confuse-input');
+  if(ci)ci.placeholder=zh?'\u6bd4\u5982\uff1a\u6211\u603b\u662f\u5f88\u96be\u8fc8\u51fa\u7b2c\u4e00\u6b65\u2026\u2026':E.ph;
+  s('match-submit',zh?'\u4e3a\u6211\u5339\u914d\u6545\u4e8b':E.submit);
+  s('match-cancel',zh?'\u53d6\u6d88':E.cancel);
+  s('explore-title',zh?'\u9009\u62e9\u4e00\u4e2a\u4e3b\u9898':E.etitle);
+  s('explore-back',zh?'\u2190 \u8fd4\u56de':E.eback);
+  s('match-label',zh?'\u4e3a\u4f60\u627e\u5230\u4e86\u4e00\u4e2a\u6545\u4e8b':E.mlabel);
+  s('start-btn',zh?'\u8fdb\u5165\u8fd9\u4e2a\u6545\u4e8b':E.startbtn);
+  s('back-btn',zh?'\u2190 \u8fd4\u56de':E.backbtn);
+  var ol=document.getElementById('match-all-label');if(ol)ol.textContent=zh?'\u6216\u8005\u9009\u53e6\u4e00\u4e2a\u6545\u4e8b':E.otherl;
+  s('cnt-vl',zh?'\u4f4d\u8bbf\u95ee\u8005':E.cvl);
+  s('cnt-pl',zh?'\u6b21\u6e38\u620f\u4f53\u9a8c':E.cpl);
+  s('cnt-al',zh?'\u4f4d\u521b\u4f5c\u8005':E.cal);
+}
+
+/* ── 两个入口交互 ── */
+function openMatchBox(){
+  closeExploreBox();
+  document.getElementById('match-box').classList.add('open');
+  document.getElementById('confuse-input').focus();
+}
+function closeMatchBox(){document.getElementById('match-box').classList.remove('open');}
+function openExploreBox(){
+  closeMatchBox();
+  document.getElementById('explore-box').classList.add('open');
+  renderCatGrid();
+}
+function closeExploreBox(){document.getElementById('explore-box').classList.remove('open');}
+
+/* ── 四类主题 ── */
+var CATS=[
+  {key:'insight',icon:'\u2728',name:{zh:'\u611f\u609f',en:'Insight'},
+   desc:{zh:'\u4ece\u4e00\u6bb5\u771f\u5b9e\u7ecf\u5386\u51fa\u53d1\uff0c\u987a\u7740\u547d\u8fd0\u7684\u5f00\u5173\uff0c\u627e\u5230\u5c5e\u4e8e\u81ea\u5df1\u7684\u611f\u609f\u3002',en:'Start from a real experience, follow the turns of fate, find your own understanding.'},live:true},
+  {key:'sports',icon:'\ud83c\udfbe',name:{zh:'\u8fd0\u52a8',en:'Sports'},
+   desc:{zh:'\u8fd0\u52a8\u4e0d\u53ea\u662f\u8fd0\u52a8\u3002\u8fd0\u52a8\u91cc\u85cf\u7740\u4e00\u4e2a\u4eba\u5982\u4f55\u9762\u5bf9\u81ea\u5df1\u7684\u65b9\u5f0f\u3002',en:'Sports are never just sports. They reveal how a person faces themselves.'},live:true},
+  {key:'career',icon:'\ud83c\udfe2',name:{zh:'\u804c\u573a',en:'Career'},
+   desc:{zh:'\u5927\u5382\u3001\u521b\u4e1a\u3001\u8f6c\u578b\u2014\u2014\u8fd9\u4e9b\u73af\u5883\u90fd\u662f\u771f\u5b9e\u7684\uff0c\u91cc\u9762\u7684\u4eba\u4e5f\u662f\u3002',en:'Big tech, startups, pivots \u2014 these worlds are real, and so are the people inside them.'},live:false},
+  {key:'dialogue',icon:'🎙️',name:{zh:'对话',en:'Dialogue'},
+   desc:{zh:'模拟一场真实的对话，两个人，两种视角，一段共同探索的旅程。',en:'Simulate a real conversation — two people, two perspectives, one shared exploration.'},live:false},
+  {key:'travel',icon:'✈️',name:{zh:'旅行',en:'Travel'},
+   desc:{zh:'一个被拖延十年的念头，一座一直存在于想象里的城市。旅行让你发现什么？',en:'A thought postponed for years. A city that lived only in imagination. What does travel let you discover?'},live:true}
+
+,
+  {key:'daily',icon:'🌿',name:{zh:'日常',en:'Daily'},
+   desc:{zh:'不需要大事。一只猫，一个傍晚，一些说不清楚但实实在在的东西。',en:'Nothing significant. A cat, an evening, something real that is hard to name.'},live:true}
+];
+
+
+function renderCatGrid(){
+  var zh=LANG==='zh';
+  var el=document.getElementById('cat-grid');
+  if(!el)return;
+  el.innerHTML=CATS.map(function(c){
+    var badge=c.live
+      ?'<span class="cat-badge badge-live">'+(zh?'\u53ef\u4f53\u9a8c':'Live')+'</span>'
+      :'<span class="cat-badge badge-soon">'+(zh?'\u5373\u5c06\u4e0a\u7ebf':'Soon')+'</span>';
+    var cls='cat-card '+(c.live?'live':'soon');
+    var click=c.live?' onclick="pickCat(this.dataset.key)"':'';
+    return '<div class="'+cls+'" data-key="'+c.key+'"'+click+'>'
+      +badge+'<span class="cat-icon">'+c.icon+'</span>'
+      +'<div class="cat-name">'+T(c.name)+'</div>'
+      +'<div class="cat-desc">'+T(c.desc)+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function pickCat(key){
+  var list=GAMES.filter(function(g){return g.category===key;});
+  if(!list.length)return;
+  if(list.length===1){selIdx=GAMES.indexOf(list[0]);startGame();}
+  else{
+    var order=list.map(function(g){return GAMES.indexOf(g);});
+    selIdx=order[0];
+    show('page-match');
+    setTimeout(function(){renderMatchPage(order);},100);
+  }
+}
+
+/* ── 初心页 ── */
+var MF=[
+  {zh:'\u9053\u7406\u4ece\u4e0d\u7a00\u7f3a\u3002\u771f\u6b63\u6539\u53d8\u4eba\u751f\u7684\uff0c\u4ece\u6765\u4e0d\u662f<strong>\u77e5\u9053</strong>\uff0c\u800c\u662f\u4e00\u6b21\u6b21\u5177\u4f53\u7684\u9009\u62e9\u4e0e\u4f53\u609f\u3002',en:'Wisdom is never scarce. What truly changes a life is never <strong>knowing</strong> \u2014 it is the weight of specific choices and lived realisation.'},
+  {zh:'\u65e0\u8bba\u6765\u81ea\u4e66\u672c\u3001\u8bbf\u8c08\uff0c\u8fd8\u662fAI\uff0c\u6211\u4eec\u83b7\u5f97\u7684\u59cb\u7ec8\u53ea\u662f\u201c\u9053\u7406\u201d\uff0c\u5dee\u522b\u4e0d\u8fc7\u662f\u83b7\u53d6\u65b9\u5f0f\u7684\u66f4\u65b0\u3002',en:'Whether from books, conversations, or AI \u2014 what we receive is always just principle. Only the delivery method changes.'},
+  {zh:'\u5b64\u72ec\uff0c\u662f\u6bcf\u4e2a\u4eba\u7684\u5e95\u8272\u3002\u8fde\u63a5\uff0c\u4e0d\u662f\u4e3a\u4e86\u9003\u907f\u5b64\u72ec\uff0c\u800c\u662f\u8ba9\u6211\u4eec\u66f4\u6709\u529b\u91cf<strong>\u9762\u5bf9</strong>\u5b83\u3002',en:"Solitude is everyone's undertone. Connection gives us the strength to <strong>face</strong> it."},
+  {zh:'\u4eba\u4e0e\u4eba\u4e4b\u95f4\u7684\u771f\u5b9e\u8fde\u63a5\uff0c\u4e0e\u5177\u4f53\u800c\u9c9c\u6d3b\u7684\u7ecf\u5386\uff0c\u662f\u4efb\u4f55AI\u5bf9\u8bdd\u90fd<strong>\u65e0\u6cd5\u66ff\u4ee3</strong>\u7684\u3002',en:'Real human connection and lived experience are things no AI conversation can <strong>replace</strong>.'},
+  {zh:'\u771f\u6b63\u6709\u610f\u4e49\u7684\u8fde\u63a5\uff0c\u4e0d\u5728\u4e8e\u5bf9\u65b9\u7684\u5934\u8861\u6216\u9ad8\u5ea6\uff0c\u800c\u5728\u4e8e\u4ed6\u662f\u5426\u7a7f\u8fc7\u4e0e\u4f60<strong>\u76f8\u4f3c\u7684\u5904\u5883</strong>\u3002',en:'Meaningful connection is not about status. It is about whether someone has walked through a <strong>similar passage</strong>.'},
+  {zh:'\u751f\u547d\u6709\u9650\uff0c\u65e0\u6cd5\u904d\u5386\u6240\u6709\u60c5\u5883\u3002\u4f46\u201c\u4eba\u751f\u6a21\u62df\u201d\uff0c\u8ba9\u6211\u4eec\u5f97\u4ee5\u5728\u4ed6\u4eba\u7684\u7ecf\u9a8c\u4e2d\uff0c\u63d0\u524d<strong>\u9884\u6f14\u4e0e\u7406\u89e3</strong>\u3002',en:'Life is finite. But <strong>simulation</strong> lets us rehearse and understand through the experience of others.'},
+  {zh:'\u6bcf\u4e2a\u4eba\u90fd\u6709\u5c5e\u4e8e\u81ea\u5df1\u7684\u201c\u547d\u8fd0\u5faa\u73af\u201d\uff0c\u5b83\u4f1a\u4ee5\u4e0d\u540c\u9762\u8c8c\u53cd\u590d\u51fa\u73b0\uff0c\u76f4\u5230\u4f60\u771f\u6b63<strong>\u770b\u89c1\uff0c\u5e76\u9009\u62e9\u7a7f\u8fc7</strong>\u3002',en:'Everyone has their cycle of fate. It returns until you truly <strong>see it and choose to move through</strong>.'},
+  {zh:'\u90a3\u4e9b\u88ab\u79f0\u4f5c\u201c\u78e8\u96be\u201d\u7684\u65f6\u523b\uff0c\u672a\u5fc5\u662f\u60e9\u7f5a\uff0c\u66f4\u50cf\u662f<strong>\u5305\u88f9\u7740\u793c\u7269\u7684\u8003\u9898</strong>\u3002',en:'The moments we call hardship are more like <strong>questions wrapped around a gift</strong>.'},
+  {zh:'\u8fd9\u4e2a\u6e38\u620f\uff0c\u672c\u8d28\u662f\u4e00\u9762\u955c\u5b50\u3002\u5b83<strong>\u4e0d\u8bc4\u5224</strong>\uff0c\u53ea\u7167\u89c1\u6b64\u523b\u6700\u771f\u5b9e\u7684\u4f60\u3002',en:'This game is a mirror. It does <strong>not judge</strong> \u2014 it simply reflects who you are right now.'},
+  {zh:'\u4eba\u751f\u6216\u8bb8\u6ca1\u6709\u6807\u51c6\u7b54\u6848\u3002\u5b83\u66f4\u50cf\u4e00\u6b21<strong>\u5b8c\u6574\u7684\u4f53\u9a8c</strong>\u3002\u80fd\u591f\u5c3d\u60c5\u7ecf\u5386\uff0c\u5e76\u9010\u6e10\u6210\u4e3a\u81ea\u5df1\uff0c\u5df2\u7ecf\u8db3\u591f\u3002',en:'Life may have no right answer. It is a <strong>complete experience</strong>. To live it fully and become yourself \u2014 that is enough.'}
+];
+
+function renderManifesto(){
+  var zh=LANG==='zh';
+  document.getElementById('mf-eyebrow').textContent=zh?'\u8bbe\u8ba1\u8005\u7684\u8bdd':'A note from the designer';
+  document.getElementById('mf-heading').textContent=zh?'\u5728\u4f60\u5f00\u59cb\u4e4b\u524d':'Before you begin';
+  document.getElementById('mf-sub').textContent=zh?'\u5341\u53e5\u8bdd\uff0c\u5173\u4e8e\u8fd9\u4e2a\u6e38\u620f\u4e3a\u4ec0\u4e48\u5b58\u5728':'Ten thoughts on why this exists';
+  document.getElementById('mf-enter').textContent=zh?'\u5f00\u59cb\u4f53\u9a8c':'Begin';
+  document.getElementById('mf-skip').textContent=zh?'\u76f4\u63a5\u8fdb\u5165 \u2192':'Skip \u2192';
+  var list=document.getElementById('mf-list');
+  if(!list)return;
+  list.innerHTML=MF.map(function(item,i){
+    return '<div class="mf-item" style="animation-delay:'+(i*0.06)+'s">'
+      +'<span class="mf-num">'+(i===9?'00':'0'+(i+1))+'</span>'
+      +'<span class="mf-text">'+(zh?item.zh:item.en)+'</span></div>';
+  }).join('');
+}
+
+/* ── 自我描述 ── */
+var PS=[
+  {key:'age',q:{zh:'\u4f60\u5927\u6982\u5728\u54ea\u4e2a\u4eba\u751f\u9636\u6bb5\uff1f',en:'Which stage of life are you in?'},hint:{zh:'\u9009\u4e00\u4e2a\u5927\u6982\u7684\u5c31\u597d',en:'Just a rough sense is fine'},type:'single',chips:[{v:'18-',zh:'18\u5c81\u4ee5\u4e0b',en:'Under 18'},{v:'18-25',zh:'18\u201325\u5c81',en:'18\u201325'},{v:'26-35',zh:'26\u201335\u5c81',en:'26\u201335'},{v:'36-45',zh:'36\u201345\u5c81',en:'36\u201345'},{v:'46+',zh:'46\u5c81\u4ee5\u4e0a',en:'46+'}]},
+  {key:'interests',q:{zh:'\u4f60\u5e73\u65f6\u5173\u6ce8\u4ec0\u4e48\uff1f',en:'What are you into?'},hint:{zh:'\u53ef\u4ee5\u591a\u9009',en:'Select all that apply'},type:'multi',chips:[{v:'travel',zh:'\u65c5\u884c',en:'Travel'},{v:'work',zh:'\u5de5\u4f5c/\u4e8b\u4e1a',en:'Work'},{v:'family',zh:'\u5bb6\u5ead/\u4eb2\u60c5',en:'Family'},{v:'sports',zh:'\u8fd0\u52a8',en:'Sports'},{v:'growth',zh:'\u4e2a\u4eba\u6210\u957f',en:'Self-growth'}]},
+  {key:'purpose',q:{zh:'\u4eca\u5929\u6765\u8fd9\u91cc\uff0c\u4f60\u66f4\u60f3\u2026\u2026',en:'What brings you here today?'},hint:{zh:'',en:''},type:'single',chips:[{v:'confused',zh:'\u5e26\u7740\u4e00\u4e2a\u5177\u4f53\u7684\u56f0\u60d1',en:'I have a specific question'},{v:'explore',zh:'\u968f\u4fbf\u770b\u770b\uff0c\u6ca1\u6709\u7279\u522b\u76ee\u7684',en:'Just exploring'},{v:'stuck',zh:'\u611f\u89c9\u5361\u4f4f\u4e86\uff0c\u60f3\u627e\u70b9\u542f\u53d1',en:'Feeling stuck, need a spark'},{v:'curious',zh:'\u597d\u5947\u8fd9\u662f\u4ec0\u4e48',en:'Curious what this is'}]}
+];
+var pIdx=0,pAnswers={};
+
+function renderProfile(){
+  var zh=LANG==='zh';
+  var step=PS[pIdx];
+  var dots=PS.map(function(_,i){return '<div class="pdot '+(i<pIdx?'done':i===pIdx?'active':'')+'"></div>';}).join('');
+  document.getElementById('profile-progress').innerHTML=dots;
+  var cur=pAnswers[step.key]||(step.type==='multi'?[]:null);
+  var chips=step.chips.map(function(c){
+    var sel=step.type==='multi'?(cur.indexOf(c.v)>=0):(cur===c.v);
+    return '<button class="chip'+(step.type==='multi'?' multi':'')+(sel?' sel':'')+'" data-v="'+c.v+'" data-key="'+step.key+'" data-multi="'+(step.type==='multi')+'" onclick="pickChip(this)">'+(zh?c.zh:c.en)+'</button>';
+  }).join('');
+  var back=pIdx>0?'<button class="profile-skip" onclick="pBack()" style="margin-right:auto">\u2190 '+(zh?'\u4e0a\u4e00\u6b65':'Back')+'</button>':'';
+  var nextL=pIdx===PS.length-1?(zh?'\u5b8c\u6210 \u2192':'Done \u2192'):(zh?'\u4e0b\u4e00\u6b65 \u2192':'Next \u2192');
+  document.getElementById('profile-content').innerHTML=
+    '<div><div class="profile-q">'+T(step.q)+'</div>'
+    +(T(step.hint)?'<div class="profile-hint">'+T(step.hint)+'</div>':'')
+    +'<div class="profile-chips">'+chips+'</div>'
+    +'<div class="profile-actions">'+back
+    +'<button class="profile-skip" onclick="pSkip()">'+(zh?'\u8df3\u8fc7':'Skip')+'</button>'
+    +'<button class="profile-next" onclick="pNext()">'+nextL+'</button></div></div>';
+}
+
+function pickChip(el){
+  var key=el.dataset.key,v=el.dataset.v,multi=el.dataset.multi==='true';
+  if(multi){var arr=pAnswers[key]||[];var i=arr.indexOf(v);if(i>=0)arr.splice(i,1);else arr.push(v);pAnswers[key]=arr;}
+  else pAnswers[key]=v;
+  renderProfile();
+}
+function pNext(){if(pIdx<PS.length-1){pIdx++;renderProfile();}else{userProfile=pAnswers;goToMatch();}}
+function pSkip(){if(pIdx<PS.length-1){pIdx++;renderProfile();}else{userProfile=pAnswers;goToMatch();}}
+function pBack(){if(pIdx>0){pIdx--;renderProfile();}}
+
+/* ── 图片库 ── */
+var IMGS={
+  rain:'https://images.unsplash.com/photo-1519692933481-e162a57d6721?w=900&q=75&auto=format&fit=crop',
+  map:'https://images.unsplash.com/photo-1476900164809-ff19b8ae5968?w=900&q=75&auto=format&fit=crop',
+  cafe:'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=900&q=75&auto=format&fit=crop',
+  mall:'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=900&q=75&auto=format&fit=crop',
+  alley:'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=900&q=75&auto=format&fit=crop',
+  wetland:'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=900&q=75&auto=format&fit=crop',
+  mud:'https://images.unsplash.com/photo-1448375240586-882707db888b?w=900&q=75&auto=format&fit=crop',
+  tower:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&q=75&auto=format&fit=crop',
+  stranger:'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=900&q=75&auto=format&fit=crop',
+  street:'https://images.unsplash.com/photo-1465447142348-e9952c393450?w=900&q=75&auto=format&fit=crop',
+  cinema:'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=900&q=75&auto=format&fit=crop',
+  phone:'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=900&q=75&auto=format&fit=crop',
+  home:'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=900&q=75&auto=format&fit=crop',
+  night:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900&q=75&auto=format&fit=crop',
+  tennis:'https://images.unsplash.com/photo-1542144582-1ba00456b5e3?w=900&q=75&auto=format&fit=crop',
+  locker:'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=900&q=75&auto=format&fit=crop'
+};
+
+var GAMES = [
+  {
+    id:'adventure',category:'insight',template:'A',level:1,
+    tag:{zh:'旅行 · 真实改编',en:'Travel · Based on a true story'},
+    title:{zh:'一场计划外的冒险',en:'An Unplanned Adventure'},
+    desc:{zh:'计划被取消的那天，你会怎么做？一个发生在亚庇湿地里的真实故事——关于那条没有路的路，和一个你可能也认识的声音。',en:"When plans fall through, what do you do? A real story from a mangrove wetland — about a path with no path, and a voice you might recognize."},
+    cover:'wetland',
+    meta:[{zh:'约 5 分钟',en:'~5 min'},{zh:'多条路径',en:'Multiple paths'},{zh:'无标准答案',en:'No right answers'}],
+    keywords:['迈出第一步','不敢尝试','计划落空','走出舒适区','行动力','犹豫','冒险'],
+    scenes:{start:{tag:{zh:'亚庇，某个早晨',en:'Kota Kinabalu, one morning'},img:'rain',body:{zh:'你计划已久的<strong>环滩岛出海</strong>，今天因为风浪过大，被临时取消了。\n\n整个上午突然空了出来。你坐在酒店房间，看着窗外的雨，手机屏幕亮了又暗。',en:'Your long-planned <strong>island trip</strong> was cancelled — waves too rough.\n\nThe whole morning opened up. You sit in the hotel room, watching the rain, phone flickering on and off.'},choices:[{l:'A',t:{zh:'在酒店待着，等天气好转，刷刷手机休息。',en:'Stay in, scroll my phone, wait for better weather.'},n:'loop1_hotel',c:true},{l:'B',t:{zh:'打开地图，找找附近有没有没想到的去处。',en:"Open the map and see if there's somewhere unexpected nearby."},n:'wetland_discover'}],prog:5},loop1_hotel:{tag:{zh:'酒店房间，两小时后',en:'Hotel room, two hours later'},img:'rain',body:{zh:'你刷完了所有该刷的内容。窗外还在下雨，城市在湿气里显得模糊。\n\n手机提醒你附近有一家评分很高的购物中心。',en:"You've scrolled through everything. Still raining outside.\n\nYour phone suggests a highly-rated shopping mall nearby."},nudge:{zh:'同样的一天，正在用不同的方式问你：要不要走出去？',en:'The same day is asking the same question, differently: will you step out?'},choices:[{l:'A',t:{zh:'去购物中心逛逛，打发时间。',en:'Head to the mall, kill some time.'},n:'loop2_mall',c:true},{l:'B',t:{zh:'随便在街上走走，没有目的地。',en:'Walk around with no particular destination.'},n:'loop1_street'}],prog:20},loop1_street:{tag:{zh:'街头，雨后',en:'On the street, after the rain'},img:'street',body:{zh:'你撑着伞往外走，没有目的地。\n\n走了几条街后，路过一家老旧的小咖啡馆，门半开着，老板看到你，朝你点了点头。',en:"You walk out with an umbrella and no destination.\n\nAfter a few streets, you pass an old café, door half open. The owner sees you and nods."},choices:[{l:'A',t:{zh:'走进去，坐一会儿。',en:'Go inside and sit for a while.'},n:'cafe_discovery'},{l:'B',t:{zh:'继续走，想再看看别处。',en:'Keep walking, look somewhere else.'},n:'loop2_walk',c:true}],prog:35},loop2_mall:{tag:{zh:'购物中心，某个角落',en:'Shopping mall, a quiet corner'},img:'mall',body:{zh:'逛了一圈，没什么特别想买的。你坐在中庭椅子上，看着来来往往的人。\n\n旁边有个老人在看地图，看起来有点迷路，却没有开口问人。',en:"A lap around the mall. Nothing you want. You sit in the atrium, watching people pass.\n\nNearby, an old man stares at a map. Looks lost. Hasn't asked for help."},nudge:{zh:'这是今天第二次了——有个缺口在等你，你要不要靠近一步？',en:"Second time today — there's an opening waiting. Will you step toward it?"},choices:[{l:'A',t:{zh:'主动过去问他需不需要帮忙。',en:'Go over and ask if he needs help.'},n:'stranger_connection'},{l:'B',t:{zh:'等等看，也许他自己能找到。',en:'Wait and see — he might figure it out himself.'},n:'loop3_wait',c:true}],prog:40},loop2_walk:{tag:{zh:'街角，一家小店',en:'Street corner, a small shop'},img:'alley',body:{zh:'你走着走着，发现一条没走过的小巷。里面有家小店，门口挂着手写的牌子。\n\n店主站在门口，和你对上了眼。',en:"Walking, you find an alley you haven't been down. A small shop inside, handwritten sign on the door.\n\nThe owner is standing there. Your eyes meet."},nudge:{zh:'你已经走出来了。门就在这里。',en:'You already stepped out. The door is right here.'},choices:[{l:'A',t:{zh:'走进去，比划着问问卖的是什么。',en:"Go in and gesture to ask what they're selling."},n:'stranger_connection'},{l:'B',t:{zh:'笑了笑，继续往前走。',en:'Smile and keep walking.'},n:'loop3_pass',c:true}],prog:45},loop3_wait:{tag:{zh:'购物中心，几分钟后',en:'Shopping mall, a few minutes later'},img:'mall',body:{zh:'老人把地图折起来，慢慢往一个方向走去。你看着他的背影，想了一会儿。\n\n这时候你的手机响了——一个陌生号码。',en:'The old man folds his map and slowly walks off. You watch him go.\n\nYour phone rings — unknown number.'},nudge:{zh:'命运很有耐心。它会一直问，直到你准备好回答。',en:"Life is patient. It keeps asking until you're ready to answer."},choices:[{l:'A',t:{zh:'接起来，看看是谁。',en:'Pick up and see who it is.'},n:'stranger_connection'},{l:'B',t:{zh:'没接，可能是骚扰电话。',en:"Don't answer — probably spam."},n:'gentle_end',c:true}],prog:55},loop3_pass:{tag:{zh:'小巷尽头',en:'End of the alley'},img:'alley',body:{zh:'你走到了小巷尽头，是一片空地。一个年轻人坐在台阶上，用英语问：\n\n"你是来找什么的？"',en:'You reach the end of the alley. A young man sits on steps and asks in English:\n\n"What are you looking for?"'},choices:[{l:'A',t:{zh:'"我也不知道，就随便走走。" 然后聊了起来。',en:'"No idea, just wandering." And you start talking.'},n:'stranger_connection'},{l:'B',t:{zh:'"走错了，不好意思。" 转身离开。',en:'"Wrong turn, sorry." You head back.'},n:'gentle_end',c:true}],prog:58},cafe_discovery:{tag:{zh:'小咖啡馆，一个下午',en:'A small café, one afternoon'},img:'cafe',body:{zh:'你坐进去，要了一杯咖啡。老板话不多，但看你在看窗外，主动说：\n\n"雨天这里其实很好看，你知道旁边那片湿地吗？"',en:'You sit down, order a coffee. The owner says:\n\n"This place looks beautiful in the rain. You know the wetland nearby?"'},choices:[{l:'→',t:{zh:'你们聊了起来。他提到了一个你从没听说过的地方。',en:"You start talking. He mentions a place you've never heard of."},n:'wetland_discover_alt'}],prog:50},wetland_discover:{tag:{zh:'地图上，一个发现',en:'On the map, a discovery'},img:'map',body:{zh:'你顺着海岸线慢慢翻，大部分地方都查过了。\n\n然后你看到——<strong>亚庇湿地公园</strong>。评论写着：<em>"无栈道徒步，建议穿靴。"</em>\n\n"无栈道"三个字让你停了一下。',en:'You scroll along the coastline. Most places already seen.\n\nThen: <strong>KK Wetland Park</strong>. A review says: <em>"Off-boardwalk hiking, boots recommended."</em>\n\nThe words make you pause.'},choices:[{l:'A',t:{zh:'有点意思，去试试。',en:'Sounds interesting — worth a try.'},n:'wetland_enter'},{l:'B',t:{zh:'听起来有点麻烦，找个熟悉的地方。',en:'Sounds like too much effort. Find somewhere familiar instead.'},n:'loop1_hotel',c:true}],prog:30},wetland_discover_alt:{tag:{zh:'原来就在附近',en:'It was nearby all along'},img:'map',body:{zh:'老板说的那个地方，你打开地图一看——<strong>亚庇湿地公园</strong>，步行十分钟。\n\n"很多人不知道，"他说，"但去过的人都说值得。有段路没有栈道，自己走。"',en:'You look it up — <strong>KK Wetland Park</strong>, ten minutes on foot.\n\n"Most people don\'t know about it," he says. "But everyone who goes says it\'s worth it. Part of the path has no boardwalk — you\'re on your own."'},choices:[{l:'A',t:{zh:'既然说值得，去看看。',en:"If they say it's worth it, go see."},n:'wetland_enter'},{l:'B',t:{zh:'谢谢他，感觉有点累，回酒店了。',en:"Thank him, but you're tired. Head back to the hotel."},n:'gentle_end',c:true}],prog:55},stranger_connection:{tag:{zh:'一次意外的连接',en:'An unexpected connection'},img:'stranger',body:{zh:'你们聊了起来。\n\n说着说着，对方提到了一个地方——一片红树林湿地，"很少人去，但值得。"\n\n你看了看时间，还有半天。',en:'You start talking.\n\nAt some point they mention a place — a mangrove wetland. "Not many people go, but it\'s worth it."\n\nYou check the time. Half a day left.'},choices:[{l:'A',t:{zh:'去看看。',en:'Go take a look.'},n:'wetland_enter'},{l:'B',t:{zh:'改天吧，今天有点累了。',en:"Another time — you're tired today."},n:'gentle_end',c:true}],prog:60},wetland_enter:{tag:{zh:'湿地公园，栈道尽头',en:'Wetland park, end of the boardwalk'},img:'wetland',body:{zh:'木栈道走到一半，突然断了。\n\n前方是一片被积水覆盖的泥潭——没有路，没有脚印，只有几只旧轮胎摆在那里，像某种邀请，又像某种警告。',en:'Halfway along the boardwalk, it ends.\n\nAhead: a mudflat covered in water. No path. No footprints. Just a few old tyres — an invitation, or a warning.'},pause:{zh:'那个"算了"的声音，开始出现了。',en:'That "forget it" voice is starting to appear.'},choices:[{l:'A',t:{zh:'太不确定了，退回去。',en:'Too uncertain. Turn back.'},n:'loop_mudflat',c:true},{l:'B',t:{zh:'已经来了，往前走一段试试。',en:"You're already here. Walk a bit further and see."},n:'mudflat_deep'}],prog:62},loop_mudflat:{tag:{zh:'退回来了，栈道上',en:'Back on the boardwalk'},img:'wetland',body:{zh:'你站回栈道，看着那片泥地。它很平静。\n\n这时从后面走来两个背包客，直接踏进了泥里。没有特别装备，也没有特别紧张。\n\n其中一个回头看了你一眼，说："来吗？"',en:"You step back onto the boardwalk and look at the mud. It's still.\n\nTwo backpackers come from behind and walk straight in. No special gear. Not nervous at all.\n\nOne looks back at you. \"Coming?\""},nudge:{zh:'有时候，我们只是需要看到别人先走一步。',en:'Sometimes all we need is to see someone else go first.'},choices:[{l:'A',t:{zh:'点头，跟上去。',en:'Nod and follow them in.'},n:'mudflat_deep'},{l:'B',t:{zh:'摇摇头，"你们去吧。"',en:'"You go ahead."'},n:'gentle_end',c:true}],prog:72},mudflat_deep:{tag:{zh:'泥潭中，某处',en:'Somewhere in the mudflat'},img:'mud',body:{zh:'你踏进去了。\n\n轮胎走完，路消失了。积水、绿藻、四周的安静。还有脑子里那个声音：\n\n<strong>"就这样吧，退回去。"</strong>',en:'You step in.\n\nThe tyres end. The path disappears. Standing water, green algae, silence. And a voice in your head:\n\n<strong>"That\'s enough. Turn back."</strong>'},pause:{zh:'这个声音，你在生活里的哪些时候也听过它？',en:'When else in your life have you heard that voice?'},choices:[{l:'A',t:{zh:'给自己打气，一步一步往前试探。',en:'Encourage yourself and inch forward, one step at a time.'},n:'end_full'},{l:'B',t:{zh:'听了那个声音，退出来。',en:'Listen to that voice and step back.'},n:'end_partial'}],prog:82},end_full:{tag:{zh:'瞭望台，第20分钟',en:'The watchtower, minute 20'},img:'tower',isEnd:true,endType:'full',title:{zh:'你走完了这300米',en:'You walked those 300 metres'},story:{zh:'你一步一步试探——浅色绿藻更硬，可以踩。一段树桩挡路，你卸下背包从底下钻过去。\n\n整整20分钟，300米。\n\n踏上木栈道的那一刻，你长长地呼了一口气。回头看，那片泥地已经<em>完全平静，像镜子一样映着蓝天和红树林</em>，仿佛从来没有人走过。\n\nMark后来写道：\n\n"如果预知了这场冒险实际如何，可能我也就不会踏上这段路了。而这，不正是计划外的魅力所在吗？"',en:'You test each step — lighter algae is harder, can hold weight. A log blocks the way; you take your bag off and crawl underneath.\n\nTwenty minutes. Three hundred metres.\n\nWhen you step back onto the boardwalk, you breathe out slowly. Looking back, the mudflat is <em>completely still, mirroring the sky and mangroves</em>, as if no one had ever been there.\n\nMark wrote afterwards:\n\n"If I\'d known what the adventure would actually involve, I probably wouldn\'t have started. And isn\'t that exactly the point?"'},insight:{zh:'迈出那一步之前，我们永远不知道会发生什么。但走过之后，有些东西会留下来——不是结论，而是经验。它会在你需要的时候告诉你：你曾经穿越过不确定。',en:'Before that step, we never know what will happen. But after — something stays. Not a conclusion, but an experience. It will tell you, when you need it: you have crossed uncertainty before.'},prog:100},end_partial:{tag:{zh:'退出来了',en:'You stepped back out'},img:'wetland',isEnd:true,endType:'reflective',title:{zh:'你触碰到了它的边界',en:'You touched the edge of it'},story:{zh:'你进去了，又退出来。脚上沾着泥。\n\n坐在栈道边缘，你看着那片泥潭。它很平静，像什么都没发生过。\n\n但你知道——<em>进去了再退出来，和从来没进去，是两件不同的事。</em>你已经知道了它的质地。',en:"You went in, then came back out. Mud on your shoes.\n\nSitting at the edge of the boardwalk, you look at the mudflat. It's still. As if nothing happened.\n\nBut you know — <em>going in and coming back is different from never going in.</em> You know what it feels like now."},insight:{zh:'退出来和没进去，是两回事。那个"算了"的声音，你现在比以前更了解它了。下一次，也许会不一样。',en:'Stepping back and never stepping in are two different things. That voice — you understand it better now. Next time might be different.'},prog:90},gentle_end:{tag:{zh:'这一天，结束了',en:'That day, over'},img:'rain',isEnd:true,endType:'gentle',title:{zh:'生活还会再问你',en:'Life will ask again'},story:{zh:'这一天平静地过去了。没有什么特别的事情发生，也没有什么东西丢失。\n\n只是，那些岔路口还在那里。\n\n<em>命运很有耐心。</em>它不会只问一次。换一个场景，换一个形式，同样的问题会再次出现——直到你准备好，走出那一步。',en:"The day passed quietly. Nothing remarkable happened. Nothing was lost.\n\nBut those crossroads are still there.\n\n<em>Life is patient.</em> It won't only ask once. Different setting, different form — the same question will come back, until you're ready to take that step."},insight:{zh:'没关系。生活会再给你机会的。',en:"It's okay. Life will give you another chance."},prog:100}}
+  },
+  {
+    id:'love',category:'insight',template:'A',level:2,
+    tag:{zh:'情感 · 真实改编',en:"Emotion · Based on a true story"},
+    title:{zh:'我们都是这样爱对方的',en:"This Is How We Love Each Other"},
+    desc:{zh:'你做手术没告诉父母。被发现后，妈妈哭着问你为什么。那一刻，你想起了很多年前，她也做过同一件事。',en:"You had surgery without telling your parents. When your mum found out and cried asking why, you remembered she had once done the same thing."},
+    cover:'phone',
+    meta:[{zh:'约 8 分钟',en:"~8 min"},{zh:'双重时间线',en:"Two timelines"},{zh:'真实故事',en:"True story"}],
+    keywords:['家','妈','爸','父母','爱','关系','说不出','亲情','手术','生病','隐瞒'],
+    scenes:{
+      start:{tag:{zh:'城市里，某个工作日',en:"A weekday, in the city"},img:'night',prog:5,body:{zh:'你工作五六年了。\n\n检查结果出来——<strong>鼻中隔偏曲，需要手术，全麻</strong>。医生说不复杂，住院两天，术后休息一周。\n\n你看着报告单，想了一会儿。\n\n手术、全麻、住院——这些词听起来有点重。但你告诉自己：就是个鼻子的问题，没必要让他们担心，做完了再说。',en:"You have been working for five or six years.\n\nThe results are back. <strong>Deviated nasal septum. Surgery required. General anaesthesia.</strong> Two days in hospital, a week to rest.\n\nYou stare at the report for a moment.\n\nSurgery. Anaesthesia. Hospital. The words feel heavy. But you tell yourself: it is just the nose. No need to worry them. You will tell them when it is done."},choices:[{l:'A',t:{zh:'就这么决定了，手术前不告诉他们。',en:"Decided. You will not tell them before the surgery."},n:'hide_decision',c:true},{l:'B',t:{zh:'还是告诉他们吧，就说是小手术。',en:"Tell them anyway. Just say it is minor."},n:'tell_parents'}]},
+      hide_decision:{tag:{zh:'手术前的几天',en:"The days before surgery"},img:'night',prog:18,body:{zh:'你请好了假，安排了朋友帮忙陪同，备好了换洗衣服。\n\n爸妈照常发消息，问吃了什么，睡得好不好。你说挺好的，都好。\n\n你没有撒谎——你确实还好。只是有些事情没说。\n\n你觉得这没什么，等手术完了，就是一个小插曲，不值得专门说起。',en:"You take leave, arrange for a friend to accompany you, pack a bag.\n\nYour parents message as usual. Eating well? Sleeping okay? You say fine, everything is fine.\n\nYou are not lying. You really are fine. You just have not mentioned certain things.\n\nYou tell yourself it is nothing. Once it is done, it will just be a small episode, not worth bringing up."},choices:[{l:'→',t:{zh:'手术那天，你嘱咐朋友：别联系我家人。',en:"On the day, you tell your friend: do not contact my family."},n:'surgery_day'}]},
+      tell_parents:{tag:{zh:'电话打过去了',en:"You make the call"},img:'phone',prog:18,body:{zh:'妈妈接的。\n\n你说要做个手术，不大，鼻子的问题，全麻，就两天。\n\n她沉默了一会儿，然后说：我去陪你。\n\n你说不用，有朋友，真的不严重。她说：那你爸去。你说：真的不用。\n\n最后她说：那你每天给我发消息。声音有点低。',en:"Your mum picks up.\n\nYou say you need a small surgery. Just the nose. General anaesthesia, two days.\n\nShe is quiet for a moment. Then: I will come.\n\nYou say no need, a friend will be there, really not serious. She says: then your dad will go. You say: really, no need.\n\nFinally she says: then message me every day. Her voice is slightly low."},choices:[{l:'→',t:{zh:'她在等你的消息。',en:"She will be waiting for your messages."},n:'surgery_day_told'}]},
+      surgery_day:{tag:{zh:'手术当天',en:"The day of surgery"},img:'home',prog:30,body:{zh:'你换上病号服，把手机交给朋友。\n\n进去之前你看了一眼，爸妈没有新消息。\n\n你想：等出来了再说，那时候已经是结果了，不用他们担心一个过程。\n\n麻药起效前，你闭着眼睛，没有想手术，想的是，他们今天大概在做什么。',en:"You change into a hospital gown and hand your phone to your friend.\n\nBefore going in, you check it one last time. No new messages from your parents.\n\nYou think: I will tell them when I am out. By then it will be over. No need for them to worry about the process.\n\nBefore the anaesthesia takes hold, you close your eyes. You are not thinking about the surgery. You are thinking about what they might be doing today."},choices:[{l:'→',t:{zh:'麻药起效了。',en:"The anaesthesia takes hold."},n:'wakeup'}]},
+      surgery_day_told:{tag:{zh:'手术当天',en:"The day of surgery"},img:'home',prog:30,body:{zh:'你换上病号服，把手机交给朋友，叮嘱他：如果我妈发消息，告诉她进去了，别让她担心。\n\n进去之前，你给她发了最后一条：进去了，两三小时，出来让朋友通知你。\n\n她回：好。保重。\n\n就这两个字。你想，她现在一定放下了手机，但还拿着。',en:"You change into a hospital gown and hand your phone to your friend. Tell him: if my mum messages, let her know I have gone in. Do not let her worry.\n\nBefore going in, you send one last message: going in now. Two or three hours. My friend will tell you when I am out.\n\nShe replies: okay. Take care.\n\nJust those two words. You imagine she has put down her phone. But is still holding it."},choices:[{l:'→',t:{zh:'麻药起效了。',en:"The anaesthesia takes hold."},n:'wakeup'}]},
+      wakeup:{tag:{zh:'手术室外，几小时后',en:"Outside the operating room"},img:'home',prog:45,body:{zh:'你醒过来。鼻子很胀，头有点晕。\n\n朋友把手机还给你。你看到有几条消息，都是他们问的：怎么样了，出来了吗。\n\n你打了几个字：出来了，很顺利，在休息。然后把手机放下。\n\n你以为这件事就这样过去了。',en:"You come round. Your nose feels swollen, your head heavy.\n\nYour friend hands back your phone. A few messages, all from your parents: how did it go, are you out yet.\n\nYou type a few words: out now, went well, resting. Then you put the phone down.\n\nYou think that is the end of it."},choices:[{l:'→',t:{zh:'出院，回家，一切如常。',en:"You are discharged. Life continues."},n:'after_hospital'}]},
+      after_hospital:{tag:{zh:'术后，某一天',en:"Some time after"},img:'night',prog:55,body:{zh:'你完全恢复了，鼻子通畅了很多，一切如常。\n\n手术这件事，你偶尔提起过，说得很轻：对，之前做了个小手术，早好了。\n\n爸妈知道了，说：怎么不早说。\n\n你说：小事，没必要担心。\n\n然后话题就过去了。你觉得这个处理方式很合理。',en:"You recover fully. Everything returns to normal.\n\nYou mention the surgery occasionally, in passing: yes, I had a small procedure, all healed.\n\nYour parents find out. They say: why did you not tell us earlier.\n\nYou say: it was nothing. No need to worry.\n\nThe topic passes. You think you handled it reasonably."},choices:[{l:'→',t:{zh:'直到那封信。',en:"Until the letter."},n:'the_letter'}]},
+      the_letter:{tag:{zh:'那封信',en:"The letter"},img:'phone',prog:62,body:{zh:'你朋友寄给你一封信，写了手术那天发生的事，写了陪你的那段时间，写得很认真。\n\n那封信，妈妈看到了。\n\n你不知道她是怎么看到的。她读了，尽管她自己也知道，读别人的信是不对的。\n\n然后她打来了电话。',en:"Your friend wrote you a letter. About the day of the surgery. About accompanying you. Written carefully.\n\nYour mum saw it.\n\nYou do not know how. She read it. Even though she knows that reading someone else's letter is wrong.\n\nThen she called."},choices:[{l:'→',t:{zh:'电话响了。',en:"The phone rings."},n:'mom_calls'}]},
+      mom_calls:{tag:{zh:'电话里',en:"On the phone"},img:'phone',prog:72,body:{zh:'她的声音有些哑。\n\n她说：我看到了那封信。\n\n你没有说话。\n\n她说：你做手术，全麻，住院，你为什么不告诉我。\n\n然后你听到她在哭。不是那种很大声的哭，就是声音断了，然后她说：你是我儿子。',en:"Her voice is slightly hoarse.\n\nShe says: I saw the letter.\n\nYou say nothing.\n\nShe says: you had surgery. General anaesthesia. You were in hospital. Why did you not tell me.\n\nThen you hear her crying. Not loudly. Just her voice breaking. Then she says: you are my son."},pause:{zh:'你是我儿子。这句话很简单，但你说不出话来。',en:"You are my son. Simple words. But you cannot speak."},choices:[{l:'A',t:{zh:'你说：就是个小手术，不严重，不想让你担心。',en:"You say: it was a small surgery, not serious, I did not want you to worry."},n:'your_reason'},{l:'B',t:{zh:'你没有立刻回答。那句话让你一下子想起了什么。',en:"You do not answer immediately. Something in those words catches you."},n:'memory_surfaces'}]},
+      your_reason:{tag:{zh:'你解释',en:"You explain"},img:'phone',prog:78,body:{zh:'你说：就是个小手术，真的不严重，我不想让你们大老远担心一个不值得担心的事。\n\n她说：你觉得不值得，不代表我不担心。\n\n你说：我就是这么想的。\n\n她沉默了一会儿，说：你从小就这样。\n\n你问：什么样。\n\n她没有回答这个问题。然后你突然想起了一件很久以前的事。',en:"You say: it was just a small surgery, really not serious. I did not want you worrying from so far away about something not worth worrying about.\n\nShe says: you decide it is not worth worrying about, but that does not mean I do not worry.\n\nYou say: that is how I see it.\n\nShe is quiet for a moment. Then: you have always been like this.\n\nYou ask: like what.\n\nShe does not answer. And then you remember something from a long time ago."},choices:[{l:'→',t:{zh:'你想起了高二那年。',en:"You remember the year you were in Year 11."},n:'memory_surfaces'}]},
+      memory_surfaces:{tag:{zh:'你想起了',en:"You remember"},img:'home',prog:85,body:{zh:'你高二。小高考前后。\n\n那段时间你每两天打一次电话回家，接电话的都是爸爸，说妈妈出差了。\n\n有一次终于是她接的，声音有点奇怪，你以为她感冒，没多问。\n\n后来有一年暑假回家，你看到她头上有一道疤，她说不小心摔的。\n\n再后来，在一次很激烈的争吵里，她说：<em>我差点死掉，你知道吗。</em>\n\n车祸。脾脏切除。头上缝针。你爸说她出差了。\n\n她恢复了将近两个月，你不知道。',en:"You were in Year 11. Around your mid-term exams.\n\nYou called home every two days. Your dad always picked up. Your mum was away on a business trip, he said.\n\nOnce she answered. Her voice sounded strange. You assumed a cold. You did not ask.\n\nOne summer you came home and saw a scar on her head. She said she had fallen.\n\nYears later, in the middle of a fierce argument, she said: <em>I nearly died. Do you know that.</em>\n\nA car accident. Her spleen removed. Stitches in her head. Your dad said she was away on a business trip.\n\nShe recovered for nearly two months. You never knew."},choices:[{l:'→',t:{zh:'你在电话里，没有说话。',en:"You are still on the phone. You say nothing."},n:'the_parallel'}]},
+      the_parallel:{tag:{zh:'电话里，很安静',en:"On the phone, very quiet"},img:'phone',prog:90,body:{zh:'她还在等你说话。\n\n你不知道怎么跟她解释。\n\n因为你刚刚想明白了一件事——你说不想让她担心，和她当年说不想让你分心，是同一句话，同一个逻辑，同一种爱。\n\n你不知道自己是什么时候学会这样的。\n\n也许从来没有学过，只是长在那个家里，就这样了。',en:"She is still waiting for you to speak.\n\nYou do not know how to explain.\n\nBecause you have just understood something. Your reason for not telling her and her reason for not telling you, all those years ago, are the same sentence. The same logic. The same kind of love.\n\nYou do not know when you learned to do this.\n\nMaybe you never learned it. Maybe it just happened, growing up in that house."},nudge:{zh:'有些话，你们两个都欠对方的。',en:"There are things both of you owe each other."},choices:[{l:'A',t:{zh:'你说：妈，你高二那年的事，我一直记得。',en:"You say: mum, I never forgot what happened when I was in Year 11."},n:'end_said'},{l:'B',t:{zh:'你什么都没说。只是说：我知道了，下次会告诉你。',en:"You say nothing about that. Just: I understand. I will tell you next time."},n:'end_quiet'}]},
+      end_said:{tag:{zh:'那通电话之后',en:"After that call"},img:'home',prog:100,body:{zh:'',en:""},choices:[],isEnd:true,endType:'full',title:{zh:'我们都是这样爱对方的',en:"This is how we love each other"},story:{zh:'她沉默了很久。\n\n然后她说：你知道。\n\n你说：知道。后来才知道的。\n\n她说：我以为你不知道。\n\n你说：我知道。\n\n你们都没有再说什么。不是因为没有话，是因为有些事说出来和不说，都已经发生了。\n\n后来你挂掉电话，坐了很久。\n\n你想：她当年选择不说，是因为她以为这是保护你的方式。你这次选择不说，也以为这是保护她的方式。\n\n你不知道这是不是原生家庭带来的什么，还是就是你们的方式。\n\n<em>你只知道，你们都没有恶意。都以为自己在为对方做对的事。这就够了。</em>',en:"She is quiet for a long time.\n\nThen she says: you know.\n\nYou say: yes. I found out later.\n\nShe says: I thought you did not know.\n\nYou say: I know.\n\nNeither of you says anything more. Not because there is nothing to say. But because some things have already happened, whether spoken or not.\n\nAfterwards you hang up and sit for a long time.\n\nYou think: she chose not to tell you because she believed it was how she protected you. You chose not to tell her for the same reason.\n\nYou do not know if this is something your family passed down, or simply how the two of you are.\n\n<em>You only know that neither of you meant harm. Both of you thought you were doing the right thing for the other. That is enough.</em>"},insight:{zh:'有些爱的方式是代代相传的，不是刻意教的，只是在一起久了，就学会了。你不一定要改变它，但是当你看见它，你就多了一种选择。',en:"Some ways of loving are passed down without being taught. Just absorbed, over years of closeness. You do not have to change it. But once you see it, you have a choice."}},
+      end_quiet:{tag:{zh:'那通电话之后',en:"After that call"},img:'night',prog:100,body:{zh:'',en:""},choices:[],isEnd:true,endType:'reflective',title:{zh:'说不出口的那一刻',en:"The moment you could not speak"},story:{zh:'你说：我知道了，下次会告诉你。\n\n她说：嗯。\n\n挂掉电话之后，你坐在那里，想了很久。\n\n那个平行让你说不出话来——你们做了同一件事，用同一个理由，在不同的年份，朝对方。\n\n你不知道该不该把那件事说出来，不知道说出来会怎样，还是就这样各自知道就好了。\n\n<em>也许沉默也是一种答案。就像它一直都是。</em>',en:"You say: I understand. I will tell you next time.\n\nShe says: okay.\n\nAfter you hang up, you sit there for a long time.\n\nThe parallel silences you. Both of you did the same thing, with the same reason, in different years, to each other.\n\nYou do not know whether to bring it up. What would happen if you did. Whether it is enough for both of you to simply know.\n\n<em>Maybe silence is also an answer. The way it always has been.</em>"},insight:{zh:'不是所有事情都需要说出来才算数。有时候，只是自己看见了，就已经是一种改变。',en:"Not everything needs to be spoken to matter. Sometimes, simply seeing it yourself is already a kind of change."}}
+    }
+  },
+  {
+    id:'effort',category:'sports',template:'A',level:1,
+    tag:{zh:'日常 · 真实改编',en:'Daily Life · Based on a true story'},
+    title:{zh:'大力出不了奇迹',en:"Trying Harder Isn't the Answer"},
+    desc:{zh:'你有没有过这种感觉：越用力，越失控。一个发生在球场上的故事——关于节奏、代偿，和那个让一切自然发生的状态。',en:"Ever feel the harder you try, the worse it gets? A story from a tennis court — about rhythm, compensation, and the state where things just flow."},
+    cover:'tennis',
+    meta:[{zh:'约 5 分钟',en:'~5 min'},{zh:'向内的旅程',en:'Inner journey'},{zh:'无标准答案',en:'No right answers'}],
+    keywords:['用力','努力','焦虑','失控','工作压力','越努力','效率','节奏','effort','stress','pressure'],
+    scenes:{
+      start:{tag:{zh:'球场，训练开始',en:'The court, training begins'},img:'tennis',body:{zh:'你已经好几周没有找到感觉了。\n\n今天的球打得很涩，准备总是慢半拍，出球又浅又软。教练在对面喂球，你接一个，失误一个。\n\n你知道问题在哪——你太紧了。但这个"知道"，好像没有任何用。',en:"You haven't found your rhythm in weeks.\n\nToday every shot feels wrong — late preparation, shallow returns. The coach feeds balls. You miss one after another.\n\nYou know the problem: you're too tense. But knowing doesn't help."},choices:[{l:'A',t:{zh:'咬牙继续，多打几组，用量把感觉找回来。',en:'Push through. More reps. Force the feeling back.'},n:'loop1_grind',c:true},{l:'B',t:{zh:'停下来一秒，感受一下现在身体是什么状态。',en:'Pause for a moment and notice what your body actually feels like.'},n:'pause_feel'}],prog:5},
+      loop1_grind:{tag:{zh:'又打了二十分钟',en:'Twenty more minutes'},img:'tennis',body:{zh:'你又打了二十分钟。\n\n球没有更好，手臂开始有点酸。你意识到自己在每次击球前都在屏气——像是在用全身准备一次很重要的事情。\n\n教练叫暂停，说："我换一种方式喂球给你。"',en:"Twenty more minutes. Still not working. Your arm is getting sore. You notice you've been holding your breath before every shot.\n\nThe coach calls a pause. \"Let me feed differently.\""},nudge:{zh:'同样的问题，正在用不同的方式再问你一次。',en:'The same question, asking itself again in a different form.'},choices:[{l:'A',t:{zh:'摆摆手，说"没事，我自己再调整调整"。',en:'"It\'s fine, I\'ll sort it myself."'},n:'loop2_adjust',c:true},{l:'B',t:{zh:'点头，让教练来。',en:'Nod and let the coach take over.'},n:'coach_slow'}],prog:22},
+      loop2_adjust:{tag:{zh:'又过了一会儿',en:'A little while later'},img:'tennis',body:{zh:'你试着调整——告诉自己放松，告诉自己不要用力，告诉自己节奏、节奏、节奏。\n\n但"告诉自己"这件事本身，就已经是一种用力了。\n\n球还是不对。你有点想离开球场。',en:"You try to adjust — telling yourself to relax, don't force it, rhythm, rhythm, rhythm.\n\nBut the act of telling yourself is itself a kind of forcing.\n\nStill not right. You feel like leaving."},nudge:{zh:'有时候，我们需要的不是更多努力，而是允许另一种可能出现。',en:"Sometimes what we need isn't more effort, but allowing a different possibility to emerge."},choices:[{l:'A',t:{zh:'算了，今天状态不好，收拍走人。',en:'Forget it. Bad day. Pack up and leave.'},n:'loop3_quit',c:true},{l:'B',t:{zh:'去喝口水，什么都不想，就站在那里一分钟。',en:'Get some water. Stand there for a minute and think nothing.'},n:'pause_feel'}],prog:38},
+      loop3_quit:{tag:{zh:'更衣室',en:'The locker room'},img:'locker',body:{zh:'你换好衣服，坐在更衣室的长椅上。\n\n手机里有三条未读消息，都是工作的。你盯着屏幕，突然发现——\n\n你处理工作的方式，好像和今天打球的方式一模一样。',en:"You've changed and you're sitting on the locker room bench.\n\nThree unread work messages on your phone. You stare at the screen and suddenly notice —\n\nYou deal with work exactly the way you played today."},nudge:{zh:'球场和生活，有时候是同一道题。',en:'The court and life are sometimes the same question.'},choices:[{l:'A',t:{zh:'回复消息，先把事情处理掉再说。',en:'Reply to messages. Handle things first.'},n:'work_grind',c:true},{l:'B',t:{zh:'放下手机，想想这个发现说明了什么。',en:"Put the phone down and sit with what you just noticed."},n:'pause_feel'}],prog:50},
+      work_grind:{tag:{zh:'办公室，深夜',en:'Office, late at night'},img:'night',body:{zh:'你加班到很晚。任务一件一件完成，但每完成一件，待办清单里又多出两件。\n\n你感觉自己像一台运转超负荷的机器——转速很高，但不知道在往哪里走。\n\n手机闹钟响了：明天还有训练。',en:"You work late. Finishing tasks, but every one completed adds two more.\n\nYou feel like a machine running too hot — spinning fast, going nowhere clear.\n\nYour alarm goes off: training tomorrow."},nudge:{zh:'命运很有耐心。它换了一个场景，但问的还是同一件事。',en:'Life is patient. Different setting, same question.'},choices:[{l:'A',t:{zh:'继续撑，明天早点去球场多练一会儿。',en:'Keep going. Get to the court earlier tomorrow.'},n:'loop_tired',c:true},{l:'B',t:{zh:'关电脑，今晚先停下来。',en:'Close the laptop. Stop for tonight.'},n:'pause_feel'}],prog:62},
+      loop_tired:{tag:{zh:'第二天，球场',en:'Next day, the court'},img:'tennis',body:{zh:'你比平时早到了半小时。\n\n但身体还是昨天的身体，节奏还是昨天的节奏。球打出去，还是那种硬、浅、不对的感觉。\n\n教练走过来，什么都没说，只是把喂球机的速度调慢了一半。',en:"You arrive half an hour early.\n\nBut your body is yesterday's body. Your rhythm is yesterday's rhythm. Every shot: hard, shallow, wrong.\n\nThe coach walks over without a word and halves the speed of the ball machine."},nudge:{zh:'你已经是第三次站在这个门口了。',en:"This is the third time you've stood at this door."},choices:[{l:'A',t:{zh:'让节奏慢下来，真的试一次。',en:'Let the rhythm slow down. Actually try it.'},n:'coach_slow'},{l:'B',t:{zh:'"不用，快一点，我要练实战节奏。"',en:'"No thanks, keep it fast. I need to train at match speed."'},n:'gentle_end',c:true}],prog:72},
+      pause_feel:{tag:{zh:'停下来的那一刻',en:'The moment you stop'},img:'tennis',body:{zh:'你停下来了。\n\n没有做什么，只是站在那里，感受了一下：手臂在哪里，重心在哪里，呼吸是快还是慢。\n\n发现自己的肩膀一直是耸着的，已经耸了很久，你自己都没有注意到。',en:"You stop.\n\nNothing dramatic. Just standing there, noticing: where are your arms, where is your weight, is your breath fast or slow.\n\nYour shoulders have been raised for a long time. You hadn't noticed."},choices:[{l:'→',t:{zh:'肩膀慢慢落下来，你告诉教练："换一种方式喂球吧。"',en:'Let your shoulders drop. Tell the coach: "Feed it differently."'},n:'coach_slow'}],prog:40},
+      coach_slow:{tag:{zh:'节奏慢下来之后',en:'Once the rhythm slows'},img:'tennis',body:{zh:'教练喂球的节奏慢了很多。\n\n突然之间，你有了时间——时间去站好位，时间去引拍，时间去让重心转过来。\n\n你打出去的那一球，不知道为什么，出乎意料地干净。\n\n然后又一球。又一球。',en:"The coach's feed slows right down.\n\nSuddenly you have time — to get into position, to backswing, to let your weight transfer.\n\nThe next ball you hit is, somehow, unexpectedly clean.\n\nThen another. And another."},pause:{zh:'这个状态，你在生活里有没有经历过？是什么时候？',en:'Have you felt this state in your life before? When?'},choices:[{l:'A',t:{zh:'告诉自己"要保持这个状态"，开始刻意维持。',en:'"Keep this state" and start trying to hold on to it.'},n:'loop_maintain',c:true},{l:'B',t:{zh:'什么都不想，就让它继续发生。',en:'Think nothing. Let it keep happening.'},n:'flow_state'}],prog:65},
+      loop_maintain:{tag:{zh:'又开始用力了',en:'Trying hard again'},img:'tennis',body:{zh:'"保持，保持，保持。"\n\n你开始想这件事，然后你开始又紧了。\n\n球又打回了原来的感觉。\n\n教练说："你刚才想什么了？"',en:'"Keep it, keep it, keep it."\n\nYou start thinking about it. And then you tighten up again.\n\nThe shots go back to what they were.\n\n"What were you just thinking about?" the coach asks.'},nudge:{zh:'那个状态不是被"维持"出来的。它是在你放下的那一刻出现的。',en:"That state can't be maintained. It appeared the moment you let go."},choices:[{l:'A',t:{zh:'"我不知道。" 停下来，不再想。',en:'"I don\'t know." Stop. Stop thinking.'},n:'flow_state'},{l:'B',t:{zh:'"我在想怎么保持好状态。" 继续想。',en:'"I was thinking about how to stay in the zone." Keep thinking.'},n:'gentle_end',c:true}],prog:78},
+      flow_state:{tag:{zh:'接下来的几分钟',en:'The next few minutes'},img:'tennis',body:{zh:'你什么都没想。\n\n球过来，你打过去。准备、挥拍、推送，连贯地发生了，不需要指挥。\n\n有那么几分钟，你找到了那种久违的自如感——<strong>不是"我在努力打好"，而是过程走到了，结果就出现了</strong>。',en:"You think nothing.\n\nBall comes, you hit it. Preparation, swing, follow-through — it all just happens, no directing needed.\n\nFor a few minutes, you find that long-lost feeling of ease. <strong>Not 'I'm trying to hit well' — but the process completing itself, and the result just appearing.</strong>"},choices:[{l:'→',t:{zh:'雨开始下了，训练提前结束。你坐在场边，想了一会儿。',en:'Rain starts. Training ends early. You sit courtside and think for a while.'},n:'end_full'}],prog:90},
+      end_full:{tag:{zh:'场边，雨里',en:'Courtside, in the rain'},img:'rain',isEnd:true,endType:'full',title:{zh:'大力不是答案',en:"Trying harder wasn't the answer"},story:{zh:'今天只打了二十分钟，却找回了那个感觉。\n\nMark后来写道：\n\n"所谓大力出奇迹，其实是一种对准备不足的代偿。当准备是完整的，这条代偿路径自然失效了，因为根本不需要它。"\n\n<em>力量不再被刻意调用，击球反而更稳定、更自然。</em>\n\n这件事不只属于球场。它更像是在提醒你：很多时候，结果不是被"努力"出来的，而是在过程回到它本来应有的节奏时，自然发生的。',en:"Only twenty minutes today, but the feeling came back.\n\nMark wrote afterwards:\n\n\"Trying harder is really just compensation for insufficient preparation. When preparation is complete, that compensation pathway becomes unnecessary — because you don't need it.\"\n\n<em>Force stops being deliberately applied, and the shots become more stable, more natural.</em>\n\nThis isn't only about tennis. It's a reminder: results often aren't produced by effort — they emerge when the process returns to its natural rhythm."},insight:{zh:'与其不断加码投入，不如反复去感受、校准、复原——让事情回到它本来该展开的方式。至于结果，只要路径是自然的，发生只是时间问题。',en:"Rather than constantly adding effort, return again and again to sensing, calibrating, restoring — letting things unfold the way they naturally should. As for results: if the path is natural, they are only a matter of time."},prog:100},
+      gentle_end:{tag:{zh:'今天就这样了',en:"That's it for today"},img:'tennis',isEnd:true,endType:'gentle',title:{zh:'感觉还没找到',en:"The feeling didn't come today"},story:{zh:'今天没有找到那个感觉。\n\n但Mark说，那种自如感从来不是靠"找"找到的——\n\n<em>它是在你停下来的那一刻，自己出现的。</em>\n\n你今天没有停下来。但你知道了有这样一种可能。下一次，也许会不一样。',en:"The feeling didn't come today.\n\nBut Mark says that ease is never found by looking for it —\n\n<em>it appears the moment you stop.</em>\n\nYou didn't stop today. But now you know that's possible. Next time might be different."},insight:{zh:'命运很有耐心。它会一直问，直到你准备好，让节奏回来。',en:"Life is patient. It keeps asking until you're ready to let the rhythm return."},prog:100}
+    }
+  },
+  {
+    id:'taiwan',category:'travel',template:'C',level:2,
+    tag:{zh:'旅行 · 真实改编',en:"Travel · Based on a true story"},
+    title:{zh:'我真正想见的，或许从来不只是风景',en:"What I Wanted to See Was Never Only the Scenery"},
+    desc:{zh:'一个拖延了十年的约定，一段两个月才批下来的申请，一次终于出发的旅行。带你走过海岸、断崖、鹅卵石滩，和一个朋友生活里最平常的一天。',en:"A promise delayed for ten years. An application that took two months. A journey finally taken. Through coastlines, cliffs, pebble beaches, and the most ordinary day in a friend's life."},
+    cover:'wetland',
+    meta:[{zh:'约 15 分钟',en:"~15 min"},{zh:'四个章节',en:"Four chapters"},{zh:'真实故事',en:"True story"}],
+    keywords:['旅行','出发','等待','朋友','约定','风景','慢下来','发现','记忆','台湾'],
+    scenes:{
+      start:
+      {tag:{zh:'某个工作日的下午',en:"A weekday afternoon"},img:'map',prog:5,body:{zh:'那是一个你工作后认识的朋友——不对，更早，大概十年前。\n\n你们在第三个城市相识，因为都打网球很快熟络。临别时约好，总要去对方的城市看看。后来他回了家，你们偶尔联系，那个约定就一直挂着，没有被正式提起，也没有被正式遗忘。\n\n直到你在一个视频里，偶然发现一条路径。那个念头——一簇快要熄灭的火，被轻轻吹了一下，又重新亮了起来。',en:"He was a friend you made about ten years ago — in a third city, not his, not yours. You bonded over tennis and hit it off quickly. When you parted, you said: we should visit each other someday. He went home. You stayed in touch, occasionally. The promise sat there, never formally made, never formally forgotten.\n\nThen one day you saw a video. A small detail. That old idea — an ember nearly out — was gently blown back to life."},choices:[{l:'→',t:{zh:'申请开始了。',en:"The application begins."},n:'application'}]},
+      application:
+      {tag:{zh:'两个月后',en:"Two months later"},img:'rain',prog:18,body:{zh:'前后补交了四次材料。每次反馈，都带着一些说不清道不明的要求。原定的出行时间一再临近，你几乎已经做好了最坏打算——就在家里，安静地过完这段假期，每天照常打网球。\n\n出发前一周，手续终于批下来。\n\n你和朋友开玩笑说，这趟申请，简直像是取经的九九八十一难。\n\n机票是当天买的。对于一个习惯提前规划的人，这大概是做过最仓促的决定，却也是最确定的一次。',en:"You submitted materials four times. Each round came back with requirements that were hard to parse. Your original travel dates kept approaching. You nearly made peace with staying home — just a quiet holiday, tennis every day.\n\nOne week before departure, it was approved.\n\nYou joked to your friend: this application process was basically eighty-one trials.\n\nYou bought the ticket that same day. For someone who plans everything in advance, it was perhaps the most impulsive decision you had ever made. Also the most certain."},choices:[{l:'→',t:{zh:'你坐上了飞机。',en:"You board the plane."},n:'on_plane'}]},
+      on_plane:
+      {tag:{zh:'飞往那座城市的航班上',en:"On the flight"},img:'rain',prog:28,body:{zh:'收录机里传出邓丽君的歌声，那几乎是你对童年某个夏天最清晰的记忆。\n\n小学和初中读过的课文，真正留下印记的其实不多。奇怪的是，有几篇描写那座岛屿风景的文章，你始终记得。或许是因为它带着一种朦胧的神秘感——一个只能通过文字想象的地方，老师未曾去过，你也从未设想过，有一天会亲眼见到。\n\n你坐在靠窗的座位，往下看是云层。\n\n你想，我真正想见的，或许从来不只是风景。',en:"Teresa Teng's voice, from an old tape recorder — that was one of your clearest memories of summer as a child.\n\nOf all the texts you read in primary school, few left much impression. Strangely, a few passages describing an island's scenery stayed with you. Perhaps because they carried a certain mystery — a place you could only imagine through words, that your teachers had never visited, that you had never seriously expected to see.\n\nYou sit by the window. Below is cloud.\n\nYou think: what I have really been wanting to see, perhaps, was never only the scenery."},pause:{zh:'有些地方，会在你抵达之前，就已经在你的生命里存在很久。',en:"Some places exist in your life long before you ever arrive."},choices:[{l:'→',t:{zh:'降落。',en:"Landing."},n:'arrive'}]},
+      arrive:
+      {tag:{zh:'夜抵，出关',en:"Night arrival"},img:'stranger',prog:35,body:{zh:'降落已是晚上九点多。出关、取行李，半小时出头，效率出乎意料。\n\n朋友在出口处等你。时隔八年多再次见到，一种说不出的喜悦慢慢散开，长途奔波的倦意也随之松了下来。\n\n搭捷运进城，再转乘到目的地，那时已是深夜十一点。路上行人稀少，四周很安静。夜色与路灯自上投下，城市慢慢显出轮廓。',en:"It is past nine when you land. Immigration, baggage — done in half an hour. Efficient beyond expectation.\n\nYour friend is waiting at the exit. Eight years since you last saw each other. A quiet joy spreads slowly. The tiredness of the journey loosens.\n\nYou take the metro into the city. By the time you arrive it is nearly eleven. Few people on the streets. Very quiet. Streetlights fall from above. The city slowly reveals its shape."},choices:[{l:'→',t:{zh:'第一眼。',en:"First impressions."},n:'first_look'}]},
+      first_look:
+      {tag:{zh:'老城区，第一天',en:"The old neighbourhood, day one"},img:'cafe',prog:42,body:{zh:'道路两旁是连贯的廊道，雨天可以一路走下去不被打断。抬头看，是二楼向外伸出的阳台，外立面带着明显的岁月感。后来才知道，这类建筑叫骑楼。\n\n阳台上的绿植探出头来，有的郁郁葱葱，有的花团锦簇。树木像是与城市一同生长出来的，道路始终干净，看不到随意丢弃的垃圾或烟头。\n\n你在街边走着，没有目的地，只是看。',en:"On both sides of the road, covered walkways stretch unbroken — you could walk through rain without getting wet. Look up: second-floor balconies extend outward, facades worn by decades. You later learn the word for these: qilou.\n\nGreen plants spill from the balconies, some lush, some flowering. The trees seem to have grown alongside the city. The streets are clean — no litter, no cigarette ends.\n\nYou walk without destination. Just looking."},choices:[{l:'A',t:{zh:'继续走，看看早晨的样子。',en:"Keep walking. See what morning looks like."},n:'morning_breakfast'},{l:'B',t:{zh:'在骑楼下站一会儿，感受一下这条街。',en:"Stand under the walkway for a moment. Just feel the street."},n:'stand_still'}]},
+      stand_still:
+      {tag:{zh:'骑楼下',en:"Under the walkway"},img:'cafe',prog:45,body:{zh:'你停下来，靠着柱子站了一会儿。\n\n这条街不宽，但有一种稳定的秩序感。摩托车偶尔经过，远处有人开门，然后关上，一切都在自己的节奏里运转。\n\n你想，城市的性格，有时候要站着不动才能感受到。',en:"You stop. Lean against a column and stand for a moment.\n\nThe street is not wide, but there is a settled order to it. A motorcycle passes occasionally. Someone opens a door in the distance, then closes it. Everything moves at its own pace.\n\nYou think: sometimes you have to stand still to feel what a city is like."},choices:[{l:'→',t:{zh:'去找早餐。',en:"Go find breakfast."},n:'morning_breakfast'}]},
+      morning_breakfast:
+      {tag:{zh:'清晨，早餐店',en:"Morning, a breakfast shop"},img:'cafe',prog:52,body:{zh:'走出门不远，早餐店已经开始营业。窗口前排着外带的人群，店里也熙熙攘攘地坐满了人。\n\n你和朋友找了个位置坐下。豆浆和一个中式汉堡。厨房里蒸汽缓慢上升，铁板上不时发出细碎的声响。店员动作利落而稳定，顾客来来往往，彼此之间没有太多交流，但气氛却很自然地连在一起。\n\n崭新的一天正在被启动——在老街巷、老骑楼、老店的包围里，那种状态，是安静的，却又是饱满的。',en:"Not far from the door, a breakfast shop is already open. A queue at the window for takeaway. Tables full inside.\n\nYou and your friend find a seat. Soy milk and a Chinese-style sandwich. Steam rises slowly from the kitchen. The griddle makes small sounds. The staff work with quiet efficiency. Customers come and go with little conversation, yet the atmosphere holds together naturally.\n\nA new day being started — in old alleys, old walkways, an old shop. The feeling is quiet, and also full."},choices:[{l:'→',t:{zh:'下午，去台大转转。',en:"That afternoon, a walk through the university."},n:'ntu'}]},
+      ntu:
+      {tag:{zh:'台大校园，某个下午',en:"The university campus, one afternoon"},img:'wetland',prog:60,body:{zh:'校园很大，也很安静，树很多，走在里面会不自觉地慢下来。学生们三三两两分散着，有人坐在草地上，有人骑着自行车慢慢经过，也有人独自走着，没有太明显的目的感。那种松弛不是刻意营造出来的，更像是一种默认的状态。\n\n校园里有一处湖。水面很平，一只天鹅正独自活动。它先把头整个倒插进水里，尾巴微微翘起，让水一点点浸到身体各处。接着在水面轻轻扑棱几下，再上岸，站在阳光下，用力扑动翅膀，把水珠甩开。\n\n你在那里站了十几分钟，看着它慢慢恢复平静，像是把刚才那阵水与风，都收回到羽毛里。',en:"The campus is large and quiet. Many trees. You find yourself slowing down without meaning to. Students scattered in small groups — some sitting on the grass, some cycling past slowly, some walking alone with no obvious destination. The ease is not performed. It seems to be the default.\n\nThere is a lake. The water is still. A swan moves alone on the surface. It plunges its head completely underwater, tail lifted, letting the water reach every part of its body. Then it paddles gently. Climbs ashore. Stands in the sunlight and beats its wings hard, scattering water in all directions.\n\nYou stand and watch for nearly fifteen minutes as it slowly returns to stillness — as if gathering everything back into its feathers."},pause:{zh:'有时候什么都不做也很好。就站着，看。',en:"Sometimes doing nothing is enough. Just standing. Watching."},choices:[{l:'A',t:{zh:'再看一会儿。',en:"Stay a little longer."},n:'ntu_linger'},{l:'B',t:{zh:'继续走，去找朋友说好的晚饭地点。',en:"Keep going. Meet your friend for dinner."},n:'friend_dinner'}]},
+      ntu_linger:
+      {tag:{zh:'湖边，多待一会儿',en:"By the lake, a little longer"},img:'wetland',prog:63,body:{zh:'天鹅已经理完了羽毛，重新回到水面，悠然地划动。\n\n你想，松弛这件事，也许不需要学。只是需要一个地方，让你忘记自己在赶什么。\n\n然后你去找了朋友。',en:"The swan has finished preening and returned to the water, gliding without hurry.\n\nYou think: maybe ease is not something you learn. Maybe you just need a place that makes you forget what you were rushing toward.\n\nThen you go find your friend."},choices:[{l:'→',t:{zh:'晚饭。',en:"Dinner."},n:'friend_dinner'}]},
+      friend_dinner:
+      {tag:{zh:'街边小店，晚饭',en:"A neighbourhood restaurant, dinner"},img:'cafe',prog:68,body:{zh:'他问你想去哪里吃。你说其实不太挑，比起专门去找什么好吃的，更想跟着他们去平时会去的地方。\n\n于是你们走进街边巷尾一家开了几十年的小店，环境很简单，来往的多是熟客。坐在那里，有种很清晰的感觉：自己并不是以一个游人的视角在这里，而是被带进了他们再平常不过的一天，仿佛我本来就在这里。\n\n饭后走在路上，你想，旅行有很多种，这一种，你最喜欢。',en:"He asks where you want to eat. You say you do not really mind. More than finding somewhere famous, you want to go where he actually goes.\n\nSo you walk into a small shop in an alley — open for decades, simple surroundings, mostly regulars. Sitting there, something is clear: you are not here as a visitor. You have been brought into an ordinary day that belongs to someone else. As if you had simply always been here.\n\nWalking back afterwards, you think: there are many ways to travel. This one, you like most."},choices:[{l:'→',t:{zh:'第三天，去看海。',en:"Third day. Go see the sea."},n:'coast_bus'}]},
+      coast_bus:
+      {tag:{zh:'公车，沿海岸线',en:"The bus, along the coast"},img:'wetland',prog:72,body:{zh:'沿着北海岸缓慢行进，全程一百三十多个站，大约两个小时。\n\n有了这样的条件，做攻略反而可以简单——打开地图，顺着海岸线一点点看，总能找到一些不那么显眼的地方。\n\n公车靠站、开门、关门，乘客上上下下，海在窗外一直陪着你。',en:"The bus travels slowly along the northern coast. Over a hundred and thirty stops. About two hours.\n\nPlanning is simple with this option: open a map, follow the coastline, look for the less obvious places.\n\nThe bus stops, doors open and close, passengers come and go. The sea keeps pace outside the window."},choices:[{l:'→',t:{zh:'下车，走向海。',en:"Get off. Walk toward the sea."},n:'green_reef'}]},
+      green_reef:
+      {tag:{zh:'老梅绿石槽',en:"The green reef"},img:'wetland',prog:76,body:{zh:'这里和常见的沙滩、峭壁或碎石海岸都不太一样。潮水退去后，整片岩面露出来，一道一道石槽平行伸向海里，沟槽里还留着水，表面很平，微微反光。\n\n阳光慢慢落下来，石槽上的海藻显出一层亮绿色。因为还湿着，颜色很饱和，带一点光泽，看起来像是给整片石槽盖了一层贴合的绿色被子。\n\n海浪一下一下推上来，又退下去，水在石槽之间流动，将绿色衬得更清晰。',en:"This is unlike any beach you have seen — no sand, no cliffs, no pebbles. When the tide recedes, the whole rock surface appears: parallel channels running toward the sea, water still sitting in the grooves, surfaces flat and faintly reflective.\n\nSunlight falls slowly. The seaweed covering the rock glows bright green. Still wet, the colour is saturated, slightly glossy — like a fitted green blanket laid across the stone.\n\nWaves push in and pull back. Water moves between the channels, making the green sharper."},choices:[{l:'A',t:{zh:'在这里多待一会儿。',en:"Stay here a while longer."},n:'green_reef_stay'},{l:'B',t:{zh:'继续往花莲去，去看清水断崖。',en:"Head on to Hualien. See the cliff."},n:'train_to_hualien'}]},
+      green_reef_stay:
+      {tag:{zh:'绿石槽，多待一会儿',en:"At the reef, staying longer"},img:'wetland',prog:78,body:{zh:'你蹲下来，看着海水在石槽里慢慢流动。\n\n这些线条来自岩石本身的裂隙，海浪长时间顺着较软的部分反复冲刷，把它们慢慢刻深。几千年，或者更久。\n\n你想，有些东西的形成，不是因为力气大，是因为时间长。',en:"You crouch down and watch the water moving slowly through the channels.\n\nThese grooves came from cracks in the rock — waves following the softer lines, deepening them over time. Thousands of years, maybe more.\n\nYou think: some things are shaped not by force, but by time."},choices:[{l:'→',t:{zh:'去花莲。',en:"Go to Hualien."},n:'train_to_hualien'}]},
+      train_to_hualien:
+      {tag:{zh:'列车，往花莲',en:"The train to Hualien"},img:'map',prog:82,body:{zh:'从台北车站出发，搭自强号往花莲。新车厢，干净、明亮，行进平稳，几乎没有多余的声响。\n\n列车沿东侧前行。海在远处铺开，颜色从浅到深一段段延伸；山脉几乎贴着轨道升起，绿意一路往上延伸到山体深处，间或闪出几块开阔的稻田。\n\n因为起得早，上车后不自觉地打了个盹。再睁眼时，视线正好落在窗外那一抹天蓝上——干净、明亮，几乎是从画面里直接跳出来的。只是一闪而过的几秒，便知道那是清水断崖。\n\n列车驶入隧道，光线短暂收起。再出来时，海与山又重新铺开。',en:"You take the express train from Taipei. New carriages — clean, bright, smooth. Almost no extra noise.\n\nThe train runs along the eastern side. The sea spreads out in the distance, colours deepening in layers. Mountains rise almost against the tracks, green climbing deep into the slopes, interrupted by occasional open rice fields.\n\nYou dozed off after boarding — you were up early. When you open your eyes, the view outside is a streak of blue — clean, bright, almost jumping out of the frame. Just a few seconds, but you know at once: Qingshui Cliff.\n\nThe train enters a tunnel. Light draws back briefly. When it emerges, the sea and mountains open up again."},choices:[{l:'→',t:{zh:'抵达花莲。',en:"You arrive in Hualien."},n:'cliff_morning'}]},
+      cliff_morning:
+      {tag:{zh:'清水断崖',en:"Qingshui Cliff"},img:'tower',prog:86,body:{zh:'早上起来时，天还是阴的。云层压得很低，光线被收住，海也跟着暗了下来。\n\n到达断崖时，云层刚好裂开一道口子。阳光完整地落下来，海面一下子亮了起来，从深蓝一路过渡到更浅的天蓝，边缘还透着一点亮。\n\n黑灰色的大理石岸边，叠着层层渐变的蓝，整片景色像是被有意压低了声量。不张扬，却更深，也更耐看。热带海岛的海，你会直接觉得美。可这里给你的，似乎是另一种东西——不是扑面而来的热烈，而是让人愿意慢慢走近、慢慢停留的魅力。\n\n看着看着，人会不自觉地安静下来。',en:"The morning is overcast. Cloud sits low. Light is held back. The sea darkens with it.\n\nWhen you reach the cliff, the cloud cracks just enough. Sunlight falls through completely. The sea brightens at once — deep blue transitioning to lighter blue, the edges touched with brightness.\n\nAgainst the black-grey marble shore, layers of blue stack in gradation. The whole scene seems deliberately quieted. Not showy, but deeper. More lasting. Tropical seas make you think: beautiful. This place gives you something else — not heat, but a pull. Something that makes you want to come closer slowly, stay longer.\n\nAfter a while, you find you have gone quiet."},choices:[{l:'A',t:{zh:'在这里再站一会儿。',en:"Stand here a little longer."},n:'cliff_stay'},{l:'B',t:{zh:'去七星潭。',en:"Go to Qixingtan."},n:'qixingtan'}]},
+      cliff_stay:
+      {tag:{zh:'断崖边，多待一会儿',en:"At the cliff, staying"},img:'tower',prog:88,body:{zh:'你没有急着走。\n\n把无人机升起来，从上方看下去，海与崖的边界一下子变得分明，整片蓝色随之铺展开来。\n\n那一瞬间，会很自然地觉得，自己原本也就是这颗蓝色星球的一部分。',en:"You do not hurry to leave.\n\nYou send up the drone. Looking down, the boundary between sea and cliff becomes sharp and clear. The whole expanse of blue opens up.\n\nIn that moment, it feels natural — obvious, even — that you were always part of this blue planet."},choices:[{l:'→',t:{zh:'去七星潭。',en:"Go to Qixingtan."},n:'qixingtan'}]},
+      qixingtan:
+      {tag:{zh:'七星潭，下午',en:"Qixingtan, afternoon"},img:'mud',prog:91,body:{zh:'下午到七星潭时，天已经重新阴了下来。海上起了风，一阵一阵从远处推过来，落在岸边。穿着短袖，倒也不觉得冷。\n\n这里是一整片鹅卵石铺成的海滩。海浪不断冲上来，又退下去，把石头一层一层往上推，堆出一个自然的斜面。\n\n海浪拍上来时声音很实，水退下去的那一刻，会带着一整片鹅卵石一起滑动，发出连续的窸窸窣窣声。不是一下，而是一段，有节奏，也有起伏。\n\n你平躺在鹅卵石上，身体被一颗一颗石头顶住，有点硌，却很放松。就躺着，听海。',en:"By the time you reach Qixingtan in the afternoon, the sky has clouded over again. Wind comes off the sea in gusts. You are in short sleeves. Not cold.\n\nThe whole beach is pebbles. Waves push in constantly, pulling the stones up the slope, building a natural incline.\n\nWhen a wave hits, the sound is solid. As the water retreats, it drags a whole surface of pebbles with it — a long, continuous rustling. Not one sound, but a sequence. Rhythmic. Variable.\n\nYou lie back on the pebbles. Each stone presses into you separately. A little uncomfortable. Very relaxed. You just lie there, listening to the sea."},pause:{zh:'有时候什么都不做也很好。就躺着，听。',en:"Sometimes doing nothing is enough. Just lying there, listening."},choices:[{l:'A',t:{zh:'闭上眼睛，听一会儿。',en:"Close your eyes. Just listen for a while."},n:'memory_recall'},{l:'B',t:{zh:'低头看看脚边的石头。',en:"Look at the pebbles near your feet."},n:'pebble_look'}]},
+      pebble_look:
+      {tag:{zh:'鹅卵石',en:"The pebbles"},img:'mud',prog:92,body:{zh:'形状、颜色、大小都不一样，有些很圆，有些还带着棱角，一颗一颗慢慢看过去。\n\n你想，它们都从同一片海里来，却长成了完全不同的样子。然后你就闭上了眼睛。',en:"Each one is different — shape, colour, size. Some perfectly round, some still with edges. You look through them one by one.\n\nYou think: they all came from the same sea, and ended up completely different. Then you close your eyes."},choices:[{l:'→',t:{zh:'听海。',en:"Listen to the sea."},n:'memory_recall'}]},
+      memory_recall:
+      {tag:{zh:'七星潭，鹅卵石滩上',en:"Qixingtan, lying on the pebbles"},img:'mud',prog:95,body:{zh:'如果说情境是回忆的提示词，那么这片声音，打开了一扇很久没开的门。\n\n那是大学毕业时的一趟旅行。虽然出生在沿海地区，却是那一次，才真正见到海。那天傍晚，你在石滩上躺了很久。海面被夕阳压低了亮度，渔船一只一只往港口靠，慢慢停下来。后来半夜睡不着，又走回海边，沿着岸边来回走。海浪一遍遍冲上来，又退下去，带着整片鹅卵石滑动，那种声音，一直到现在都还记得。\n\n时间其实已经过去很久了，十几年。你不太确定现在的自己，和当时是不是同一个人，也说不清那一部分还剩下多少。只是在这里的时候，会隐约感觉到，有些东西并没有真的改变——面对还未发生的未来，仍然愿意相信，也仍然愿意好好生活。',en:"If context is the prompt for memory, then this sound opens a door that has not opened in a long time.\n\nA trip after graduation. Though you grew up near the coast, that was the first time you truly saw the sea. You lay on a pebble beach all evening. Sunlight dimmed the sea surface. Fishing boats came in one by one, slowly stopped. Later, you could not sleep and went back. You walked back and forth along the shore. Waves came in and pulled back, dragging the pebbles. That sound — you have never forgotten it.\n\nThat was more than ten years ago. You are not sure whether you are still the same person who lay on that beach. You cannot say how much of that person remains. But lying here now, you sense something that has not really changed — faced with a future not yet happened, you are still willing to believe in it. Still willing to live well."},choices:[{l:'→',t:{zh:'回台北。最后一天。',en:"Back to Taipei. The last day."},n:'back_taipei'}]},
+      back_taipei:
+      {tag:{zh:'台北车站，夜归',en:"Taipei station, returning at night"},img:'night',prog:97,body:{zh:'昨晚乘台铁从花莲返回台北，走出闸机，台北车站的灯光陡然亮得有些刺眼。四周的人群像是一段被按了2倍速的录像带，公文包、香水味和匆忙的皮鞋声交织在一起，把花莲带回来的那点海盐味儿冲得稀碎。\n\n你低头看了看自己鞋子，上面可能还沾着点泥土，在锃亮的地板上显得格格不入。就像是一个带着满身草木气息的人，笨拙地站在时间洪流的缝隙里。\n\n你有个习惯：去到一个地方，总要去看看它的代表性的公园，像是某种下意识的路径。到了那里，城市才会慢慢显出它的另一面。上周末去阳明山，被一场雾雨拦了下来——风声、雨丝、朦胧的轮廓，一切都在，却又什么都看不真切。\n\n于是你决定，离开前最后一天，再上一次阳明山。',en:"Last night you took the train back from Hualien. Walking out of the barriers, the lights of Taipei station are suddenly, sharply bright. The crowd moves at double speed. Briefcases, perfume, hurried footsteps — they dissolve whatever sea-salt feeling you brought back.\n\nYou look down at your shoes. Still a little mud on them. Out of place on the gleaming floor. Like someone carrying grass and wood back into the current of time, standing awkwardly in the gap.\n\nYou have a habit: wherever you go, you look for the city's signature park. That is where a city shows its other side. Last weekend you tried Yangmingshan and were stopped by fog and drizzle — wind, mist, faint shapes. Everything seemed present, yet nothing was clear.\n\nSo you decide: on the last day before you leave, go up again."},choices:[{l:'→',t:{zh:'最后一天。上山。',en:"Last day. Up the mountain."},n:'yangming'}]},
+      yangming:
+      {tag:{zh:'阳明山，擎天岗',en:"Yangmingshan, Qingtiangang"},img:'wetland',prog:98,body:{zh:'这天不算晴朗，但云雾轻到足以被拨开。山脚下有光，是那种能穿透云层、但并不刺眼的亮。\n\n擎天岗是一片起伏温和的山丘草原，没有突兀的高峰，也没有逼人的坡度，只是缓缓地铺展开来，像一张被风轻轻掀起边角的绿色毯子。牛安静地低头吃草，像是这片山的原住民，而人只是偶尔路过的访客。\n\n走在这样的草坡上，会不自觉地想发出一些没什么意义的声音。那种冲动来得很自然，好像身体会先于念头，对这片开阔作出一点回应。\n\n这大概走了几公里，却几乎没有赶路的感觉。没有目标，没有时间限制，没有需要完成的事情。只是自在地前行、停下、再前行。身体很轻，呼吸也很稳。',en:"Not quite sunny, but the clouds are thin enough to let light through. At the foot of the mountain there is brightness — the kind that penetrates cloud without glare.\n\nQingtiangang is a gently rolling grassland. No sharp peaks, no steep inclines — it simply unfolds, like a green blanket with its corners lifted by wind. Cattle graze quietly, original residents of this mountain. People are occasional visitors.\n\nWalking across this slope, you find yourself wanting to make a sound — something meaningless. The impulse comes naturally, as if the body responds to open space before the mind catches up.\n\nYou cover perhaps a few kilometres with almost no sense of hurrying. No goal. No time limit. Nothing that needs completing. Just moving forward, stopping, moving again. Your body is light. Your breathing is steady."},pause:{zh:'春和景明，心生欢喜。',en:"Spring light, clear sky. A quiet joy rises."},choices:[{l:'A',t:{zh:'在坡顶停一会儿，往远处看。',en:"Stop at the top of the slope. Look out."},n:'yangming_view'},{l:'B',t:{zh:'随着山路继续走，不用往哪里。',en:"Keep walking with the path. Nowhere in particular."},n:'yangming_walk'}]},
+      yangming_view:
+      {tag:{zh:'坡顶',en:"The top of the slope"},img:'tower',prog:99,body:{zh:'远处叠起的山线，脚下起伏的草浪，光影在云层间慢慢移动。\n\n你忽然想，阳明山似乎并不是一个可以被单独截取出来的画面。没有哪一帧能代表它，但走在其中的时候，每一帧又都在里面。\n\n有些地方是这样的。',en:"Layered mountain lines in the distance. Grass rising and falling below. Light and shadow moving slowly between the clouds.\n\nYou think: Yangmingshan cannot really be captured in a single frame. No one image represents it. But while you are inside it, every frame is there.\n\nSome places are like this."},choices:[{l:'→',t:{zh:'下山，去找朋友。',en:"Down the mountain. Go find your friend."},n:'last_evening'}]},
+      yangming_walk:
+      {tag:{zh:'山路上',en:"On the mountain path"},img:'wetland',prog:99,body:{zh:'风不算大，但一直在流动。短袖加一件薄外套刚刚好。\n\n不时会遇到一群牛，在不远处吃草。站着听了一会儿，能听见它们拔草的声音——草从地面被扯起，再送入口中。那一刻，你忍不住去想，这样简单的食物，是怎么长成这样庞大的身体。\n\n然后就不想了。继续走。',en:"The wind is not strong, but it keeps moving. Short sleeves plus a thin jacket — just right.\n\nYou come across a group of cattle nearby, grazing. You stop and listen. You can hear the sound of grass being pulled from the ground and taken into the mouth. You find yourself wondering how something so simple becomes something so large.\n\nThen you stop wondering. Keep walking."},choices:[{l:'→',t:{zh:'下山，去找朋友。',en:"Down the mountain. Go find your friend."},n:'last_evening'}]},
+      last_evening:
+      {tag:{zh:'最后一个傍晚',en:"The last evening"},img:'stranger',prog:99,body:{zh:'你们在他家附近的街边站了一会儿。没有特别说什么，也没有刻意告别的感觉。就是站着，偶尔说几句话，看着路上的人来来往往。\n\n你想，很多年前，你们是在第三个城市认识的。然后各自去了不同的地方，偶尔联系，那个约定就一直挂着。\n\n后来有了这趟旅行，你第一次走进了他成长的地方，走进了他平时会走的街道，坐在他常去的店里吃了饭。\n\n你以为你来看的是一座城市，但你慢慢发现，你其实是来看一个人的生活——那些具体的、真实的，在这座城市里展开的日子。',en:"You stand with him on a street near his home for a while. Not saying much in particular. No deliberate sense of farewell. Just standing, the occasional word, watching the people passing.\n\nYou think: you met in a third city, years ago. Then each went somewhere different, kept in touch occasionally, that promise hanging there.\n\nThen this trip happened. For the first time you walked into the place he grew up, the streets he walks, the shops he goes to.\n\nYou thought you came to see a city. But slowly you realise: you came to see a life — specific, real, unfolding in this place."},choices:[{l:'→',t:{zh:'第二天，离开。',en:"Next day. You leave."},n:'departure'}]},
+      departure:
+      {tag:{zh:'机场，出发',en:"The airport, departing"},img:'rain',prog:99,body:{zh:'你排队过安检，把背包放上传送带，走进候机厅。\n\n收录机里邓丽君的歌声，那是你对童年某个夏天最清晰的记忆。阿里山的课文，你那时以为只是文字，只是想象。\n\n十年的时间，说长不长，说短也不短。有些地方，会在你尚未抵达之前，就已经在你的生命里存在很久。有些路，也许并不是走过去的。只是某一天，你刚好走到了它出现的位置。\n\n你找到座位坐下，等待登机。',en:"You join the queue for security. Put your bag on the belt. Walk into the departure hall.\n\nTeresa Teng's voice from an old tape recorder. A summer childhood. A text about mountains and lakes that you once thought were only words, only imagination.\n\nTen years is not so long. Not so short either. Some places exist in your life long before you arrive. Some journeys are not walked toward — you simply reach the moment when they appear.\n\nYou find your seat and wait to board."},choices:[{l:'→',t:{zh:'起飞。',en:"Takeoff."},n:'end_reflection'}]},
+      end_reflection:
+      {tag:{zh:'飞机上，离开的方向',en:"On the plane, heading away"},img:'rain',prog:100,body:{zh:'',en:""},choices:[],isEnd:true,endType:'full',title:{zh:'我真正想见的，或许从来不只是风景',en:"What I wanted to see was never only the scenery"},story:{zh:'你靠在椅背上，窗外是云。\n\n你想起那只天鹅——把头整个倒插进水里，反复确认每一处都被水带到，然后上岸，用力把水珠甩开，再慢慢把羽毛理顺。没有人教它这个步骤，但每一步都有来处。\n\n你想起七星潭，和那片更久以前的鹅卵石滩。\n\n你想起骑楼下的早晨，朋友家的饭桌，那家几十年的小店，和阳明山上没有目的地的几公里。\n\n有些旅行，是去看一个地方。有些旅行，是去看一段时间——你的，或者别人的，或者两者之间那片难以言说的交叠。\n\n这一次，你想见的，是一个朋友的生活，是一段被长久拖延的约定，是某个童年里只有声音的地方，是十年前的自己和现在的自己之间那条若隐若现的线。\n\n你不确定你都找到了。但你知道，你来了。\n\n<em>有些东西，来了之后才会知道自己原来一直想要。</em>',en:"You lean back. Outside the window, clouds.\n\nYou think of the swan — plunging its head completely underwater, checking that every part was reached, then climbing ashore and beating its wings hard to shed the water, then slowly straightening each feather. No one taught it those steps. But each one had a reason.\n\nYou think of Qixingtan, and the pebble beach from much longer ago.\n\nYou think of mornings under the walkway, dinners at your friend's table, a small shop open for decades, a few kilometres on Yangmingshan with nowhere particular to go.\n\nSome journeys are to see a place. Some are to see a span of time — yours, or someone else's, or the overlap between the two that is hard to put into words.\n\nThis time, you came to see a friend's life, a long-delayed promise, a place that existed in your childhood only as sound, a faint line connecting the person you were ten years ago to who you are now.\n\nYou are not sure you found all of it. But you know you came.\n\n<em>Some things — you only discover you always wanted them once you have arrived.</em>"},insight:{zh:'旅行最诚实的地方在于，你带着什么去，它就照出什么来。有时候是风景，有时候是记忆，有时候是一个关于自己的发现。不必强求。走着走着，你想见的，会慢慢出现。',en:"The most honest thing about travel is this: whatever you bring with you, it reflects back. Sometimes scenery. Sometimes memory. Sometimes something about yourself. You do not need to force it. Keep going, and what you came to see will slowly appear."}}
+    }
+  }
+,
+  {
+    id:'innergame',category:'sports',template:'A',level:2,
+    tag:{zh:'运动 · 真实改编',en:"Sports · Based on a true story"},
+    title:{zh:'你即你的击球，而击球不会撑谎',en:"You Are Your Hitting, and Hitting Never Lies"},
+    desc:{zh:'积极心理暗示和自我评判，背后是同一件事。一个关于内心游戏的真实故事。',en:"Positive self-talk and self-judgment share the same core. A true story about the inner game."},
+    cover:'tennis',
+    meta:[{zh:'约 6 分钟',en:"~6 min"},{zh:'内心游戏',en:"Inner game"},{zh:'真实故事',en:"True story"}],
+    keywords:['用力','急躁','内耗','失控','状态','心流','内心游戏','心态','运动','inner game','zone'],
+    scenes:{
+      start:
+      {tag:{zh:'球场，清晨',en:"The court, early morning"},img:'tennis',prog:8,body:{zh:'清晨的练习，一开始就不对劲。\n\n小场热身，力道总是偏大，落点掉在发球区外。退到底线后，击球莫名其妙——不是击飞，就是打呲，或者下网。这种离谱的状态，是几个月来不多见的。\n\n连续的失误，让水面下隐藏的东西浮了上来：练习了这么久，怎么还可以打这么烂。明明知道动作要怎么做，为什么结果却差十万八千里。\n\n这种感觉就像一个大大的脑袋，困在了一个小小的身躯上。你指东，身体往西。',en:"Something is wrong from the start of morning practice.\n\nWarm-up in the service box — the force keeps coming out too big, shots landing beyond the line. Moving back to the baseline, the hitting becomes inexplicable — flying long, shanking off the frame, hitting the net. A state this bad has not happened in months.\n\nConsecutive errors bring something surfacing from beneath: after all this practice, how can you still play this badly. You know exactly what the motion should be, so why does the result miss by a mile.\n\nIt feels like a very large head trapped inside a very small body. You tell it to go right. It goes left."},choices:[{l:'A',t:{zh:'告诉自己放松，积极暗示，继续打。',en:"Tell yourself to relax. Positive self-talk. Keep going."},n:'positive_talk',c:true},{l:'B',t:{zh:'停下来，走到边上喝口水。',en:"Stop. Walk to the side. Get some water."},n:'pause_water'}]},
+      positive_talk:
+      {tag:{zh:'底线，继续打',en:"Baseline, keep playing"},img:'tennis',prog:20,body:{zh:'你开始在心里对自己说：放松，trust yourself，I can do it。\n\n这些话你以前用过，某些时候确实有效。于是你一边击球，一边在脑海里重复这些句子，像念咒一样。\n\n但球还是不对。\n\n不仅如此，这些咒语反而让你更加注意到每一次失误——每打完一球，你立刻判断它和预期的差距，然后再次输出指令，再次重复那几句话。\n\n身体还在场上，但心思早已离场，自顾自玩起了另一场游戏。',en:"You start talking to yourself internally: relax, trust yourself, I can do it.\n\nThese phrases have worked before, sometimes. So you hit balls and repeat the sentences in your mind, like an incantation.\n\nBut the hitting is still wrong.\n\nWorse — the incantations make you more aware of each error. After every ball you immediately assess the gap between result and expectation, then issue new instructions, then repeat the phrases again.\n\nYour body is still on the court. Your mind left a while ago and is playing a different game entirely."},nudge:{zh:'积极暗示和自我评判，背后藏着同一件事：预期。',en:"Positive self-talk and self-judgment share the same hidden ingredient: expectation."},choices:[{l:'→',t:{zh:'Tengku 叫停了。',en:"Tengku calls a halt."},n:'tengku_stops'}]},
+      pause_water:
+      {tag:{zh:'球场边，长凳旁',en:"Courtside, by the bench"},img:'locker',prog:22,body:{zh:'你走到边上，喝了口水。\n\nTengku 走过来，问：昨晚睡好了吗？\n\n你愣了一下。你不记得睡得如何。但你确实感觉到，有什么东西压在心里——说不清楚是什么，只是很笃定地在那里。\n\n你好奇地问他是怎么看出来的。\n\n他说：你的内心世界，已经全部透明地写在击球里。也许你的思维会撒谎，但击球不会，从不会。',en:"You walk to the side and drink some water.\n\nTengku comes over. Did you sleep well last night?\n\nYou pause. You do not actually remember how you slept. But you do sense something pressing on you — you cannot name it clearly, only feel its presence with certainty.\n\nYou ask him how he could tell.\n\nHe says: your inner world is written transparently in every shot. Your thoughts might lie. But your hitting never does."},pause:{zh:'击球不会撒谎。这句话让你停了一下。',en:"Your hitting never lies. That stops you for a moment."},choices:[{l:'→',t:{zh:'你们坐下来聊了一会儿。',en:"You sit and talk for a moment."},n:'after_talk'}]},
+      tengku_stops:
+      {tag:{zh:'球场边，Tengku 叫停',en:"Courtside, Tengku calls a halt"},img:'locker',prog:25,body:{zh:'Tengku 走过来，让你休息。\n\n他问：昨晚睡好了吗？\n\n你愣了一下。不记得睡得如何。但你笃定地感觉到，有什么东西压在心里，被他清晰地捕捉到了。\n\n你问他是怎么看出来的。\n\n他说：你的内心世界，已经全部透明地写在击球里。也许你的思维会撒谎，但击球不会，从不会。\n\n你坐在那里，想了一下这句话。',en:"Tengku comes over and calls a rest.\n\nDid you sleep well last night?\n\nYou pause. You do not remember. But you feel with certainty that something is pressing on you — and he has caught it clearly.\n\nYou ask how he could tell.\n\nHe says: your inner world is written transparently in every shot. Your thoughts might lie. But your hitting never does.\n\nYou sit with that for a moment."},choices:[{l:'→',t:{zh:'Tengku 提议打一盘记分比赛。',en:"Tengku suggests playing a proper set."},n:'match_proposal'}]},
+      after_talk:
+      {tag:{zh:'重新站上场',en:"Back on court"},img:'tennis',prog:30,body:{zh:'喝完水，你重新站上了底线。\n\n没有做什么特别的准备。只是站着，等球。\n\n然后Tengku提议：我们打一盘记分比赛吧。\n\n你点头。',en:"After the water, you stand on the baseline again.\n\nNo special preparation. Just standing. Waiting for the ball.\n\nThen Tengku suggests: let's play a proper set, keep score.\n\nYou nod."},choices:[{l:'→',t:{zh:'第一分开始了。',en:"The first point begins."},n:'zone_entry'}]},
+      match_proposal:
+      {tag:{zh:'记分比赛',en:"A scored set"},img:'tennis',prog:32,body:{zh:'Tengku 提议打一盘记分比赛。\n\n这个间隙好像打断了什么。当你重新站上场，脚踩在底线位置，望向隔网远处，脑海中一片空白——所有的思绪仍在缓冲中，尚未来得及加载。\n\n你没有主动做任何事，只是站在那里。',en:"Tengku suggests playing a proper set.\n\nThis gap seems to break something. When you stand on the baseline again, looking across the net, your mind is blank — all the thoughts still buffering, not yet loaded.\n\nYou do not do anything deliberately. You just stand there."},choices:[{l:'→',t:{zh:'第一分开始了。',en:"The first point begins."},n:'zone_entry'}]},
+      zone_entry:
+      {tag:{zh:'第一分',en:"The first point"},img:'tennis',prog:55,body:{zh:'球飞过来。\n\n你没有想任何事。准备提前了，步伐跟上了，拍面对准了，球落在你想要的地方。\n\n然后又一球，又一球。\n\n你没有叫它来，但它来了——盯球更清楚，准备更提前，步伐更勤快，击打更准确。零失误拿到三个破发点，然后一鼓作气完成破发。\n\n这是你练习以来第一次拿下教练的发球局。而且是连下四分的方式。\n\n你几乎不敢相信。',en:"The ball comes over.\n\nYou are not thinking about anything. Preparation is earlier, footwork follows, the racket face aligns, the ball lands where you want it.\n\nThen another. And another.\n\nYou did not summon it, but it came — tracking the ball more clearly, preparing earlier, feet moving quicker, striking more accurately. Zero errors, three break points, then the break itself.\n\nThis is the first time you have broken Tengku's serve since you started training. With four straight points.\n\nYou can barely believe it."},pause:{zh:'你不知道自己做了什么。它只是发生了。',en:"You do not know what you did. It just happened."},choices:[{l:'A',t:{zh:'状态太好了，想搞清楚自己做对了什么，把它延续下去。',en:"The state is extraordinary. You want to understand what you did right and keep it going."},n:'analyze_zone',c:true},{l:'B',t:{zh:'什么都不想，就让它继续发生。',en:"Think nothing. Let it keep happening."},n:'stay_zone'}]},
+      stay_zone:
+      {tag:{zh:'继续打',en:"Continuing"},img:'tennis',prog:72,body:{zh:'你没有去想。\n\n球来，你打。步伐、引拍、随挥——连贯地发生，不需要指挥。\n\n这个状态延续了六局，比分来到3:3。这是你练习以来最好的一段表现。\n\nTengku 在对面打得更认真了，但你能感觉到他眼睛里有一种你以前没见过的东西。',en:"You do not think.\n\nBall comes, you hit. Footwork, backswing, follow-through — happening in sequence, without direction.\n\nThe state holds for six games. Score reaches 3-3. The best stretch of play since you started training.\n\nTengku is playing more seriously across the net. But you can sense something in his eyes you have not seen before."},choices:[{l:'→',t:{zh:'然后一个念头出现了。',en:"Then a thought arrives."},n:'thought_arrives'}]},
+      analyze_zone:
+      {tag:{zh:'你开始想',en:"You start thinking"},img:'tennis',prog:65,body:{zh:'你开始琢磨：刚才到底做对了什么？\n\n是步伐？是引拍时机？还是什么别的？\n\n你想把它找出来，复制它，延续这个状态。\n\n但就在这个念头出现之后，击球开始走偏。不是一下，是慢慢的，越来越偏，像沙漏里的沙，在你没注意到的地方，悄悄流走了。',en:"You start to work it out: what exactly did you do right just then?\n\nWas it the footwork? The timing of the backswing? Something else?\n\nYou want to identify it, replicate it, extend the state.\n\nBut from the moment this thought appears, the hitting starts to drift. Not all at once — slowly, gradually further off, like sand in an hourglass, slipping away somewhere you were not watching."},nudge:{zh:'你开始想要捉住它的那一刻，它就已经走了。',en:"The moment you tried to hold it, it was already leaving."},choices:[{l:'→',t:{zh:'你飞快丢掉了接下来三局。',en:"You quickly lose the next three games."},n:'losing_streak'}]},
+      thought_arrives:
+      {tag:{zh:'一个念头',en:"A thought"},img:'tennis',prog:80,body:{zh:'3:3。\n\n你站在底线，忽然意识到——自己刚才打了多么不可思议的六局。\n\n于是一个念头出现了：我刚才到底做对了什么？\n\n就那么一下，思绪动了。\n\n接下来三局，你飞快丢掉了。',en:"3-3.\n\nYou stand on the baseline and suddenly realise — what an extraordinary six games you just played.\n\nA thought arrives: what exactly did I do right just then?\n\nJust that movement of thought.\n\nYou lose the next three games quickly."},choices:[{l:'→',t:{zh:'3:6 告负。Tengku 走过来。',en:"3-6. Tengku comes over."},n:'tengku_end'}]},
+      losing_streak:
+      {tag:{zh:'比分滑落',en:"The score slides"},img:'tennis',prog:82,body:{zh:'3局，飞快丢掉。\n\n3:6 告负。\n\n你坐在椅子上，脑子里同时存在两种感受：那六局的不可思议，和这三局的迅速崩盘。\n\nTengku 走过来，在旁边坐下。',en:"Three games. Lost quickly.\n\n3-6. Defeat.\n\nYou sit in the chair, holding two feelings at once: the extraordinary six games, and the rapid collapse of these three.\n\nTengku comes over and sits beside you."},choices:[{l:'→',t:{zh:'他说了一句话。',en:"He says something."},n:'tengku_end'}]},
+      tengku_end:
+      {tag:{zh:'球场边，练习结束后',en:"Courtside, after practice"},img:'locker',prog:90,body:{zh:'Tengku 坐在旁边。\n\n他说：你知道那六局你在做什么吗？\n\n你说：什么都没想。\n\n他点头。然后他说：你不关注的时候，那个状态自然就出来了。你开始想要它，它就走了。积极暗示也好，自我评判也好，背后是同一件事——预期。你把注意力全部放在结果和预期的差距上，身体就没有空间了。\n\n你坐在那里，听着。\n\n然后他补了一句：每一分开始前，做一次归零。然后只管去打。',en:"Tengku sits beside you.\n\nHe says: do you know what you were doing in those six games?\n\nYou say: not thinking about anything.\n\nHe nods. Then: when you stopped paying attention, the state appeared naturally. When you wanted it, it left. Positive self-talk, self-judgment — at their core they are the same thing: expectation. When all your attention goes to the gap between result and expectation, the body has no space left.\n\nYou sit and listen.\n\nThen he adds: before each point, reset to zero. Then just play."},pause:{zh:'每一分开始前，做一次归零。然后只管去打。',en:"Before each point, reset to zero. Then just play."},choices:[{l:'→',t:{zh:'你想了很久这句话。',en:"You sit with this for a long time."},n:'end_full'}]},
+      end_full:
+      {tag:{zh:'练习结束后，回家路上',en:"On the way home after practice"},img:'rain',prog:100,body:{zh:'',en:""},choices:[],isEnd:true,endType:'full',title:{zh:'你即你的击球，而击球不会撒谎',en:"You Are Your Hitting, and Hitting Never Lies"},story:{zh:'你想到那六局。\n\n那时候你没有在想任何事，球就来了，你就打了，步伐、引拍、随挥——连贯地发生，不需要指挥。那个状态不是被努力出来的，也不是被积极心理暗示召唤来的。它是在你停下来、脑子清空的那一刻，自己出现的。\n\n然后你开始想要理解它，想要复制它，它就走了。\n\n你想到 Tengku 那句话——积极暗示和自我评判，背后是同一件事：预期。两者都把注意力投射在实际与预期的差距上。虽然一个是正向的，一个是负向的，但它们做的是同一件事：把心带离了当下。\n\n然后你想到另一句：每一分开始前，做一次归零。\n\n不是忘掉上一分，是不把它带进下一分。\n\n<em>究竟哪个是真正的我——那个有如神助的我，还是低迷不振的我？也许完整的你，像一把游标卡尺，而当下的你，只是其中一个切片。你打出什么样的球，不是你是谁，只是这一刻你在哪里。</em>',en:"You think about those six games.\n\nYou were not thinking about anything. The ball came, you hit it, footwork, backswing, follow-through — happening in sequence, without direction. That state was not produced by effort, or summoned by positive self-talk. It appeared by itself in the moment you stopped, when your mind went quiet.\n\nThen you tried to understand it, replicate it. And it left.\n\nYou think about what Tengku said — positive self-talk and self-judgment are the same thing at their core: expectation. Both direct attention toward the gap between result and expectation. One is framed positively, one negatively, but they do the same thing: they take the mind away from now.\n\nThen you think about the other thing he said: before each point, reset to zero.\n\nNot forgetting the last point. Not carrying it into the next one.\n\n<em>Which is the real you — the one playing with extraordinary ease, or the one stuck in a slump? Maybe the complete you is like a measuring instrument, and the present you is just one reading on its scale. What kind of shot you hit is not who you are. It is only where you are, in this moment.</em>"},insight:{zh:'积极心理暗示不是没用，只是它和自我评判一样，都暗含了预期。真正的平静不是告诉自己没问题，而是在下一分开始前，真正地放下上一分。',en:"Positive self-talk is not useless — but like self-judgment, it contains expectation. Real composure is not telling yourself things are fine. It is genuinely releasing the last point before the next one begins."}},
+      end_partial:
+      {tag:{zh:'练习结束，还在想',en:"After practice, still thinking"},img:'rain',prog:90,body:{zh:'',en:""},choices:[],isEnd:true,endType:'reflective',title:{zh:'那六局，和它消失的那一刻',en:"Those Six Games, and the Moment They Left"},story:{zh:'你还在想那六局。\n\n那时候你什么都没想，球就打对了。然后你开始想要理解它，想要延续它，它就走了。\n\n你想不明白这件事——不是因为它太复杂，而是因为它太简单，简单到让你不知道该怎么相信它。\n\n你想起 Tengku 的那句话：积极暗示也好，自我评判也好，背后是同一件事——预期。\n\n也许有些状态，不是靠寻找得来的。它们只在你不找的时候，悄悄出现。\n\n<em>这不是一个你现在就能完全理解的事情。但它发生过——那六局是真实的，你打出了那些球，那个状态是真实的。这就够了，先记住它。</em>',en:"You are still thinking about those six games.\n\nYou were not thinking about anything, and the hitting was right. Then you tried to understand it, to extend it, and it left.\n\nYou cannot quite work it out — not because it is too complicated, but because it is too simple. Simple enough that you do not know how to trust it.\n\nYou think of what Tengku said: positive self-talk and self-judgment, at their core, are the same thing — expectation.\n\nMaybe some states cannot be found. They appear only when you stop looking.\n\n<em>This is not something you can fully understand right now. But it happened — those six games were real, you hit those shots, that state was real. That is enough. Remember it first.</em>"},insight:{zh:'不是每一次领悟都能在发生的当天就完全消化。有些东西，需要在以后某一次练习里，突然想起来，才真正明白。',en:"Not every insight can be fully absorbed on the day it happens. Some things only become clear later — in a future session, when something suddenly reminds you."}}
+    }
+  }
+,
+  {
+    id:'cat',category:'daily',template:'C',level:1,
+    tag:{zh:'日常 · 真实改编',en:"Daily Life · Based on a true story"},
+    title:{zh:'愿无所拘束的活下去',en:"May We Live Without Restraint"},
+    desc:{zh:'一只叫大咪的猫，三年，一个平常傍晚的质地。以及他一直在静静教你的事。',en:"A cat named Dami. Three years. The texture of daily life, and what he has been quietly teaching you."},
+    cover:'home',
+    meta:[{zh:'约 6 分钟',en:"~6 min"},{zh:'一个傍晚',en:"One evening"},{zh:'真实故事',en:"True story"}],
+    keywords:['猫','养猫','日常','独居','阯伴','当下','安静','生活'],
+    scenes:{
+      start:
+      {tag:{zh:'某个下班的傍晚',en:"A weekday evening, coming home"},img:'night',prog:8,body:{zh:'钥匙插进去，门开了。\n\n他已经在那里了。\n\n不是等在门口的那种——是听到声音，从某处缓缓走过来，走廊上爪子踩出轻微的声响。鼻头红彤彤的，说明刚才在玩。\n\n他停在你面前，看着你。\n\n你放下包，也看着他。',en:"Key in, door open.\n\nHe is already there.\n\nNot waiting at the door — he heard you and walked over slowly from somewhere, his paws making soft sounds on the hallway floor. His nose is pink-red, which means he was just playing.\n\nHe stops in front of you and looks at you.\n\nYou put down your bag and look back."},choices:[{l:'A',t:{zh:'蹲下来，把手伸向他。',en:"Crouch down and reach your hand toward him."},n:'touch'},{l:'B',t:{zh:'先站着，等他过来。',en:"Stay standing. Wait for him to come to you."},n:'wait'}]},
+      wait:
+      {tag:{zh:'走廊里，对视',en:"In the hallway, looking at each other"},img:'night',prog:18,body:{zh:'你没有动。\n\n他也没有动。\n\n然后他开口了——ngha，ngha，眼睛圆圆的，古铜色，满是疑惑和迫不及待。\n\n你笑了，把手伸过去。他立刻踮起四肢，脑袋微微用力地顶着你的手心。\n\n你们已经这样做过上千次了，每次都像第一次一样自然。',en:"You do not move.\n\nNeither does he.\n\nThen he opens his mouth — ngha, ngha — eyes wide and copper-coloured, full of puzzlement and urgency.\n\nYou smile and reach your hand out. He immediately lifts onto his toes, head pushing gently but firmly into your palm.\n\nYou have done this a thousand times. Each time feels as natural as the first."},choices:[{l:'→',t:{zh:'进屋，开始这个晚上。',en:"Go inside. The evening begins."},n:'living_room'}]},
+      touch:
+      {tag:{zh:'走廊里，蹲下来',en:"In the hallway, crouching down"},img:'night',prog:18,body:{zh:'他立刻踮起四肢，脑袋微微用力地顶着你的手心。\n\n这个动作你们已经重复过上千次了——他总是这样，主动迎上来那么一点点，好像在说，我也想。\n\n他的毛是温的，鼻头还是热的，刚才玩得很尽兴。\n\n你在走廊里蹲了一会儿，没有急着站起来。',en:"He immediately lifts onto his toes, his head pushing gently but firmly into your palm.\n\nYou have repeated this gesture a thousand times — he always does this, meeting you just that little bit, as if to say, me too.\n\nHis fur is warm. His nose is still hot from playing.\n\nYou stay crouched in the hallway for a moment, in no hurry to stand."},choices:[{l:'→',t:{zh:'进屋，开始这个晚上。',en:"Go inside. The evening begins."},n:'living_room'}]},
+      living_room:
+      {tag:{zh:'客厅，晚上',en:"Living room, evening"},img:'home',prog:30,body:{zh:'客厅里空荡荡的，没什么摆件——他搬来没多久，龟背竹和天堂鸟就被破坏殆尽了。玻璃制品碎了好几个。后来干脆什么都不放，看上去家徒四壁。\n\n但你早就习惯了，甚至觉得清爽。\n\n他在沙发上蹲着，尾巴卷成一圈，看你在屋里走动。你经过他旁边，他用额头蹭了一下你的腿，不动声色地标记气味。\n\n你把腿往旁边挪了一步，假装没给他蹭到。他高高扬起尾巴，又倾过来蹭了一下。\n\n就是这么锲而不舍。',en:"The living room is sparse, not much on the shelves — shortly after he moved in, the plants were destroyed, a few glass things broken. Eventually you stopped putting anything out. It looks bare but you got used to it. Actually you find it clean.\n\nHe is crouched on the sofa, tail curled into a ring, watching you move around the room. As you pass, he rubs his forehead against your leg, marking his scent without making a fuss about it.\n\nYou move your leg a step sideways, pretending not to give him the opportunity. He lifts his tail high and leans over to do it again.\n\nThis is just how he is. Persistent."},choices:[{l:'A',t:{zh:'在沙发上坐下来。',en:"Sit down on the sofa."},n:'sofa'},{l:'B',t:{zh:'去厨房倒杯水，他跟过来了。',en:"Go to the kitchen for water. He follows."},n:'kitchen'}]},
+      kitchen:
+      {tag:{zh:'厨房，他跟过来了',en:"Kitchen, he followed you"},img:'cafe',prog:38,body:{zh:'你去倒杯水，他也跟了过来。\n\n没有什么理由。你去哪里，他就在不远处出现。\n\n他坐在厨房地板上，看你倒水，然后看你把杯子放下，然后看你准备离开，然后站起来，跟你一起走回客厅。\n\n不粘，不吵，只是在。\n\n你想，他大概不需要你一直陪着，他只是喜欢知道你在。',en:"You go to pour some water. He comes along.\n\nNo particular reason. Wherever you go, he appears nearby.\n\nHe sits on the kitchen floor and watches you pour, watches you put the glass down, watches you prepare to leave, then stands and walks back to the living room with you.\n\nNot clingy. Not loud. Just there.\n\nYou think he probably does not need you to be with him constantly. He just likes knowing you are around."},choices:[{l:'→',t:{zh:'回到沙发上。',en:"Back to the sofa."},n:'sofa'}]},
+      sofa:
+      {tag:{zh:'沙发上，过了一会儿',en:"On the sofa, a while later"},img:'home',prog:50,body:{zh:'你躺下来。\n\n没过多久，他跳上来，在你大腿上蹲稳，收起爪子，尾巴轻轻扫了两下，然后定住。\n\n然后是那个声音——呼噜，呼噜，低沉而均匀，像一台小型的、运转正常的机器。\n\n你第一次听到这个声音时以为他感冒了，呼吸不畅。后来才知道，这是他非常享受当下的信号。\n\n屋里很安静，只有呼噜声。',en:"You lie down.\n\nNot long after, he jumps up and settles on your thighs, tucks his paws in, gives his tail a couple of light sweeps, then goes still.\n\nThen that sound — purring, low and steady, like a small machine running smoothly.\n\nThe first time you heard it you thought he had a cold, his breathing obstructed. Later you learned this is his signal for deep contentment.\n\nThe room is quiet. Just the purring."},pause:{zh:'你上一次在家里什么都不做，是什么时候的事了。',en:"When was the last time you did nothing at home."},choices:[{l:'A',t:{zh:'抚摸他的脑袋，揉揉肚子。',en:"Stroke his head. Rub his belly."},n:'knead'},{l:'B',t:{zh:'就这样，什么都不做，听着他。',en:"Stay still. Do nothing. Just listen."},n:'just_listen'}]},
+      just_listen:
+      {tag:{zh:'沙发上，听着',en:"On the sofa, listening"},img:'home',prog:60,body:{zh:'你什么都没做。\n\n就听着他的呼噜声，低沉而均匀，随着他的呼吸起伏。\n\n外面偶尔有车声，楼道里偶尔有脚步声，但都是远的。这里很安静。\n\n你不知道自己在想什么，或者说，你没有在特别想什么。只是在这里，感受到他的重量压在大腿上，温热的，一动不动。\n\n你意识到，你已经很久没有这样了——什么都不做，只是在。',en:"You do nothing.\n\nJust listening to his purring, low and steady, rising and falling with his breathing.\n\nOccasionally a car outside, occasionally footsteps in the hallway, but all distant. It is quiet here.\n\nYou do not know what you are thinking, or rather, you are not thinking about anything in particular. Just here, feeling his weight on your thighs, warm, motionless.\n\nYou realise it has been a long time since you were like this — doing nothing. Just being."},choices:[{l:'→',t:{zh:'过了一会儿，他开始踩奶。',en:"After a while, he starts kneading."},n:'knead'}]},
+      knead:
+      {tag:{zh:'踩奶',en:"Kneading"},img:'home',prog:70,body:{zh:'他开始踩奶了。\n\n前爪一下一下，有节奏地踩在你的腿上，眼睛微微眯起，表情心满意足。\n\n这是猫小时候刚出生、为了获取母乳的动作，但离开母亲之后，长大了，还是会这样做。你觉得，这大概是他表达依赖和羁绊的方式。\n\n他的爪子不算重，但能感受到每一下的力道。踩着踩着，你发现自己的肩膀不知道什么时候松下来了。',en:"He starts kneading.\n\nFront paws, one after the other, pressing rhythmically into your leg, eyes half-closed, expression fully satisfied.\n\nThis is what kittens do at birth to get milk from their mother. He left his mother long ago. He still does this. You think it is probably his way of expressing attachment.\n\nHis paws are not heavy, but you can feel each press. Somewhere in the middle of it, you notice your shoulders have come down."},choices:[{l:'→',t:{zh:'他慢慢安静下来，趴稳了。',en:"He gradually settles, lying flat and still."},n:'sleeping'}]},
+      sleeping:
+      {tag:{zh:'他睡着了',en:"He falls asleep"},img:'home',prog:82,body:{zh:'呼噜声慢慢低了下去，踩奶的动作也停了。\n\n他趴在你腿上，闭着眼睛，呼吸变得缓慢而深长。\n\n你没有动。\n\n窗外的光已经暗了，屋里也没开灯。你就在半暗中坐着，他在你腿上睡着，发出轻微的呼吸声。\n\n这一方天地不大，但此刻，它是完整的。',en:"The purring gradually fades. The kneading stops.\n\nHe lies flat on your legs, eyes closed, breathing becoming slow and deep.\n\nYou do not move.\n\nThe light outside has darkened. You have not turned on the lights inside. You sit in the half-dark, him asleep on your legs, the faint sound of his breathing.\n\nThis space is small. But right now, it is complete."},choices:[{l:'A',t:{zh:'轻轻摸了摸他，他动了一下，没醒。',en:"You reach down and touch him lightly. He stirs but does not wake."},n:'touch_sleeping'},{l:'B',t:{zh:'就这样坐着，不打扰他。',en:"Stay still. Do not disturb him."},n:'end_still'}]},
+      touch_sleeping:
+      {tag:{zh:'他动了一下',en:"He stirs"},img:'home',prog:90,body:{zh:'他动了一下，身体往你腿上更贴了一点，又沉下去，继续睡。\n\n你把手放在他背上，能感受到他呼吸时轻微的起伏。\n\n你想起他刚来的时候，四个多月大，像个长条子，轻盈地吱溜乱窜。那时候你以为他可能刻着瘦的基因。\n\n现在他是心宽体胖的猪咪了，压在你腿上，沉甸甸的，踏实。\n\n三年了。',en:"He shifts, pressing himself a little closer into your legs, then sinks back down and keeps sleeping.\n\nYou rest your hand on his back and feel the slight rise and fall of his breathing.\n\nYou think of when he first arrived, four months old, all stretched out and darting around lightly. You thought he might have a lean constitution.\n\nNow he is a plump, contented cat, heavy on your legs, solid.\n\nThree years."},choices:[{l:'→',t:{zh:'窗外的天完全黑了。',en:"Outside, the sky has gone completely dark."},n:'end_still'}]},
+      end_still:
+      {tag:{zh:'这个晚上',en:"This evening"},img:'night',prog:100,body:{zh:'',en:""},choices:[],isEnd:true,endType:'full',title:{zh:'愿无所拘束的活下去',en:"May We Live Without Restraint"},story:{zh:'你在这里坐了很久。\n\n他在你腿上睡着了，屋里没开灯，外面的车声偶尔传进来，又消失。\n\n你不知道自己有没有想什么。大概没有。只是在，只是坐着，只是感受他压在腿上的重量，温热的，均匀呼吸着。\n\n你想到他的名字，想到三年里那些日常——鼻头红彤彤说明刚在玩，长假回来他扒拉一整晚房门，客厅里什么都不放空荡荡的，他锲而不舍地用额头蹭你的腿。\n\n没有一件是大事。\n\n但加在一起，是生活的质地。是某种你说不太清楚的、却实实在在存在的东西。\n\n窗外是夜晚的城市，屋里是安静的他。<em>他毫不介意房屋不大，毫不介意陪伴有限，就在这一方天地里，充分享受着每一天。</em>\n\n你想，也许这就是他一直在教你的事。',en:"You have been sitting here for a long time.\n\nHe is asleep on your legs. The lights are off. The sound of cars outside comes and goes.\n\nYou do not know if you have been thinking about anything. Probably not. Just here, just sitting, just feeling his weight on your legs, warm, breathing steadily.\n\nYou think of his name, of three years of ordinary things — nose pink-red from just playing, pawing at the door all night when you returned from a long trip, the living room bare and clear, the way he presses his forehead against your leg and keeps going.\n\nNone of it is significant.\n\nBut together, it is the texture of a life. Something you cannot quite name but that is undeniably there.\n\nOutside is the night city. Inside is his quiet presence. <em>He does not mind that the space is small. Does not mind that company is limited. He simply lives each day fully, in this small world of his.</em>\n\nYou think: maybe this is what he has been teaching you all along."},insight:{zh:'有些东西，只有和动物在一起才会出现——不是顿悟，不是改变，只是某种被拉回当下的感觉。他不问你今天过得怎样，不需要你表现什么，他只是在，你也只是在，这已经是一件完整的事了。',en:"Some things only appear when you are with an animal — not a revelation, not a change, just a feeling of being pulled back to now. He does not ask how your day was. Does not need you to perform anything. He is simply here, and so are you, and that is already something complete."}}
+    }
+  }
+,
+  {
+    id:'cat2',category:'daily',template:'C',level:2,
+    tag:{zh:'日常 · 真实改编',en:"Daily Life · Based on a true story"},
+    title:{zh:'心之所向，千千万万遇',en:"Wherever the Heart Points, A Thousand Times Over"},
+    desc:{zh:'离开一座城市前，你把大咪送走了。那个深夜的哭，让你明白了一件事。',en:"Before leaving a city, you handed Dami over. The tears that night told you something you had not known before."},
+    cover:'night',
+    meta:[{zh:'约 8 分钟',en:"~8 min"},{zh:'离别与归属',en:"Parting and belonging"},{zh:'真实故事',en:"True story"}],
+    keywords:['离开','分别','猫','日常','独居','归属','流浪','记得'],
+    scenes:{
+      start:
+      {tag:{zh:'离开前，某个下午',en:"Before leaving, one afternoon"},img:'home',prog:5,body:{zh:'你决定了，要离开这座城市。\n\n大咪的去处，成了一个难题。\n\n把他带出国，在当下不是最优解。托付给一位非常信赖的朋友——她家里有一只布偶，两只猫互相有个伴，住处离这里也很近，对大咪少一些折腾。\n\n道理上说得通。\n\n但你还是拖了几天，才拨通朋友的电话。',en:"You have decided. You are leaving this city.\n\nWhat to do with Dami becomes a problem.\n\nTaking him abroad is not the best option right now. Entrusting him to a close friend — she has a Ragdoll at home, two cats can keep each other company, and she lives nearby, less disruption for Dami.\n\nIt makes sense.\n\nBut you put it off for a few days before making the call."},choices:[{l:'→',t:{zh:'送走的那天到了。',en:"The day of handover arrives."},n:'sendoff'}]},
+      sendoff:
+      {tag:{zh:'送走的那天',en:"The day you hand him over"},img:'home',prog:22,body:{zh:'你把猫包打开，放在地上。\n\n大咪走过来闻了一下，然后看了你一眼。\n\n他似乎感知到了什么。当你把他的下半身放进猫包，他后腿蹬地，前爪向上顶，使出全身的力气想钻出来。你和他拉锯了很久，好不容易装进去，拉链刚拉上，他就开启了嚎叫模式。\n\n去朋友家不过步行十分钟，他嗷了一路，路人回头率几乎百分之百。\n\n你低着头走，什么都没说。',en:"You open the carrier and place it on the floor.\n\nDami walks over, sniffs it, then looks at you.\n\nHe seems to sense something. When you lower his back half into the bag, he pushes with his hind legs, presses up with his front paws, using every bit of strength to get out. You struggle with him for a long time. Finally he is in, the zip barely closed, and he starts howling.\n\nThe walk to your friend's place is ten minutes. He cried the whole way. Nearly everyone you passed turned to look.\n\nYou walked with your head down and said nothing."},choices:[{l:'→',t:{zh:'安顿好大咪，你回到住处。',en:"Dami is settled. You walk back home."},n:'return_alone'}]},
+      return_alone:
+      {tag:{zh:'回到住处，入夜',en:"Back home, night falling"},img:'night',prog:38,body:{zh:'家里很安静。\n\n以前这个时间，他会从某处缓缓走过来，鼻头红彤彤或是奶白，蹭蹭你的腿，或者ngha ngha冲你叫。\n\n现在什么声音都没有。\n\n你在沙发上坐了一会儿，然后去洗漱，然后躺下。辗转反侧，睡不着。\n\n不知道过了多久，鼻子一酸。',en:"The apartment is very quiet.\n\nAt this hour he would usually walk over slowly from somewhere, nose pink-red or cream, rub against your leg, or make that ngha ngha sound.\n\nNow there is nothing.\n\nYou sit on the sofa for a while, then wash up, then lie down. Restless, unable to sleep.\n\nAfter some time, your nose stings."},pause:{zh:'屋里很安静。以前这个安静里，有他的呼噜声。',en:"The apartment is quiet. Before, inside this quiet, there was the sound of his purring."},choices:[{l:'A',t:{zh:'眼泪就这样下来了。',en:"The tears come."},n:'crying'},{l:'B',t:{zh:'你强迫自己闭上眼睛，告诉自己没事的。',en:"You force your eyes shut and tell yourself it is fine."},n:'suppress',c:true}]},
+      suppress:
+      {tag:{zh:'深夜，忍着',en:"Late night, holding it in"},img:'night',prog:48,body:{zh:'你告诉自己，这没什么。只是一只猫，他去了更好的地方，有人照顾，有猫做伴。\n\n你知道这是对的。\n\n但身体不听。鼻子还是酸，眼眶还是热，情绪像是涨满的水，你试着用理智把它压住，它就从别的地方渗出来。\n\n最后你放弃了。',en:"You tell yourself it is nothing. Just a cat. He has gone somewhere better, someone to look after him, another cat for company.\n\nYou know it is right.\n\nBut your body does not listen. Your nose still stings, your eyes are still hot, emotion like water pressing against a surface. You try to hold it down with reason and it seeps out somewhere else.\n\nFinally you give up."},choices:[{l:'→',t:{zh:'眼泪还是下来了。',en:"The tears come anyway."},n:'crying'}]},
+      crying:
+      {tag:{zh:'深夜，枕头上',en:"Late night, on the pillow"},img:'night',prog:55,body:{zh:'情绪像山洪一样涌出来，然后止不住地抽泣。\n\n周遭很静，你不知道哭了多久。脑海中一片空白，没有在想任何具体的事，只是哭。\n\n后来你慢慢平静下来，盯着天花板，想起了很多——他第一次来的时候，那只瘦瘦长长的「条子」；他踮起四肢顶着你的手心；他嗷嗷嗷一路被你抱来的第一天；他压在你腿上发出呼噜声的每一个晚上。\n\n三年多，每天不多的陪伴，平凡而深刻。\n\n此刻，你才真正意识到，这对你有多重要。',en:"Emotion floods out like a burst of water and you cannot stop sobbing.\n\nThe room is quiet. You do not know how long you cry. Your mind is blank, not thinking of anything specific. Just crying.\n\nAfterwards you slowly calm and stare at the ceiling, thinking of things — the first day he arrived, that stretched-out skinny shape; him lifting onto his toes to press into your palm; him howling the whole way here on that first day; every evening with him settled on your legs, purring.\n\nThree years, not much time each day, ordinary and deep.\n\nIn this moment, you finally understand how much this has mattered to you."},choices:[{l:'→',t:{zh:'天快亮了，你做了一个决定。',en:"Near dawn, you make a decision."},n:'decision'}]},
+      decision:
+      {tag:{zh:'第二天早上',en:"The next morning"},img:'home',prog:65,body:{zh:'你醒来，脑子出奇地清醒。\n\n你打开手机，锁定了回老家的机票，预订了宠物舱位。\n\n然后拨了爸妈的电话。这些年一起生活的三年多，你从来没和他们提起过大咪——这是一件和他们毫不相干的事，你以为。\n\n电话那头，你告诉他们：我要把一只猫带回来。\n\n你以为会有一场解释，甚至争论。\n\n他们几乎很快欣然接纳了。\n\n可能这些年，他们对你离经叛道的选择，也逐渐脱敏了。',en:"You wake up with unusual clarity.\n\nYou open your phone, find a flight home, book a pet cabin.\n\nThen you call your parents. In the three-plus years of life together, you never mentioned Dami to them — you thought it had nothing to do with them.\n\nOn the phone, you tell them: I am bringing a cat home.\n\nYou expected to have to explain. Maybe argue.\n\nThey agreed, quickly, almost warmly.\n\nMaybe over these years they have gradually become desensitised to your unconventional choices."},nudge:{zh:'你以为这是一件和他们毫不相干的事。但他们说好了。',en:"You thought it had nothing to do with them. They said yes."},choices:[{l:'→',t:{zh:'离开的前一晚。',en:"The night before you leave."},n:'last_night'}]},
+      last_night:
+      {tag:{zh:'离开前的最后一晚',en:"The last night"},img:'home',prog:78,body:{zh:'你去朋友家把大咪接了回来。\n\n这三年，你从没让他进过卧室。偶尔趁机溜进来，也被你请了出去。他虽然不乐意，但适应了。\n\n那晚，你把卧室门敞开了。\n\n大咪站在门口，像是瞳孔地震了一番，然后小心翼翼地摸索进来，在房间里转了几圈，闻了闻，确认了，然后跳上床，在你腿边侧卧下来。\n\n你以为半夜会被他压醒。\n\n没有。那一晚你睡得格外踏实。',en:"You go to your friend's place and bring Dami back.\n\nThese three years, you never let him into the bedroom. If he slipped in he was escorted out. He was unhappy about it but adapted.\n\nThat night, you left the bedroom door open.\n\nDami stood at the doorway, something like shock crossing his face, then carefully felt his way in, circled a few times, sniffed, confirmed something, then jumped on the bed and lay down on his side beside your legs.\n\nYou thought you would be woken by his weight in the night.\n\nYou were not. That night you slept more soundly than usual."},choices:[{l:'→',t:{zh:'早上醒来。',en:"Waking up in the morning."},n:'morning_last'}]},
+      morning_last:
+      {tag:{zh:'最后一个早上，醒来',en:"Last morning, waking up"},img:'home',prog:88,body:{zh:'你睁开眼。\n\n他就在那里，侧卧在你腿边，安静的像一只XXXL号躺平海参。\n\n窗帘透着光，这个房间你住了三年，今天是最后一天。他不知道这些，只是把自己妥帖地安置在那里，发出轻微的呼吸声。\n\n你没有立刻起来。\n\n就这样又多躺了一会儿，和他一起。',en:"You open your eyes.\n\nHe is there, lying on his side beside your legs, as still as an XXXL-sized sea cucumber.\n\nLight comes through the curtains. You have lived in this room for three years. Today is the last day. He does not know any of this. He has simply arranged himself there, breathing softly.\n\nYou do not get up right away.\n\nYou lie there a little longer. With him."},choices:[{l:'→',t:{zh:'收拾行李，准备出发。',en:"Pack up. Time to go."},n:'departure_cat'}]},
+      departure_cat:
+      {tag:{zh:'出发',en:"Departure"},img:'rain',prog:93,body:{zh:'大咪这次进猫包，没有上次那么激烈。\n\n也许感知到了什么不同，也许只是疲倦，他进去之后，嗷了几声，然后安静下来。\n\n你提着他，出了门。\n\n身后这套房子，你把钥匙留给了房东。你想，以后大概不会再回来了。\n\n但现在，你低头看了一眼猫包，他正透过网眼看着你，古铜色的眼睛，圆的，安静的。\n\n你继续往前走。',en:"This time Dami goes into the carrier without as much drama.\n\nMaybe he senses something is different. Maybe he is just tired. He goes in, calls out a few times, then goes quiet.\n\nYou pick him up and walk out the door.\n\nYou have left the keys with the landlord. You think, you probably will not come back.\n\nBut right now you look down at the carrier. He is looking back at you through the mesh, copper eyes, round, quiet.\n\nYou keep walking."},choices:[{l:'→',t:{zh:'回到老家，新的开始。',en:"Back home. A new beginning."},n:'new_home'}]},
+      new_home:
+      {tag:{zh:'老家，之后',en:"Back home, some time later"},img:'home',prog:97,body:{zh:'大咪的生活，一下子从经济舱跃升至头等舱。\n\n爸妈在真香定律支配下，对他宠爱有加。家里没有任何禁区，他任意溜达，和爸妈的作息逐渐拟合。每天晒足太阳，吃饱喝足，找个柔软的地方倒头就睡。\n\n早上叫醒服务，晚上迎接回家，是他亲密表达的集中时刻。其余时间，他很享受独处，偶尔看不见人了，转悠一圈，看到你在视线里，也不粘着，便继续自己的事。\n\n你从他们发来的照片和视频里，看见这一切。\n\n你想，他过得很好。',en:"Dami's life upgrades from economy to first class overnight.\n\nYour parents, subject to the law of eventual appreciation, spoil him thoroughly. No forbidden zones anywhere in the house. He roams freely, his schedule gradually syncing with theirs. Full sun every day, well fed, finding the softest spot and lying down whenever he likes.\n\nMorning wake-up service, evening welcome home — these are his concentrated moments of affection. The rest of the time he enjoys being alone, occasionally checking that you are somewhere in his field of vision, then returning to his own business without clinging.\n\nYou see all of this in the photos and videos they send.\n\nYou think: he is doing well."},choices:[{l:'→',t:{zh:'生日快乐，大咪。',en:"Happy birthday, Dami."},n:'end_full'}]},
+      end_full:
+      {tag:{zh:'四岁了',en:"Four years old"},img:'home',prog:100,body:{zh:'',en:""},choices:[],isEnd:true,endType:'full',title:{zh:'心之所向，千千万万遍',en:"Wherever the Heart Points, A Thousand Times Over"},story:{zh:'你有时会想，不知道是你像大咪，还是大咪像你，或者你们本就是一体。\n\n他不介意空间的大小，不介意陪伴的多少，不介意是在北京的出租屋还是老家的房子。他只是充分地活在当下，活在他所在的地方，活在他所有的每一天里。\n\n而你呢——这些年，你也一直在寻找一种活法：不被太多东西框住，随心而动，走到哪里就在哪里扎根一阵子，然后再走。\n\n送走他的那个深夜，你才真正明白，那三年的日常有多重要。不是因为特别，恰恰是因为太普通了——下班开门，他走过来；你躺下，他跳上来；他嗷嗷嗷，你低着头走。\n\n这些加在一起，是一种联结，是一种证明——<em>证明你在一个地方，真实地活过，被一个生命记得，也记得一个生命。</em>\n\n大咪四岁了。愿我们皆为心之所向，千千万万遍。',en:"You sometimes wonder: do you resemble Dami, or does Dami resemble you, or are you perhaps the same thing.\n\nHe does not mind the size of the space, does not mind how much company there is, does not mind whether it is a rental in a distant city or the house he grew up in. He simply lives fully in the present, in wherever he is, in every day he has.\n\nAnd you — these years, you have been looking for a way to live: not boxed in by too many things, moving when the heart moves, putting down roots wherever you land for a while, then moving again.\n\nThat late night when you sent him away, you finally understood how much those three ordinary years meant. Not because they were special. Precisely because they were so ordinary — door opening after work, him walking over; you lying down, him jumping up; him howling, you walking with your head down.\n\nAll of it together is a connection, a kind of proof — <em>proof that in one place, you lived truly, were remembered by a life, and remembered one in return.</em>\n\nDami is four. May we each go wherever the heart points, a thousand times over."},insight:{zh:'有时候，你以为在照顾一个生命，回头看，才发现那个生命也在照顾你。不是用语言，不是用道理，只是用它每天活着的样子，提醒你：就是这样，就在这里，就是现在。',en:"Sometimes you think you are the one doing the caring. Looking back, you find the life was caring for you too. Not with words or reasons. Just by the way it lived each day, reminding you: just like this, just here, just now."}}
+    }
+  }
+];
+
+
+
+
+/* ── 匹配逻辑 ── */
+function matchGames(input){
+  var text=input.toLowerCase();
+  var scores=GAMES.map(function(g,i){
+    var sc=0;
+    g.keywords.forEach(function(k){if(text.indexOf(k)>=0)sc+=2;});
+    if(userProfile.interests){
+      if(userProfile.interests.indexOf('travel')>=0&&i===0)sc++;
+      if(userProfile.interests.indexOf('family')>=0&&i===1)sc++;
+      if(userProfile.interests.indexOf('sports')>=0&&i===2)sc++;
+    }
+    return{idx:i,score:sc};
+  });
+  scores.sort(function(a,b){return b.score-a.score;});
+  if(scores[0].score===0){
+    var lw=['家','妈','爸','父母','爱','关系','说不出','亲情'];
+    var ew=['用力','努力','焦虑','失控','工作压力','越努力','效率','节奏'];
+    var ls=lw.filter(function(w){return text.indexOf(w)>=0;}).length;
+    var es=ew.filter(function(w){return text.indexOf(w)>=0;}).length;
+    if(es>ls&&es>0)return[2,0,1];
+    return ls>0?[1,0,2]:[0,1,2];
+  }
+  return scores.map(function(s){return s.idx;});
+}
+
+function doMatch(){
+  var val=document.getElementById('confuse-input').value.trim();
+  if(!val)return;
+  window._input=val;
+  show('page-manifesto');
+  renderManifesto();
+}
+
+function goToProfile(){pIdx=0;pAnswers={};show('page-profile');renderProfile();}
+
+function goToMatch(){
+  show('page-match');
+  setTimeout(function(){
+    var order=matchGames(window._input||'');
+    selIdx=order[0];
+    renderMatchPage(order);
+  },1600);
+}
+
+function renderMatchPage(order){
+  var zh=LANG==='zh';
+  var g=GAMES[order[0]];
+  document.getElementById('featured-img').src=IMGS[g.cover];
+  document.getElementById('featured-tag').textContent=T(g.tag);
+  document.getElementById('featured-title').textContent=T(g.title);
+  document.getElementById('featured-desc').textContent=T(g.desc);
+  document.getElementById('featured-meta').innerHTML=g.meta.map(function(m){return '<span>'+T(m)+'</span>';}).join('<span> · </span>');
+  if(order.length>1){
+    var html='';
+    for(var i=1;i<order.length;i++){
+      var og=GAMES[order[i]];
+      html+='<div class="match-mini" data-idx="'+order[i]+'" onclick="switchGame(+this.dataset.idx)">'
+        +'<img class="match-mini-img" src="'+IMGS[og.cover]+'" alt="">'
+        +'<div><div class="match-mini-tag">'+T(og.tag)+'</div><div class="match-mini-title">'+T(og.title)+'</div></div></div>';
+    }
+    document.getElementById('other-cards').innerHTML=html;
+    document.getElementById('match-all').style.display='block';
+  }
+}
+
+function switchGame(idx){
+  selIdx=idx;
+  var g=GAMES[idx];
+  document.getElementById('featured-img').src=IMGS[g.cover];
+  document.getElementById('featured-tag').textContent=T(g.tag);
+  document.getElementById('featured-title').textContent=T(g.title);
+  document.getElementById('featured-desc').textContent=T(g.desc);
+}
+
+function show(id){
+  ['page-home','page-manifesto','page-profile','page-match','page-game'].forEach(function(p){
+    document.getElementById(p).style.display='none';
+  });
+  var t=document.getElementById(id);
+  t.style.display=(id==='page-game')?'block':'flex';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goHome(){
+  closeMatchBox();closeExploreBox();
+  show('page-home');
+  renderCatGrid();updateCounters();
+}
+
+function startGame(){
+  curGame=GAMES[selIdx];loopCount=0;curScene='start';
+  incrementPlays();show('page-game');render();
+}
+
+/* ── 渲染游戏 ── */
+function render(){
+  if(!curGame||!curGame.scenes[curScene])return;
+  var s=curGame.scenes[curScene];
+  var stage=document.getElementById('stage');
+  var lmap={full:{zh:'\u4f60\u8d70\u5230\u4e86\u8fd9\u91cc',en:'You made it here'},reflective:{zh:'\u8fd9\u4e00\u6b21\u7684\u6536\u83b7',en:'What you took away'},gentle:{zh:'\u5173\u4e8e\u8fd9\u4e00\u6b21',en:'About this time'}};
+  if(s.isEnd){
+    var loopTxt=loopCount>0?(LANG==='zh'?'\u547d\u8fd0\u95ee\u4e86\u4f60 '+loopCount+' \u6b21':'Fate asked '+loopCount+' time'+(loopCount>1?'s':'')):'' ;
+    stage.innerHTML=
+      '<div class="ending-frame">'
+      +'<img class="scene-img" src="'+IMGS[s.img]+'" alt="">'
+      +'<div class="scene-overlay"></div>'
+      +'<div class="top-bar"><div class="prog-wrap"><div class="prog-fill" style="width:'+s.prog+'%"></div></div>'
+      +(loopTxt?'<span class="loop-badge">'+loopTxt+'</span>':'')
+      +'</div>'
+      +'<div class="ending-content"><div class="ending-label">'+T(lmap[s.endType])+'</div><div class="ending-title">'+T(s.title)+'</div></div>'
+      +'</div>'
+      +'<div class="ending-body">'
+      +'<div class="ending-story">'+T(s.story).replace(/\n/g,'<br>')+'</div>'
+      +'<div class="ending-divider"></div>'
+      +'<div class="ending-insight">'+T(s.insight)+'</div>'
+      +buildConsult()+buildComments()+buildEmail()+buildSubmit()
+      +'<div class="btn-row">'
+      +'<button class="btn-p" onclick="restartGame()">'+(LANG==='zh'?'\u91cd\u65b0\u8d70\u4e00\u9057':'Play again')+'</button>'
+      +'<button class="btn-g" onclick="goHome()">'+(LANG==='zh'?'\u56de\u5230\u5165\u53e3':'Back to home')+'</button>'
+      +'</div></div>';
+    return;
+  }
+  var nudge=s.nudge?'<div class="nudge">\u21bb '+T(s.nudge)+'</div>':'';
+  var pause=s.pause?'<div class="pause-line">'+T(s.pause)+'</div>':'';
+  var choices='';
+  if(s.choices&&s.choices.length){
+    choices=s.choices.map(function(ch){
+      var lbl=ch.l?'<div class="choice-label">'+(LANG==='zh'?'\u9009\u9879 ':'Option ')+ch.l+'</div>':'';
+      return '<button class="choice'+(ch.c?' comfort':'')+'" data-n="'+ch.n+'" data-c="'+(ch.c?'1':'0')+'" onclick="pick(this.dataset.n,this.dataset.c===\'1\')">'
+        +lbl+T(ch.t)+'</button>';
+    }).join('');
+  }
+  var lb=loopCount>0?'<span class="loop-badge">'+(LANG==='zh'?'\u547d\u8fd0\u7b2c '+loopCount+' \u6b21\u95ee\u4f60':'Fate asks again ('+loopCount+')')+'</span>':'';
+  stage.innerHTML='<div class="scene-frame">'
+    +'<img class="scene-img" src="'+IMGS[s.img]+'" alt="">'
+    +'<div class="scene-overlay"></div>'
+    +'<div class="top-bar"><div class="prog-wrap"><div class="prog-fill" style="width:'+s.prog+'%"></div></div>'+lb+'</div>'
+    +'<div class="scene-content"><div class="scene-tag">'+T(s.tag)+'</div>'
+    +'<div class="scene-body">'+T(s.body).replace(/\n/g,'<br>')+'</div>'
+    +nudge+pause+'</div></div>'
+    +'<div class="choices">'+choices+'</div>';
+}
+
+function pick(next,isComfort){if(isComfort)loopCount++;curScene=next;render();window.scrollTo({top:0,behavior:'smooth'});}
+function restartGame(){loopCount=0;curScene='start';render();window.scrollTo({top:0,behavior:'smooth'});}
+
+/* ── 咨询 ── */
+function buildConsult(){
+  var zh=LANG==='zh';
+  var subj=encodeURIComponent(zh?'\u60f3\u548c\u4f60\u804a\u804a':"I'd like to chat");
+  var role=zh?'Lifestyle Artist \u00b7 \u4e1c\u5357\u4e9a':'Lifestyle Artist \u00b7 South East Asia';
+  return '<div class="consult-area">'
+    +'<div class="consult-label">'+(zh?'\u548c\u4f5c\u8005\u804a\u804a':'Talk to the author')+'</div>'
+    +'<div class="consult-title">'+(zh?'\u8fd9\u4e2a\u6545\u4e8b\u80cc\u540e\uff0c\u8fd8\u6709\u66f4\u591a':"There's more behind this story")+'</div>'
+    +'<div class="consult-desc">'+(zh?'\u8fd9\u4e9b\u6e38\u620f\u6539\u7f16\u81ea\u771f\u5b9e\u7684\u4eba\u751f\u7ecf\u5386\u3002\u5982\u679c\u4f60\u60f3\u804a\u804a\u81ea\u5df1\u7684\u5904\u5883\uff0c\u4f5c\u8005\u5728\u8fd9\u91cc\u3002':"These games are adapted from real life. If you'd like to talk through your own situation, the author is here.")+'</div>'
+    +'<a class="consult-btn" href="mailto:guchao815@gmail.com?subject='+subj+'">'
+    +'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>'
+    +(zh?'\u7ed9\u4f5c\u8005\u53d1\u6d88\u606f':'Message the author')+'</a>'
+    +'<div class="consult-author"><div class="consult-avatar" onclick="openAuthor()">'
+    +'M</div><div><div class="consult-author-name">Mark</div><div class="consult-author-role">'+role+'</div></div></div>'
+    +'</div>';
+}
+
+/* ── 评论 ── */
+var SEEDS={
+  adventure:[
+    {zh:'那个"算了退回去"的声音，我太熟了。每次要做一件没把握的事都会出现。',en:"That 'just give up' voice — I know it so well. It shows up every time I try something I am not sure about.",initial:'L'},
+    {zh:'计划外的事情反而记得最久。这个故事让我想起了一次独自旅行。',en:'The unplanned moments always stick longest. This reminded me of a solo trip I once took.',initial:'A'},
+    {zh:'我以为我是因为太谨慎所以错过了很多，看完才发现，原来那个声音大家都有。',en:'I thought I missed things because I was too cautious. Now I see everyone has that voice.',initial:'W'}
+  ],
+  love:[
+    {zh:'我妈生病的时候也没告诉我。后来我才知道，那时候我在准备考试。',en:'My mum was sick once and did not tell me. I found out later. I was studying for exams at the time.',initial:'C'},
+    {zh:'我一直以为瞒着家人是保护他们，看完这个才意识到，我好像从来没想过他们的感受。',en:'I always thought hiding things from family was protecting them. This made me realise I never thought about how they felt.',initial:'J'},
+    {zh:'那句"你是我儿子"，我看着看着眼睛就红了。',en:'At the words "you are my son" my eyes went red.',initial:'H'}
+  ],
+  effort:[
+    {zh:'越用力越失控这件事，我在工作上体会太深了，不只是球场。',en:'The harder I try the worse it gets — I feel this so much at work, not just on a court.',initial:'S'},
+    {zh:'"告诉自己放松"本身就是一种用力，这个观察太准了。',en:'Telling yourself to relax is itself a kind of effort. This observation is so accurate.',initial:'T'},
+    {zh:'停下来的那一刻，我突然想到我最近也一直在用力撑着，停不下来。',en:'When you stopped and just stood there, I suddenly thought — I have been pushing through too, unable to stop.',initial:'Z'}
+  ],
+  taiwan:[
+    {zh:'那句“我真正想见的，从来不只是风景”，看完之后一直在脑子里。',en:"That line about what you really came to see never being just the scenery — it stayed with me.",initial:'L'},
+    {zh:'我也有一个一直说要去找的朋友，看完这个我决定这周就买机票。',en:"I have a friend I keep saying I will go visit. After this I am buying the ticket this week.",initial:'A'},
+    {zh:'躺在鹅卵石上只是听海浪那段，我就实实在在湿了眼眶。',en:"The part about lying on the pebbles and just listening to the waves — I was genuinely moved.",initial:'W'}
+  ],
+  innergame:[
+    {zh:'积极暗示和自我评判背后是同一件事——这句话让我愣了好一会儿。',en:"Positive self-talk and self-judgment being the same thing at their core — that stopped me for a while.",initial:'S'},
+    {zh:'那六局打完又崩掉的过程，我在工作上也经历过一模一样的弧线。',en:"That arc of six great games then falling apart — I have lived the exact same curve at work.",initial:'T'},
+    {zh:'教练说击球不会撒谎，我突然想到很多生活里的事情也是这样的。',en:"The coach saying hitting never lies — I suddenly thought of so many things in life that work the same way.",initial:'Z'}
+  ]
+,
+  cat:[
+    {zh:'大咪鼻头红彤彤是刚在玩这个细节，我看到自己猫了。',en:'The detail about a pink-red nose meaning he was just playing — I saw my own cat.',initial:'L'},
+    {zh:'客厅里什么都不放这个我太懂了，现在家里也是这样。',en:'The bare living room with nothing on the shelves — I understand this completely.',initial:'A'},
+    {zh:'“他只是喜欢知道你在”，这句话想了很久。',en:'He just likes knowing you are around — this line stayed with me for a long time.',initial:'W'}
+  ]
+,
+  cat2:[
+    {zh:'送走他的那晚哭了这个情节，我自己也绷不住了。将来不得不面对的事，还是希望它来得晚一些。',en:"The part about crying the night you sent him away — I understood. I hope what I dread comes later too.",initial:'L'},
+    {zh:'开了卧室门那个情节太像我和我的猫了。有些事不说不代表不重要。',en:"Opening the bedroom door felt exactly like me and my cat. Some things matter without being said.",initial:'A'},
+    {zh:'竟不知道是我像大咪还是大咪像我这句话我看完反复想了很久。',en:"I cannot tell if I am like Dami or Dami is like me — I kept coming back to that line.",initial:'W'}
+  ]
+,
+  cat2:[
+    {zh:'送走大咪那晚哭了这个细节，我就绷不住了。',en:'The detail about crying the night you sent Dami away — I could not hold it together.',initial:'L'},
+    {zh:'大咪进入卧室那个画面，像一道很久没开过的门终于打开了。',en:'Dami finally allowed into the bedroom — it felt like a very long locked door finally opening.',initial:'A'},
+    {zh:'“不知道是我像大咪，还是大咪像我”这句话我思考了很久。',en:'I kept thinking about that line — whether you are like Dami or Dami is like you.',initial:'W'}
+  ]
+};
+
+var userComments={};
+
+function buildComments(){
+  var zh=LANG==='zh';
+  var key=curGame?curGame.id:'';var gameSeeds=(SEEDS[key]||[]);var all=gameSeeds.concat(userComments[key]||[]);
+  var items=all.map(function(c){
+    return '<div class="comment-item"><div class="comment-meta"><div class="comment-av">'+c.initial+'</div>'
+      +'<span class="comment-name">'+(zh?'\u533f\u540d\u8bfb\u8005':'Anonymous')+'</span></div>'
+      +'<div class="comment-body">'+(zh?c.zh:(c.en||c.zh))+'</div></div>';
+  }).join('');
+  return '<div class="comments-area">'
+    +'<div class="comments-title">'+(zh?'\u5927\u5bb6\u7684\u5171\u9e23':'What others felt')+'</div>'
+    +'<div class="comment-list" id="comment-list">'+items+'</div>'
+    +'<div class="comment-input-row">'
+    +'<textarea class="comment-input" id="comment-input" rows="2" placeholder="'+(zh?'\u5199\u4e0b\u4f60\u7684\u5171\u9e23\u2026\u2026':'Share what resonated with you\u2026')+'"></textarea>'
+    +'<button class="comment-send" onclick="sendComment()">'+(zh?'\u53d1\u9001':'Send')+'</button>'
+    +'</div></div>';
+}
+
+function sendComment(){
+  var inp=document.getElementById('comment-input');
+  var val=inp.value.trim();if(!val)return;
+  var ini='WYCJHSTZXM'[Math.floor(Math.random()*10)];
+  var key=curGame?curGame.id:'';if(!userComments[key])userComments[key]=[];userComments[key].push({zh:val,en:val,initial:ini});
+  var item=document.createElement('div');item.className='comment-item';
+  item.innerHTML='<div class="comment-meta"><div class="comment-av">'+ini+'</div>'
+    +'<span class="comment-name">'+(LANG==='zh'?'\u4f60':'You')+'</span></div>'
+    +'<div class="comment-body">'+val+'</div>';
+  var list=document.getElementById('comment-list');if(list)list.appendChild(item);
+  inp.value='';
+}
+
+
+/* ── 邮件收集 ── */
+var _emailDone={};
+function buildEmail(){
+  var zh=LANG==='zh';
+  var gid=curGame?curGame.id:'_';
+  if(_emailDone[gid]){
+    return '<div class="email-area">'
+      +'<div class="email-done">✓ '+(zh?'已记录，有新故事时会通知你':'Saved. We will let you know when there is a new story.')+'</div>'
+      +'</div>';
+  }
+  return '<div class="email-area">'
+    +'<div class="email-area-text">'
+    +'<div class="email-area-label">'+(zh?'有新故事，第一个知道':'Be the first to know')+'</div>'
+    +'<div class="email-area-sub">'+(zh?'留下邮箱，我会在有新故事时联系你。不推销。':'Leave your email. I will reach out when there is something new.')+'</div>'
+    +'</div>'
+    +'<div class="email-area-right">'
+    +'<input class="email-input" id="email-inp" type="email" placeholder="'+(zh?'你的邮箱':'your@email.com')+'">'
+    +'<button class="email-send" onclick="submitEmail()">'+(zh?'订阅':'Subscribe')+'</button>'
+    +'</div></div>';
+}
+
+function submitEmail(){
+  var val=document.getElementById('email-inp');
+  if(!val||!val.value.trim())return;
+  var email=val.value.trim();
+  var gid=curGame?curGame.id:'_';
+  // 发到 mailto（简单方案）或未来接后端
+  var zh=LANG==='zh';
+  var subj=encodeURIComponent((zh?'订阅人生模拟游戏新故事':'New story subscription')+' — '+email);
+  // 打开邮件发给作者（临时方案，后续可换 API）
+  window.open('mailto:guchao815@gmail.com?subject='+subj+'&body='+encodeURIComponent(email),'_blank');
+  _emailDone[gid]=true;
+  // 重新渲染结尾
+  var area=document.querySelector('.email-area');
+  if(area){
+    area.innerHTML='<div class="email-done">✓ '+(zh?'已记录，有新故事时会通知你':'Saved. We will let you know when there is a new story.')+'</div>';
+  }
+}
+
+/* ── 投稿 ── */
+function buildSubmit(){
+  var zh=LANG==='zh';
+  var subj=encodeURIComponent(zh?'\u6211\u60f3\u6210\u4e3a\u521b\u4f5c\u8005\uff0c\u8d21\u732e\u6211\u7684\u6545\u4e8b':'I want to contribute my story');
+  return '<div class="submit-area">'
+    +'<div class="submit-label">'+(zh?'\u6210\u4e3a\u521b\u4f5c\u8005':'Become a contributor')+'</div>'
+    +'<div class="submit-title">'+(zh?'\u4f60\u4e5f\u6709\u4e00\u4e2a\u503c\u5f97\u88ab\u770b\u89c1\u7684\u6545\u4e8b':'You have a story worth telling')+'</div>'
+    +'<p style="font-size:13px;color:var(--muted);line-height:1.85;margin:0.6rem 0 1.1rem">'
+    +(zh?'\u6bcf\u4e00\u4e2a\u6e38\u620f\u80cc\u540e\uff0c\u90fd\u662f\u4e00\u6bb5\u771f\u5b9e\u7ecf\u5386\u3002\u5982\u679c\u4f60\u8d70\u8fc7\u7c7b\u4f3c\u7684\u5904\u5883\uff0c\u613f\u610f\u628a\u5b83\u5199\u4e0b\u6765\u2014\u2014\u5b83\u53ef\u80fd\u6210\u4e3a\u4e0b\u4e00\u4e2a\u965b\u4f34\u4ed6\u4eba\u7684\u6545\u4e8b\u3002'
+      :"Every game here started as a real experience. If you've walked through something similar and want to write it down — it might become the next story that walks someone else through.")
+    +'</p>'
+    +'<a class="consult-btn" href="mailto:guchao815@gmail.com?subject='+subj+'" style="background:var(--terracotta)">'
+    +'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>'
+    +(zh?'\u7ed9 Mark \u5199\u4fe1\uff0c\u5206\u4eab\u4f60\u7684\u6545\u4e8b \u2192':'Write to Mark and share your story \u2192')
+    +'</a></div>';
+}
+
+/* ── 作者弹层 ── */
+function openAuthor(){
+  var zh=LANG==='zh';
+  document.getElementById('ac-av').textContent='M';
+  document.getElementById('ac-name').textContent='Mark';
+  document.getElementById('ac-role').textContent=zh?'\u751f\u6d3b\u827a\u672f\u5bb6 \u00b7 \u4e1c\u5357\u4e9a':'Lifestyle Artist \u00b7 South East Asia';
+  document.getElementById('ac-bio').innerHTML=zh
+    ?'\u5728\u5927\u5382\u505a\u8fc7\u591a\u5e74\u6218\u7565\u548c\u4e1a\u52a1\uff0c\u540e\u6765\u9009\u62e9\u79bb\u5f00\uff0c\u5e38\u9a7b\u4e1c\u5357\u4e9a\u3002\u6253\u7f51\u7403\u3001\u6162\u65c5\u884c\u3001\u5192\u60f3\u3001\u5199\u4f5c\u2014\u2014\u6211\u76f8\u4fe1\u8ba4\u771f\u89c2\u5bdf\u751f\u6d3b\u672c\u8eab\uff0c\u5c31\u662f\u4e00\u79cd\u521b\u4f5c\u3002<br><br>\u5bb6\u91cc\u8fd8\u517b\u4e86\u4e00\u53ea\u732b\u3002\u4ed6\u5bf9\u6d3b\u5728\u5f53\u4e0b\u7684\u7406\u89e3\u53ef\u80fd\u6bd4\u6211\u6df1\u3002'
+    :"Spent many years in big tech working across strategy and business, then chose to leave \u2014 now based in South East Asia. Tennis, slow travel, meditation, writing. I believe paying close attention to life is its own kind of art.<br><br>I also have a cat. His grasp of living in the present is probably deeper than mine.";
+  var tags=zh?['\u7f51\u7403','\u65c5\u884c','\u5199\u4f5c','\u5192\u60f3','\u79d1\u6280','\u732b']:['Tennis','Travel','Writing','Meditation','Tech','Cat'];
+  document.getElementById('ac-tags').innerHTML=tags.map(function(t){return '<span class="ac-tag">'+t+'</span>';}).join('');
+  var links=zh?[{l:'\u4e2a\u4eba\u4e3b\u9875',h:'index.html'},{l:'\u53d1\u90ae\u4ef6',h:'mailto:guchao815@gmail.com'}]:[{l:'Personal site',h:'index.html'},{l:'Send email',h:'mailto:guchao815@gmail.com'}];
+  document.getElementById('ac-links').innerHTML=links.map(function(l){return '<a class="ac-link" href="'+l.h+'">'+l.l+'</a>';}).join('');
+  document.getElementById('author-overlay').classList.add('open');
+}
+function closeAuthor(e){if(e.target===document.getElementById('author-overlay'))document.getElementById('author-overlay').classList.remove('open');}
+function closeAuthorDirect(){document.getElementById('author-overlay').classList.remove('open');}
+
+/* ── 计数器 ── */
+function initCounters(){
+  try{var v=parseInt(localStorage.getItem('ls_v')||'0')+1;localStorage.setItem('ls_v',v);}catch(e){}
+  updateCounters();
+}
+function incrementPlays(){try{var p=parseInt(localStorage.getItem('ls_p')||'0')+1;localStorage.setItem('ls_p',p);}catch(e){}}
+function updateCounters(){
+  var zh=LANG==='zh';
+  var v=0,p=0;
+  try{v=parseInt(localStorage.getItem('ls_v')||'0');}catch(e){v=128;}
+  try{p=parseInt(localStorage.getItem('ls_p')||'0');}catch(e){p=47;}
+  function fmt(n){return n>999?(n/1000).toFixed(1)+'k':n;}
+  var vEl=document.getElementById('cnt-v');var pEl=document.getElementById('cnt-p');
+  if(vEl)vEl.textContent=fmt(v);if(pEl)pEl.textContent=fmt(p);
+  var vl=document.getElementById('cnt-vl');var pl=document.getElementById('cnt-pl');var al=document.getElementById('cnt-al');
+  if(vl)vl.textContent=zh?'\u4f4d\u8bbf\u95ee\u8005':'visitors';
+  if(pl)pl.textContent=zh?'\u6b21\u6e38\u620f\u4f53\u9a8c':'plays';
+  if(al)al.textContent=zh?'\u4f4d\u521b\u4f5c\u8005':'contributors';
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('page-home').style.display='flex';
+  renderText();renderCatGrid();initCounters();
+});
+</script>
+</body>
+</html>
