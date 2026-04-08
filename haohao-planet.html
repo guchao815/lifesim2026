@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>好好生活星球</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --warm-bg: #fdf7ee;
+    --warm-mid: #f9f0e2;
+    --warm-deep: #f5ead8;
+    --ink: #3d3228;
+    --ink-mid: #6a5c50;
+    --ink-light: #8a7060;
+    --ink-mute: #b8a898;
+    --ink-faint: #c8b8a8;
+    --border: #ede5d8;
+    --amber: #fdebd0;
+    --amber-stroke: #e8d0a8;
+    --amber-dark: #7a5c3c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--warm-bg);
+    font-family: 'Noto Sans SC', sans-serif;
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ── BEAT SECTIONS ── */
+  .beat {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 40px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .z1 {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 520px;
+    width: 100%;
+  }
+
+  /* ── BEAT 1: HERO ── */
+  .planet-wrap {
+    position: relative;
+    width: 108px;
+    height: 108px;
+    margin-bottom: 36px;
+  }
+
+  .planet-body {
+    width: 108px;
+    height: 108px;
+    border-radius: 50%;
+    background: #fdebd0;
+    border: 1px solid #f0d5b0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .planet-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 148px;
+    height: 30px;
+    border: 1.5px solid #e8c888;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) rotateX(72deg);
+    opacity: 0.65;
+    pointer-events: none;
+  }
+
+  .greeting {
+    font-size: 11px;
+    color: #c0a888;
+    letter-spacing: 0.22em;
+    margin-bottom: 12px;
+    text-transform: none;
+    font-weight: 300;
+  }
+
+  .main-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 40px;
+    font-weight: 400;
+    color: var(--ink);
+    text-align: center;
+    line-height: 1.3;
+    margin-bottom: 18px;
+    letter-spacing: 0.05em;
+  }
+
+  .one-liner {
+    font-size: 16px;
+    color: var(--ink-light);
+    text-align: center;
+    line-height: 1.9;
+    margin-bottom: 40px;
+    font-weight: 300;
+  }
+
+  .member-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #fdf5eb;
+    border: 1px solid #edd9b8;
+    border-radius: 40px;
+    padding: 9px 22px;
+  }
+
+  .member-dots {
+    display: flex;
+    gap: 4px;
+  }
+
+  .mdot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  .member-text {
+    font-size: 12px;
+    color: #9a7a58;
+    font-weight: 300;
+  }
+
+  .member-text strong {
+    font-weight: 500;
+    color: #6a4e30;
+  }
+
+  /* ── BEAT 2: WORLDVIEW ── */
+  .world-text {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    color: var(--ink-mid);
+    line-height: 2.2;
+    text-align: center;
+    max-width: 440px;
+    font-weight: 300;
+  }
+
+  .world-text p {
+    margin-bottom: 24px;
+  }
+
+  .world-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ── BEAT 3: CTA ── */
+  .req {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 26px;
+    font-weight: 400;
+    color: var(--ink);
+    text-align: center;
+    line-height: 1.7;
+    margin-bottom: 14px;
+    letter-spacing: 0.04em;
+  }
+
+  .req-sub {
+    font-size: 13px;
+    color: var(--ink-mute);
+    text-align: center;
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+
+  .enter-btn {
+    padding: 16px 60px;
+    background: var(--amber);
+    border: 1px solid var(--amber-stroke);
+    border-radius: 40px;
+    color: var(--amber-dark);
+    font-size: 15px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background 0.25s, transform 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .enter-btn:hover {
+    background: #f8e0c0;
+    transform: translateY(-2px);
+  }
+
+  /* ── BEAT 4: MAP ── */
+  .map-section {
+    padding: 80px 40px 100px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: none;
+  }
+
+  .map-header {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+
+  .map-label {
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.16em;
+    margin-bottom: 8px;
+    font-weight: 300;
+  }
+
+  .map-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+  }
+
+  .map-wrap {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .map-wrap svg {
+    width: 100%;
+    border-radius: 16px;
+    filter: drop-shadow(0 4px 24px rgba(120,90,60,0.08));
+  }
+
+  .map-footer {
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  .map-footer p {
+    font-size: 12px;
+    color: var(--ink-faint);
+    letter-spacing: 0.08em;
+    font-weight: 300;
+  }
+
+  /* ── FADE-IN ANIMATION ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 24px;
+    height: 1px;
+    background: var(--border);
+    margin: 28px auto;
+  }
+
+  /* ── SCROLL HINT ── */
+  .scroll-hint {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.4;
+    animation: bob 2s ease-in-out infinite;
+  }
+
+  @keyframes bob {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(5px); }
+  }
+
+  .scroll-hint span {
+    font-size: 10px;
+    color: var(--ink-mute);
+    letter-spacing: 0.12em;
+  }
+
+  .scroll-arrow {
+    width: 16px;
+    height: 16px;
+    border-right: 1px solid var(--ink-mute);
+    border-bottom: 1px solid var(--ink-mute);
+    transform: rotate(45deg);
+  }
+</style>
+</head>
+<body>
+
+<!-- ── BEAT 1: HERO ── -->
+<section class="beat" id="beat1">
+  <div class="blob" style="width:420px;height:420px;background:#fff5e8;top:-150px;right:-110px;"></div>
+  <div class="blob" style="width:260px;height:260px;background:#f0f8ff;bottom:-90px;left:-70px;"></div>
+  <div class="blob" style="width:180px;height:180px;background:#f2fff5;bottom:80px;right:120px;opacity:0.6;"></div>
+
+  <div class="z1">
+    <div class="planet-wrap fade-up">
+      <div class="planet-body">
+        <svg width="62" height="62" viewBox="0 0 62 62" fill="none">
+          <circle cx="31" cy="31" r="24" fill="#fdd9a0"/>
+          <ellipse cx="31" cy="31" rx="8" ry="24" fill="#f5c878" opacity="0.4"/>
+          <circle cx="21" cy="21" r="7" fill="#f5d090" opacity="0.5"/>
+          <circle cx="40" cy="39" r="4" fill="#f0c870" opacity="0.38"/>
+          <circle cx="41" cy="19" r="3" fill="#f5d5a0" opacity="0.45"/>
+          <circle cx="19" cy="38" r="2.5" fill="#edc878" opacity="0.32"/>
+        </svg>
+      </div>
+      <div class="planet-ring"></div>
+    </div>
+
+    <p class="greeting fade-up" style="transition-delay:0.1s">欢迎来到</p>
+    <h1 class="main-title fade-up" style="transition-delay:0.2s">好好生活星球</h1>
+    <p class="one-liner fade-up" style="transition-delay:0.3s">这里有一个你还没见过的自己</p>
+
+    <div class="member-badge fade-up" style="transition-delay:0.4s">
+      <div class="member-dots">
+        <div class="mdot" style="background:#e8905a;"></div>
+        <div class="mdot" style="background:#4aaa88;"></div>
+        <div class="mdot" style="background:#7a70d8;"></div>
+      </div>
+      <p class="member-text">已经有 <strong>2,847 人</strong> 决定试试好好生活</p>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>往下看</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ── BEAT 2: WORLDVIEW ── -->
+<section class="beat" id="beat2">
+  <div class="blob" style="width:300px;height:300px;background:#f2fff5;top:-90px;left:-70px;opacity:0.7;"></div>
+  <div class="blob" style="width:220px;height:220px;background:#fff8ee;bottom:-70px;right:-50px;"></div>
+
+  <div class="z1">
+    <div class="world-text fade-up">
+      <p>这里没有打卡，没有排行，<br>没有任何东西要你「更好」。</p>
+      <p>这里有一些地方可以去。<br>没有顺序，没有对错，<br>随便乘哪条线都行。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── BEAT 3: CTA ── -->
+<section class="beat" id="beat3">
+  <div class="blob" style="width:340px;height:340px;background:#fff5e8;top:-110px;right:-90px;"></div>
+  <div class="blob" style="width:200px;height:200px;background:#f0f0ff;bottom:-60px;left:-50px;opacity:0.6;"></div>
+
+  <div class="z1">
+    <p class="req fade-up">唯一的要求是——<br>带着自己来。</p>
+    <p class="req-sub fade-up" style="transition-delay:0.1s">不用准备什么，现在就可以进去</p>
+    <a href="#map" class="enter-btn fade-up" style="transition-delay:0.2s">进来逛逛</a>
+  </div>
+</section>
+
+<!-- ── BEAT 4: MAP ── -->
+<section class="map-section" id="map">
+  <div class="blob" style="width:300px;height:300px;background:#fff8ee;top:-90px;left:-70px;border-radius:50%;"></div>
+  <div class="blob" style="width:200px;height:200px;background:#eef5ff;bottom:-60px;right:-40px;border-radius:50%;"></div>
+
+  <div class="map-header fade-up">
+    <p class="map-label">想去哪里，随便选一条线出发</p>
+    <h2 class="map-title">好好生活星球 · 线路图</h2>
+  </div>
+
+  <div class="map-wrap fade-up" style="transition-delay:0.15s">
+    <svg viewBox="0 0 760 600" xmlns="http://www.w3.org/2000/svg" role="img">
+      <title>好好生活星球线路图</title>
+      <desc>插画风星球地图，六条彩色线路从中心出发通往各目的地</desc>
+
+      <rect width="760" height="600" fill="#fdf7ee" rx="20"/>
+      <ellipse cx="380" cy="300" rx="330" ry="235" fill="#f5ead8"/>
+      <ellipse cx="380" cy="300" rx="295" ry="208" fill="#f9f0e2"/>
+
+      <path d="M 180 295 Q 200 268 240 258 Q 280 248 300 258 Q 270 275 260 295 Q 245 315 215 318 Q 190 318 180 295 Z" fill="#d8cdb8"/>
+      <path d="M 180 290 Q 200 263 240 253 Q 280 243 300 253 Q 270 270 260 290 Q 245 310 215 313 Q 190 313 180 290 Z" fill="#e8ddc8"/>
+      <path d="M 185 285 Q 205 260 242 251 Q 278 242 296 252 Q 268 268 258 287 Q 244 306 216 309 Q 193 308 185 285 Z" fill="#f0e6d5"/>
+
+      <path d="M 490 260 Q 518 238 548 235 Q 578 232 590 248 Q 572 260 560 275 Q 545 290 520 290 Q 498 288 490 260 Z" fill="#d8cdb8"/>
+      <path d="M 490 255 Q 518 233 548 230 Q 578 227 590 243 Q 572 255 560 270 Q 545 285 520 285 Q 498 283 490 255 Z" fill="#e8ddc8"/>
+      <path d="M 494 250 Q 520 229 548 226 Q 576 224 587 239 Q 570 251 559 265 Q 545 280 521 280 Q 500 278 494 250 Z" fill="#f0e6d5"/>
+
+      <path d="M 310 388 Q 338 382 368 385 Q 398 388 408 398 Q 395 408 368 412 Q 340 415 316 408 Q 298 400 310 388 Z" fill="#a8cfc0"/>
+      <path d="M 308 384 Q 338 378 368 381 Q 398 384 408 394 Q 395 404 368 408 Q 340 411 315 404 Q 297 396 308 384 Z" fill="#b8dfcf"/>
+      <path d="M 310 380 Q 340 374 370 377 Q 400 380 410 390 Q 396 400 368 404 Q 340 407 316 400 Q 298 392 310 380 Z" fill="#c8eedf"/>
+      <path d="M 313 376 Q 342 370 371 373 Q 400 376 410 386 Q 396 396 368 400 Q 340 403 317 396 Q 300 388 313 376 Z" fill="#d8f5ec"/>
+
+      <path d="M 372 278 C 330 252 268 210 178 162" fill="none" stroke="#e8905a" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+      <path d="M 362 285 C 318 295 248 318 148 348" fill="none" stroke="#4aaa88" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+      <path d="M 368 292 C 342 332 308 378 258 452" fill="none" stroke="#d4884a" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+      <path d="M 398 292 C 438 328 482 362 558 400" fill="none" stroke="#7a70d8" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+      <path d="M 396 276 C 438 250 498 214 572 172" fill="none" stroke="#c8a030" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+      <path d="M 388 268 C 412 232 458 185 522 128" fill="none" stroke="#5070d0" stroke-width="2.5" stroke-linecap="round" opacity="0.85"/>
+
+      <circle cx="382" cy="282" r="22" fill="#fdebd0" stroke="#e8c078" stroke-width="2"/>
+      <circle cx="382" cy="282" r="8" fill="#e8a850"/>
+      <text x="382" y="300" text-anchor="middle" font-size="11" fill="#9a7040" font-family="sans-serif" font-weight="500">出发</text>
+
+      <!-- 人生模拟剧场 -->
+      <g transform="translate(118, 118)">
+        <ellipse cx="0" cy="18" rx="46" ry="14" fill="#e8905a22" stroke="#e8905a" stroke-width="1" opacity="0.5"/>
+        <ellipse cx="0" cy="14" rx="46" ry="26" fill="#fff3ec" stroke="#e8905a" stroke-width="1.2"/>
+        <ellipse cx="0" cy="-8" rx="46" ry="26" fill="#fff3ec" stroke="#e8905a" stroke-width="1.2"/>
+        <rect x="-46" y="-8" width="92" height="22" fill="#fff3ec"/>
+        <rect x="-30" y="-12" width="14" height="22" fill="#e8784a" opacity="0.55"/>
+        <rect x="16" y="-12" width="14" height="22" fill="#e8784a" opacity="0.55"/>
+        <polygon points="0,-30 -34,-12 34,-12" fill="#e8905a" opacity="0.9"/>
+        <line x1="-16" y1="-38" x2="-8" y2="-12" stroke="#f8e060" stroke-width="2" opacity="0.95"/>
+        <line x1="16" y1="-38" x2="8" y2="-12" stroke="#f8e060" stroke-width="2" opacity="0.95"/>
+        <ellipse cx="-17" cy="-41" rx="5" ry="3" fill="#f8e060"/>
+        <ellipse cx="17" cy="-41" rx="5" ry="3" fill="#f8e060"/>
+        <rect x="-6" y="-4" width="12" height="14" rx="1" fill="#fdebd0" stroke="#e8905a" stroke-width="0.8"/>
+        <text x="0" y="34" text-anchor="middle" font-size="11" fill="#7a3c18" font-family="sans-serif" font-weight="500">人生模拟剧场</text>
+        <text x="0" y="48" text-anchor="middle" font-size="10" fill="#e8905a" font-family="sans-serif">① 线</text>
+      </g>
+
+      <!-- 平镜湖 -->
+      <g transform="translate(132, 344)">
+        <ellipse cx="0" cy="18" rx="44" ry="12" fill="#4aaa8822" stroke="#4aaa88" stroke-width="1" opacity="0.4"/>
+        <ellipse cx="0" cy="10" rx="44" ry="22" fill="#e4f5ee" stroke="#4aaa88" stroke-width="1.2"/>
+        <ellipse cx="0" cy="-8" rx="44" ry="22" fill="#e4f5ee" stroke="#4aaa88" stroke-width="1.2"/>
+        <rect x="-44" y="-8" width="88" height="18" fill="#e4f5ee"/>
+        <ellipse cx="0" cy="8" rx="34" ry="14" fill="#a8dcc8" opacity="0.75"/>
+        <ellipse cx="0" cy="8" rx="24" ry="9" fill="#70c4ac" opacity="0.6"/>
+        <path d="M -34 8 Q -18 0 0 -2 Q 18 0 34 8" fill="none" stroke="#50b898" stroke-width="1.2" opacity="0.8"/>
+        <path d="M -26 12 Q -12 6 0 4 Q 12 6 26 12" fill="none" stroke="#50b898" stroke-width="0.8" opacity="0.6"/>
+        <circle cx="-8" cy="2" r="2.5" fill="#fff" opacity="0.55"/>
+        <ellipse cx="-22" cy="-10" rx="8" ry="12" fill="#b8e0d0" stroke="#4aaa88" stroke-width="0.8"/>
+        <ellipse cx="4" cy="-16" rx="6" ry="10" fill="#c8e8d8" stroke="#4aaa88" stroke-width="0.8"/>
+        <ellipse cx="24" cy="-12" rx="7" ry="11" fill="#b8e0d0" stroke="#4aaa88" stroke-width="0.8"/>
+        <text x="0" y="36" text-anchor="middle" font-size="11" fill="#1a5040" font-family="sans-serif" font-weight="500">平镜湖</text>
+        <text x="0" y="50" text-anchor="middle" font-size="10" fill="#4aaa88" font-family="sans-serif">② 线</text>
+      </g>
+
+      <!-- 念头照相馆 -->
+      <g transform="translate(255, 450)">
+        <ellipse cx="0" cy="20" rx="44" ry="12" fill="#d4884a22" stroke="#d4884a" stroke-width="1" opacity="0.4"/>
+        <ellipse cx="0" cy="12" rx="44" ry="22" fill="#fdeee6" stroke="#d4884a" stroke-width="1.2"/>
+        <ellipse cx="0" cy="-8" rx="44" ry="22" fill="#fdeee6" stroke="#d4884a" stroke-width="1.2"/>
+        <rect x="-44" y="-8" width="88" height="20" fill="#fdeee6"/>
+        <rect x="-22" y="-22" width="44" height="30" rx="4" fill="#e8c090" stroke="#d4884a" stroke-width="1.2"/>
+        <circle cx="0" cy="-7" r="13" fill="#fdeee6" stroke="#d4884a" stroke-width="1.2"/>
+        <circle cx="0" cy="-7" r="9" fill="#e8c090" stroke="#d4884a" stroke-width="1"/>
+        <circle cx="0" cy="-7" r="5" fill="#b87030" opacity="0.9"/>
+        <circle cx="0" cy="-7" r="2.5" fill="#2a1008" opacity="0.9"/>
+        <rect x="-10" y="-34" width="20" height="11" rx="2" fill="#d4884a"/>
+        <rect x="24" y="-16" width="8" height="16" rx="4" fill="#d4884a" opacity="0.75"/>
+        <circle cx="-22" cy="-18" r="4" fill="#f8d0a0" stroke="#d4884a" stroke-width="0.8"/>
+        <circle cx="22" cy="-18" r="4" fill="#f8d0a0" stroke="#d4884a" stroke-width="0.8"/>
+        <text x="0" y="36" text-anchor="middle" font-size="11" fill="#6a3010" font-family="sans-serif" font-weight="500">念头照相馆</text>
+        <text x="0" y="50" text-anchor="middle" font-size="10" fill="#d4884a" font-family="sans-serif">③ 线</text>
+      </g>
+
+      <!-- 无相屋 -->
+      <g transform="translate(566, 398)">
+        <ellipse cx="0" cy="18" rx="44" ry="12" fill="#7a70d822" stroke="#7a70d8" stroke-width="1" opacity="0.4"/>
+        <ellipse cx="0" cy="10" rx="44" ry="22" fill="#eeeafc" stroke="#7a70d8" stroke-width="1.2"/>
+        <ellipse cx="0" cy="-8" rx="44" ry="22" fill="#eeeafc" stroke="#7a70d8" stroke-width="1.2"/>
+        <rect x="-44" y="-8" width="88" height="18" fill="#eeeafc"/>
+        <ellipse cx="18" cy="4" rx="22" ry="13" fill="#c8c0f0" stroke="#7a70d8" stroke-width="1"/>
+        <path d="M 6 -2 Q 14 -20 26 -24 Q 38 -24 42 -12 Q 44 -2 36 6 Q 28 14 18 14" fill="none" stroke="#8878d8" stroke-width="1.5" opacity="0.8"/>
+        <ellipse cx="38" cy="-10" rx="10" ry="14" fill="#d8d0f8" stroke="#7a70d8" stroke-width="1"/>
+        <circle cx="38" cy="-18" r="5" fill="#eeeafc" stroke="#7a70d8" stroke-width="0.8"/>
+        <circle cx="-24" cy="8" r="8" fill="#d0c8f4" stroke="#7a70d8" stroke-width="1"/>
+        <path d="M -17 3 Q -8 -8 0 -10" fill="none" stroke="#7a70d8" stroke-width="1.2" opacity="0.65"/>
+        <path d="M -17 13 Q -7 18 2 15" fill="none" stroke="#7a70d8" stroke-width="1" opacity="0.55"/>
+        <path d="M 0 -10 Q 10 -18 20 -12 Q 30 -6 26 6" fill="none" stroke="#8878d8" stroke-width="1.2" opacity="0.65"/>
+        <text x="0" y="36" text-anchor="middle" font-size="11" fill="#342880" font-family="sans-serif" font-weight="500">无相屋</text>
+        <text x="0" y="50" text-anchor="middle" font-size="10" fill="#7a70d8" font-family="sans-serif">④ 线</text>
+      </g>
+
+      <!-- 无限游戏乐园 -->
+      <g transform="translate(578, 165)">
+        <ellipse cx="0" cy="22" rx="46" ry="13" fill="#c8a03022" stroke="#c8a030" stroke-width="1" opacity="0.4"/>
+        <ellipse cx="0" cy="14" rx="46" ry="24" fill="#fef4d8" stroke="#c8a030" stroke-width="1.2"/>
+        <ellipse cx="0" cy="-10" rx="46" ry="24" fill="#fef4d8" stroke="#c8a030" stroke-width="1.2"/>
+        <rect x="-46" y="-10" width="92" height="24" fill="#fef4d8"/>
+        <circle cx="0" cy="-2" r="7" fill="#e8c040" stroke="#c8a030" stroke-width="1.2"/>
+        <line x1="0" y1="5" x2="0" y2="22" stroke="#c8a030" stroke-width="2" opacity="0.7"/>
+        <line x1="0" y1="5" x2="-24" y2="16" stroke="#c8a030" stroke-width="1.5" opacity="0.65"/>
+        <line x1="0" y1="5" x2="24" y2="16" stroke="#c8a030" stroke-width="1.5" opacity="0.65"/>
+        <line x1="0" y1="5" x2="-32" y2="6" stroke="#c8a030" stroke-width="1.5" opacity="0.65"/>
+        <line x1="0" y1="5" x2="32" y2="6" stroke="#c8a030" stroke-width="1.5" opacity="0.65"/>
+        <circle cx="0" cy="24" r="6" fill="#f8e070" stroke="#c8a030" stroke-width="1"/>
+        <circle cx="-26" cy="18" r="6" fill="#e8c040" stroke="#c8a030" stroke-width="1"/>
+        <circle cx="26" cy="18" r="6" fill="#f8e070" stroke="#c8a030" stroke-width="1"/>
+        <circle cx="-34" cy="7" r="6" fill="#f0d050" stroke="#c8a030" stroke-width="1"/>
+        <circle cx="34" cy="7" r="6" fill="#f8e070" stroke="#c8a030" stroke-width="1"/>
+        <circle cx="0" cy="12" r="9" fill="#fef4d8" stroke="#c8a030" stroke-width="1.5"/>
+        <path d="M -36 28 Q 0 36 36 28" fill="none" stroke="#c8a030" stroke-width="1" opacity="0.4"/>
+        <text x="0" y="46" text-anchor="middle" font-size="11" fill="#5a3e08" font-family="sans-serif" font-weight="500">无限游戏乐园</text>
+        <text x="0" y="60" text-anchor="middle" font-size="10" fill="#c8a030" font-family="sans-serif">⑤ 线</text>
+      </g>
+
+      <!-- 观景号列车 -->
+      <g transform="translate(524, 108)">
+        <ellipse cx="0" cy="20" rx="46" ry="13" fill="#5070d022" stroke="#5070d0" stroke-width="1" opacity="0.4"/>
+        <ellipse cx="0" cy="12" rx="46" ry="22" fill="#deeeff" stroke="#5070d0" stroke-width="1.2"/>
+        <ellipse cx="0" cy="-8" rx="46" ry="22" fill="#deeeff" stroke="#5070d0" stroke-width="1.2"/>
+        <rect x="-46" y="-8" width="92" height="20" fill="#deeeff"/>
+        <rect x="-34" y="-4" width="52" height="20" rx="10" fill="#c0d4f8" stroke="#5070d0" stroke-width="1.2"/>
+        <circle cx="26" cy="6" r="16" fill="#d8e8fc" stroke="#5070d0" stroke-width="1.2"/>
+        <circle cx="26" cy="6" r="10" fill="#c0d4f8" stroke="#5070d0" stroke-width="1"/>
+        <circle cx="26" cy="6" r="5" fill="#deeeff" stroke="#5070d0" stroke-width="0.8"/>
+        <rect x="-28" y="-18" width="32" height="16" rx="3" fill="#d8e8fc" stroke="#5070d0" stroke-width="1"/>
+        <rect x="-24" y="-15" width="10" height="9" rx="1" fill="#b0c8f8" opacity="0.85"/>
+        <rect x="-10" y="-15" width="10" height="9" rx="1" fill="#b0c8f8" opacity="0.85"/>
+        <rect x="-34" y="4" width="8" height="16" rx="3" fill="#b0c8f0" opacity="0.8"/>
+        <circle cx="-22" cy="18" r="9" fill="#b8ccf8" stroke="#5070d0" stroke-width="1.2"/>
+        <circle cx="-22" cy="18" r="5" fill="#deeeff" stroke="#5070d0" stroke-width="0.8"/>
+        <text x="0" y="40" text-anchor="middle" font-size="11" fill="#1a2870" font-family="sans-serif" font-weight="500">观景号列车</text>
+        <text x="0" y="54" text-anchor="middle" font-size="10" fill="#5070d0" font-family="sans-serif">⑥ 线</text>
+      </g>
+
+      <circle cx="295" cy="72" r="2.5" fill="#d8c8b0" opacity="0.5"/>
+      <circle cx="460" cy="55" r="2" fill="#c8c0d8" opacity="0.4"/>
+      <circle cx="72" cy="225" r="2" fill="#b8d0c0" opacity="0.4"/>
+      <circle cx="52" cy="388" r="1.8" fill="#b8d0c0" opacity="0.38"/>
+      <circle cx="608" cy="92" r="2" fill="#c0c8e0" opacity="0.4"/>
+    </svg>
+  </div>
+
+  <div class="map-footer fade-up" style="transition-delay:0.25s">
+    <p>唯一的要求是——带着自己来</p>
+  </div>
+</section>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
