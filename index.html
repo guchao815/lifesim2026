@@ -404,7 +404,7 @@
         <div class="mdot" style="background:#4aaa88;"></div>
         <div class="mdot" style="background:#7a70d8;"></div>
       </div>
-      <p class="member-text" id="planet-members">已经有 <strong>2,847 人</strong> 决定试试好好生活</p>
+      <p class="member-text" id="planet-members">你是星球的第 <strong id="visitor-num">...</strong> 位访问者</p>
     </div>
 
     <a href="https://goodlifeplanet.community/guchao.html" class="founder-link fade-up" style="transition-delay:0.5s">
@@ -641,7 +641,7 @@
       greeting: '欢迎来到',
       title: '好好生活星球',
       oneliner: '这里有一个你还没见过的自己',
-      members: '已经有 <strong>2,847 人</strong> 决定试试好好生活',
+      members: '你是星球的第 <strong id="visitor-num">...</strong> 位访问者',
       founderLabel: '发起者 · founder',
       worldview: '<p>这里没有打卡，没有排行，<br>没有任何东西要你「更好」。</p><p>这里有一些地方可以去。<br>没有顺序，没有对错，<br>随便乘哪条线都行。</p>',
       req: '唯一的要求是——<br>带着自己来。',
@@ -656,7 +656,7 @@
       greeting: 'Welcome to',
       title: 'Good Life Planet',
       oneliner: 'Here lives a self you\'ve never met',
-      members: '<strong>2,847 people</strong> have decided to try living well',
+      members: 'You are visitor <strong id="visitor-num">...</strong> of this planet',
       founderLabel: 'Founder',
       worldview: '<p>No streaks, no rankings,<br>nothing here asks you to be "better".</p><p>There are some places to explore.<br>No order, no right or wrong —<br>take any line you like.</p>',
       req: 'The only requirement —<br>bring yourself.',
@@ -752,7 +752,9 @@
     btn.style.borderColor = done ? '#ddd' : '#e8d0a8';
     btn.disabled = done || false;
     var count = interests[key + '_count'] || 0;
-    document.getElementById('overlay-count').textContent = count > 0 ? (LANG === 'en' ? count + ' interested' : count + ' 人感兴趣') : '';
+    getCount(key, function(count) {
+      document.getElementById('overlay-count').textContent = count > 0 ? (LANG === 'en' ? count + ' interested' : count + ' 人感兴趣') : '';
+    });
     overlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
   }
@@ -766,6 +768,38 @@
     }
   }
 
+  var SUPABASE_URL = 'https://ybdmnhstohulksvtplbx.supabase.co';
+  var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliZG1uaHN0b2h1bGtzdnRwbGJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Nzk1MDQsImV4cCI6MjA5MTI1NTUwNH0.AdFeKn7I7TCSvEAqNuvifNuewVBkeXa31cDEXC7wLBs';
+
+  function getCount(facility, callback) {
+    fetch(SUPABASE_URL + '/rest/v1/interest_clicks?facility=eq.' + facility + '&select=count', {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY
+      }
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      callback(data && data[0] ? data[0].count : 0);
+    })
+    .catch(function() { callback(0); });
+  }
+
+  function incrementCount(facility, callback) {
+    fetch(SUPABASE_URL + '/rest/v1/rpc/increment_interest', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ facility_name: facility })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) { callback(data); })
+    .catch(function() { callback(0); });
+  }
+
   function handleInterest() {
     if (!currentFacility) return;
     var f = FACILITIES[currentFacility][LANG || 'zh'];
@@ -774,8 +808,8 @@
       closeOverlay();
       return;
     }
+    if (interests[currentFacility]) return;
     interests[currentFacility] = true;
-    interests[currentFacility + '_count'] = (interests[currentFacility + '_count'] || 0) + 1;
     localStorage.setItem('planet_interests', JSON.stringify(interests));
     var btn = document.getElementById('overlay-btn');
     btn.textContent = f.btnDone;
@@ -783,14 +817,64 @@
     btn.style.color = '#aaa';
     btn.style.borderColor = '#ddd';
     btn.disabled = true;
-    document.getElementById('overlay-count').textContent = LANG === 'en'
-      ? interests[currentFacility + '_count'] + ' interested'
-      : interests[currentFacility + '_count'] + ' 人感兴趣';
+    incrementCount(currentFacility, function(newCount) {
+      document.getElementById('overlay-count').textContent = LANG === 'en'
+        ? newCount + ' interested'
+        : newCount + ' 人感兴趣';
+    });
   }
 
   document.getElementById('facility-overlay').addEventListener('click', function(e) {
     if (e.target === this) closeOverlay();
   });
+</script>
+
+
+<script>
+  // 访问者计数
+  (function() {
+    var SURL = 'https://ybdmnhstohulksvtplbx.supabase.co';
+    var SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliZG1uaHN0b2h1bGtzdnRwbGJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2Nzk1MDQsImV4cCI6MjA5MTI1NTUwNH0.AdFeKn7I7TCSvEAqNuvifNuewVBkeXa31cDEXC7wLBs';
+
+    // 每个session只计数一次
+    var counted = sessionStorage.getItem('planet_visited');
+    if (!counted) {
+      sessionStorage.setItem('planet_visited', '1');
+      fetch(SURL + '/rest/v1/rpc/increment_visitor', {
+        method: 'POST',
+        headers: {
+          'apikey': SKEY,
+          'Authorization': 'Bearer ' + SKEY,
+          'Content-Type': 'application/json'
+        },
+        body: '{}'
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(num) {
+        var els = document.querySelectorAll('#visitor-num');
+        els.forEach(function(el) { el.textContent = num.toLocaleString(); });
+      })
+      .catch(function() {
+        var els = document.querySelectorAll('#visitor-num');
+        els.forEach(function(el) { el.textContent = '—'; });
+      });
+    } else {
+      // 已访问过，只读取当前数字
+      fetch(SURL + '/rest/v1/visitor_count?id=eq.1&select=count', {
+        headers: {
+          'apikey': SKEY,
+          'Authorization': 'Bearer ' + SKEY
+        }
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var num = data && data[0] ? data[0].count : '—';
+        var els = document.querySelectorAll('#visitor-num');
+        els.forEach(function(el) { el.textContent = num.toLocaleString(); });
+      })
+      .catch(function() {});
+    }
+  })();
 </script>
 
 </body>
