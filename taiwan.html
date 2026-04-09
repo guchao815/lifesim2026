@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>台湾 · 观景号列车</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #faf8f4; font-family: 'Noto Sans SC', sans-serif; color: #2a2218; }
+.hdr { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; background: rgba(250,248,244,0.96); border-bottom: 1px solid #ede8e0; }
+.hdr a { font-size: 12px; color: #8a7a6a; text-decoration: none; }
+.hdr-title { font-family: 'Noto Serif SC', serif; font-size: 13px; font-weight: 300; color: #5a4a38; }
+.hdr-sub { font-size: 11px; color: #b0a090; }
+.page { padding: 80px 2rem 4rem; max-width: 620px; margin: 0 auto; }
+.sel-label { font-size: 10px; color: #b0a090; letter-spacing: 0.2em; margin-bottom: 0.75rem; }
+.sel-title { font-family: 'Noto Serif SC', serif; font-size: 24px; font-weight: 300; color: #1a1410; margin-bottom: 0.75rem; }
+.sel-desc { font-size: 14px; color: #8a7a6a; line-height: 1.9; margin-bottom: 2rem; }
+.sc-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 1.4rem; border: 1px solid #ede8e0; border-radius: 14px; background: #fff; cursor: pointer; font-family: inherit; text-align: left; margin-bottom: 10px; transition: all 0.2s; }
+.sc-btn:hover { border-color: #c0b8a8; background: #f8f4ee; }
+.sc-num { font-size: 11px; color: #b0a090; letter-spacing: 0.12em; }
+.sc-name { font-family: 'Noto Serif SC', serif; font-size: 18px; font-weight: 300; color: #1a1410; }
+.sc-tagline { font-size: 12px; color: #8a7a6a; }
+.sc-arrow { font-size: 16px; color: #c0b0a0; }
+#story-page { display: none; padding: 80px 2rem 4rem; max-width: 580px; margin: 0 auto; }
+.t-station-label { font-size: 10px; color: #6a9a58; letter-spacing: 0.18em; margin-bottom: 0.6rem; }
+.t-title { font-family: 'Noto Serif SC', serif; font-size: clamp(24px,4vw,36px); font-weight: 300; line-height: 1.45; color: #1a1410; margin-bottom: 1.5rem; }
+.t-body { font-family: 'Noto Serif SC', serif; font-size: 17px; line-height: 2; color: #2a2218; margin-bottom: 0.8rem; opacity: 0; transform: translateY(8px); transition: opacity 0.7s, transform 0.7s; }
+.t-body.show { opacity: 1; transform: none; }
+.t-quote { font-family: 'Noto Serif SC', serif; font-size: 17px; line-height: 1.85; color: #3a5a28; border-left: 2px solid #c0d8a8; padding-left: 1.2rem; margin: 0.8rem 0; opacity: 0; transform: translateY(8px); transition: opacity 0.7s, transform 0.7s; }
+.t-quote.show { opacity: 1; transform: none; }
+.t-photo { width: 100%; max-height: 300px; object-fit: cover; border-radius: 10px; margin-bottom: 0.4rem; opacity: 0; transition: opacity 0.8s; }
+.t-photo.show { opacity: 1; }
+.t-caption { font-size: 11px; color: #b0a090; margin-bottom: 0.8rem; opacity: 0; transition: opacity 0.6s; }
+.t-caption.show { opacity: 1; }
+.q-block { margin: 1.5rem 0; padding: 1.5rem; background: #f4f0e8; border-radius: 12px; opacity: 0; transition: opacity 0.8s; }
+.q-block.show { opacity: 1; }
+.q-dot { font-size: 10px; color: #b0a090; letter-spacing: 0.16em; margin-bottom: 0.75rem; }
+.q-text { font-family: 'Noto Serif SC', serif; font-size: 17px; color: #1a1410; line-height: 1.75; margin-bottom: 1.1rem; }
+.q-opt { width: 100%; padding: 10px 16px; border: 1px solid #ddd8ce; border-radius: 10px; font-size: 14px; font-family: 'Noto Sans SC', sans-serif; color: #5a4a38; background: #fff; cursor: pointer; text-align: left; margin-bottom: 8px; transition: all 0.2s; }
+.q-opt:hover { background: #f0ebe3; border-color: #c0b8a8; }
+.q-opt.chosen { background: #f0ebe3; border-color: #a09080; }
+.q-resp { margin-top: 0.85rem; font-size: 14px; color: #4a6a38; line-height: 1.85; padding: 0.9rem 1.1rem; background: #eef2e8; border-radius: 10px; display: none; }
+.end-block { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #ede8e0; opacity: 0; transition: opacity 0.8s; }
+.end-block.show { opacity: 1; }
+.end-label { font-size: 11px; color: #b0a090; letter-spacing: 0.14em; margin-bottom: 1rem; }
+.end-btn { padding: 10px 20px; border: 1px solid #d8d0c8; border-radius: 40px; font-size: 13px; font-family: 'Noto Sans SC', sans-serif; color: #6a5a48; background: transparent; cursor: pointer; margin-right: 10px; margin-bottom: 8px; transition: all 0.2s; }
+.end-btn:hover { background: #f0ebe3; }
+
+.lang-switch { position: fixed; top: 1.1rem; right: 1.25rem; z-index: 200; display: flex; border: 1px solid #e0d8cc; border-radius: 20px; overflow: hidden; background: #faf8f4; }
+.lang-btn { background: transparent; border: none; padding: 0.32rem 0.85rem; font-size: 11px; cursor: pointer; font-family: inherit; color: #a09080; letter-spacing: 0.06em; transition: all 0.18s; }
+.lang-btn.active { background: #3a3228; color: #faf8f4; }
+.write-block { margin-top: 2rem; padding: 1.5rem; background: #f4f0e8; border-radius: 12px; }
+.write-label { font-size: 10px; color: #b0a090; letter-spacing: 0.16em; margin-bottom: 0.75rem; }
+.write-text { font-family: 'Noto Serif SC', serif; font-size: 16px; color: #2a2218; line-height: 1.75; margin-bottom: 1.1rem; }
+.write-btn { padding: 11px 24px; border: 1px solid #d8d0c8; border-radius: 40px; font-size: 13px; font-family: 'Noto Sans SC', sans-serif; color: #5a4a38; background: transparent; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; }
+.write-btn:hover { background: #f0ebe3; color: #2a2218; }
+</style>
+</head>
+<body>
+
+<div class="lang-switch"><button class="lang-btn active" id="btn-zh" onclick="setLang('zh')">中文</button><button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button></div>
+<header class="hdr">
+  <a href="train.html" id="hdr-back">← 线路图</a>
+  <p class="hdr-title">台湾 · 观景号列车</p>
+  <p class="hdr-sub">2026 春</p>
+</header>
+
+<div class="page" id="select-page">
+  <p class="sel-label" id="sel-label">TAIWAN · 2026 SPRING</p>
+  <h2 class="sel-title" id="sel-title">想先去哪一站？</h2>
+  <p class="sel-desc" id="sel-desc">十年的等待，一个一再被推迟的约定。<br>这趟列车有四站，随便从哪里开始。</p>
+  <button class="sc-btn" id="btn0">
+    <div><p class="sc-num" id="sc-num0">STATION 01</p><p class="sc-name" id="sc-name0">抵达</p><p class="sc-tagline" id="sc-tag0">关于十年的等待，和一个约定</p></div>
+    <span class="sc-arrow">→</span>
+  </button>
+  <button class="sc-btn" id="btn1">
+    <div><p class="sc-num" id="sc-num1">STATION 02</p><p class="sc-name" id="sc-name1">旧与新</p><p class="sc-tagline" id="sc-tag1">骑楼、早餐店、朋友的日常</p></div>
+    <span class="sc-arrow">→</span>
+  </button>
+  <button class="sc-btn" id="btn2">
+    <div><p class="sc-num" id="sc-num2">STATION 03</p><p class="sc-name" id="sc-name2">绿与蓝</p><p class="sc-tagline" id="sc-tag2">从北海岸到花莲</p></div>
+    <span class="sc-arrow">→</span>
+  </button>
+  <button class="sc-btn" id="btn3">
+    <div><p class="sc-num" id="sc-num3">STATION 04</p><p class="sc-name" id="sc-name3">再上阳明</p><p class="sc-tagline" id="sc-tag3">春和景明，心生欢喜</p></div>
+    <span class="sc-arrow">→</span>
+  </button>
+</div>
+
+<div id="story-page">
+  <div id="story-content"></div>
+</div>
+
+<script>
+var STATIONS = [
+  {
+    label: 'STATION 01 · 抵达',
+    title: '终于踏上这片土地',
+    blocks: [
+      { type: 'texts', lines: [
+        '"甜蜜蜜，你笑得多甜蜜，好像花儿开在春风里，开在春风里。"',
+        '收录机里传出邓丽君的歌声，风扇缓慢转动，桌上是一盘刚切开的西瓜——那几乎是我对90年代夏天最清晰的记忆。',
+        '受母亲影响，我的童年被这些旋律反复填满。很多年后，我早已记不清语文课本里的古诗词，但这些歌词，却总能在某个瞬间，被旋律轻轻唤醒。',
+      ]},
+      { type: 'texts', lines: [
+        '小学和初中的课文读过许多，真正留下印记的却不多。奇怪的是，我始终记得《日月潭》和《阿里山》。或许是因为它们带着一种朦胧的神秘感——那是一个我们只能通过文字去想象的地方。老师未曾去过，我们也不曾真正设想，有一天会亲眼见到。',
+      ]},
+      { type: 'question',
+        text: '当提到台湾，你脑海里第一个浮现的是什么？',
+        opts: [
+          { s: '邓丽君的歌声，或者某首旋律', r: '旋律是时间的暗道。它不需要理由，就能把你带回去。台湾对很多人来说，最初就是一种声音——那些从收录机或者父母口中流出来的旋律，在你还没意识到的时候，就已经在心里占了一个地方。' },
+          { s: '课本里的日月潭和阿里山', r: '那些课文留下来的，是一种朦胧的神秘感。台湾在那时候，是一个只能用文字去想象的地方——老师未曾去过，我们也不曾真正设想，有一天会亲眼见到。有些地方，就是这样，先以文字的形式住进你心里的。' },
+          { s: '周杰伦、五月天，或者某部台偶剧', r: '那些年的台湾流行文化，跨过海峡，落在无数人的青春里。它不是新闻，不是地理，是一种陪伴过你某段时光的声音和故事。那也是一种真实的连接。' },
+          { s: '一个认识的台湾人', r: '一个具体的人，往往比任何风景都更能让一个地方变得真实。你认识的那个台湾人，是你和这片土地之间最私人的那条线。' },
+          { s: '其实，我对台湾没有太具体的记忆', r: '没有也很正常。有些地方，在你到达之前，它在你的生命里就是一片空白。空白未必是缺失——也许它只是在等待一个具体的时刻，来填上自己的颜色。' },
+        ]
+      },
+      { type: 'texts', lines: [
+        '于是很长一段时间里，台湾对我来说，只存在于纸面与想象之中。它没有具体的人，也没有真实的触感。直到大学。',
+        '那年冬天，我借着一次冬令营的机会，去了首尔。参加项目的学生来自大陆、台湾、印尼和澳洲。文化和习惯的差异，让大家在分组时很自然地各自聚拢。但有一个台湾青年，偏偏没有这么做。',
+        '他选择加入一群大陆学生的队伍，也因此，我认识了第一个台湾朋友。我们因为都喜欢网球，很快熟络起来。临别时约定，将来在北京或上海一起看比赛。一年多后，这个约定真的被兑现了。2017年，我去北京工作，我们一起看了两天中网。那时说好，下一次，该轮到我去台湾找他。',
+        '那几年，去台湾自由行还算顺畅，我甚至已经办好了相关证件。但事情就那样被一再拖延，没有明确的原因，只是没有成行。',
+      ]},
+      { type: 'question',
+        text: '你有没有一个一直想去、却一再被推迟的地方？',
+        opts: [
+          { s: '有，而且还没去', r: '那个地方还在等你。有时候，推迟本身也是一种积累——等你真正到达的那天，也许会发现，时机刚刚好。' },
+          { s: '有，但最终去了', r: '去了之后，是什么感觉？有时候等待会让一个地方变得更重，有时候，抵达反而比想象中更轻——但两种都是真实的。' },
+          { s: '暂时还没有这样的地方', r: '也许那个地方还没出现。有些向往，是在你遇见它的那一刻才开始的。' },
+        ]
+      },
+      { type: 'texts', lines: [
+        '再后来，一切都变了。2019年之后，叠加疫情与两岸关系，这个原本简单的计划，变得越来越遥远。那个念头，也慢慢被放进了一个落灰的角落。',
+        '直到我出国工作之后，有一天，在一个vlog里偶然看到，长期居住海外的人，通过某种特殊路径申请到了入台证。那一刻，就像一簇快要熄灭的火，被轻轻吹了一下，又重新亮了起来。',
+        '接下来的过程，比想象中漫长得多。前后两个月，补交了四次材料。每一次反馈，都带着一些说不清道不明的要求。原定的出行时间一再临近，我几乎已经做好了最坏打算——留在雅加达，安静地过一个开斋节假期，每天照常去打网球。',
+        '直到出发前一周，入台证终于批下来。我和朋友开玩笑说，这趟申请过程，简直像是唐僧取经的"九九八十一难"。但回头看，也正是这些看似无厘头的阻碍，让这次出发多了一点重量。拿到入台证后，我几乎是立刻买了机票。对于一个习惯提前规划的人来说，这大概是我做过最仓促的一次决定，却也是最确定的一次。',
+      ]},
+      { type: 'quote', text: '"高山青，涧水蓝。\n阿里山的姑娘美如水呀，\n阿里山的少年壮如山。"' },
+      { type: 'texts', lines: [
+        '这些旋律像是从很远的地方回响而来，带着某种跨越时间的熟悉感。很多年前，它们只是声音。后来，是想象。再后来，是一个被不断推迟的约定。而现在，它终于开始变成现实。',
+        '十年的时间，说长不长，说短也不短。有些地方，会在你尚未抵达之前，就已经在你的生命里存在很久。有些路，也许并不是走过去的。只是某一天，你刚好走到了它出现的位置。',
+      ]},
+      { type: 'quote', text: '我坐在飞往宝岛的航班上，\n忽然意识到——\n我真正想见的，或许从来不只是风景。' },
+    ]
+  },
+  {
+    label: 'STATION 02 · 旧与新',
+    title: '台北慢生活',
+    blocks: [
+      { type: 'texts', lines: [
+        '降落桃园机场已是晚上九点多。原以为出关会花上不少时间，没想到连同入境与取行李，仅半小时出头。走廊里是偏米黄的色调，不知是岁月沉淀，还是夜色映衬下多了一层柔和。',
+        '朋友在出口处等我。时隔八年多再次见到，一种说不出的喜悦慢慢散开，长途奔波的倦意也随之松了下来。',
+        '从机场搭乘桃捷进城，再转乘捷运到顶溪。那时已是深夜十一点，路上机车稀少，四周显得格外安静。夜色与路灯自上投下，让人得以慢慢看清这座城市。',
+      ]},
+      { type: 'texts', lines: [
+        '第一眼的感觉，是建筑带着明显的岁月感。道路两旁大多已有四五十年的年纪。街道一侧是连贯的廊道，雨天可以一路走下去不被打断。抬头看，是二楼向外伸出的阳台。后来才知道，这类建筑有个专有名词，叫"骑楼"。',
+      ]},
+      { type: 'texts', lines: [
+        '这些建筑的外立面虽略显老旧，却并不沉闷。尤其在社区街巷，阳台上的绿植常常探出头来，有的郁郁葱葱，有的花团锦簇，给空间添了不少生气。道路始终干净，看不到随意丢弃的垃圾或烟头。',
+      ]},
+      { type: 'texts', lines: [
+        '每日清晨，起床出门吃早餐。我很喜欢老社区的这种氛围，不需要特意寻找，走出门不远，就能看到几家早餐店已经开始营业。窗口前排着外带的人群，店里也熙熙攘攘地坐满了人。',
+        '和朋友找了个位置坐下，我点了一碗豆浆和一个中式汉堡。厨房里蒸汽缓慢上升，铁板上不时发出细碎的声响。店员动作利落而稳定，顾客来来往往，除去收银，彼此之间并没有太多交流，但气氛却很自然地连在一起。',
+        '这样的场景每天重复，却从不显得陈旧。崭新的一天正在被启动——在老街巷、老骑楼、老店的包围里，那种状态，是安静的，却又是饱满的。',
+      ]},
+      { type: 'question',
+        text: '你多久没在老社区附近，吃一顿烟火气的早饭了？',
+        opts: [
+          { s: '已经不记得了，好像很久没好好吃过早饭', r: '那种热气腾腾的早晨，其实随时可以找回来。不需要去老社区，只需要早起十分钟，坐下来，慢慢吃。' },
+          { s: '偶尔会，但不是常态', r: '偶尔就够了。有时候一顿认真的早饭，能让整个人的状态不一样。' },
+          { s: '我很享受早饭这件事，从不将就', r: '这是一种很难得的习惯。早饭认真的人，往往对生活也认真。' },
+        ]
+      },
+      { type: 'texts', lines: [
+        '这一次来到台北，第一次走进朋友成长的地方。那些在他口中提过无数次的街道、社区与日常，此刻都有了具体的形状。借住在他家，也见到了他的家人。一起吃饭，听他们聊天，被很自然地照顾着，没有刻意的热情，却处处周到。',
+        '有一晚，他们问我想去哪里吃。我说其实不太挑，比起专门去找什么好吃的，更想跟着他们去平时会去的地方。于是我们走进街边巷尾一家开了几十年的小店，环境很简单，来往的多是熟客。',
+      ]},
+      { type: 'quote', text: '坐在那里，有种很清晰的感觉：\n自己并不是以一个游人的视角在这里，\n而是被带进了他们再平常不过的一天，\n仿佛我本来就在这里。' },
+      { type: 'texts', lines: [
+        '一天下午，我去了趟国立台湾大学。校园很大，也很安静，树很多，走在里面会不自觉地慢下来。学生们三三两两地分散着，有人坐在草地上聊天，有人骑着自行车慢慢经过，也有人独自走着，没有太明显的目的感。那种松弛不是刻意营造出来的，更像是一种默认的状态。',
+      ]},
+      { type: 'question',
+        text: '你怀念校园时光吗？\n你怀念的是什么？',
+        opts: [
+          { s: '怀念，那种没有太多压力的时光', r: '那种轻盈不是因为年轻，是因为还没有太多东西要守护。有时候，放下一些，那种轻盈会回来的。' },
+          { s: '怀念，是那时候的朋友和关系', r: '人和人之间最自然的连接，往往发生在那段时间。那些关系不一定还在，但它们塑造了现在的你。' },
+          { s: '怀念，是那时候对未来还有很多想象', r: '那些想象没有消失，只是换了形状。你现在做的事，也许就是当年某个念头的延续。' },
+          { s: '其实不太怀念，现在也挺好', r: '能这么说，说明现在的生活有它自己的重量和意义。这比怀念要难得。' },
+        ]
+      },
+      { type: 'texts', lines: [
+        '台大校园里有一处湖。水面很平，一只天鹅正独自活动。它先是把头整个倒插进水里，尾巴微微翘起。接着在水里轻轻扑棱几下，让羽毛充分沾湿。过了一会儿，它上了岸，开始用力地扑动翅膀，水珠被甩开，一圈一圈散落在地面上。',
+        '我在那里站了十几分钟，看着它慢慢恢复平静，像是把刚才那阵水与风，都收回到羽毛里。',
+      ]},
+      { type: 'quote', text: '所谓的"新"，未必来自替换与重建。\n更多时候，它是在既有的一切之上，\n让生活继续发生——\n在热忱里，在平和里，在感念与喜悦里。' },
+    ]
+  },
+  {
+    label: 'STATION 03 · 绿与蓝',
+    title: '从北海岸到花莲',
+    blocks: [
+      { type: 'texts', lines: [
+        '台北是一个交通非常便捷的城市。沿着北海岸缓慢行进，打开地图，顺着海岸线一点点看，总能找到一些不那么显眼的地方。老梅绿石槽，就是这样被发现的。',
+        '但去之前，其实并不确定能不能看到。这片绿色只在冬末到春天生长，需要在对的季节——还要配合潮汐，退潮时石槽才露出来，涨潮就完全淹没了，太干颜色也不对。一切都要刚好。',
+      ]},
+      { type: 'question',
+        text: '如果不确定能不能看到，你还会去吗？',
+        opts: [
+          { s: '会，不确定本身就是旅行的一部分', r: '正是这种不确定，让抵达有了重量。如果一切都按计划，那只是执行，不是旅行。' },
+          { s: '要看情况，专程去又看不到会有点遗憾', r: '这很正常。有时候我们需要给自己一个"值得"的理由。但有些东西，只有去了才知道值不值。' },
+          { s: '我更倾向于确定能看到的地方', r: '确定性有它的价值。只是偶尔，也可以给不确定留一个位置——说不定它会给你惊喜。' },
+        ]
+      },
+      { type: 'texts', lines: [
+        '从淡水出发，公车约一小时，下车后再步行一小段，海就出现在眼前。潮水退去后，整片岩面露出来，一道一道石槽平行伸向海里。沟槽里还留着水，表面很平，微微反光。',
+        '阳光慢慢落下来，石槽上海藻显出一层亮绿色。因为还湿着，颜色很饱和，带一点光泽，看起来很像是给整片石槽盖了一层贴合的绿色被子。海浪一下一下推上来，又退下去，水在石槽之间流动，将绿色衬得更清晰。',
+      ]},
+      { type: 'texts', lines: [
+        '从台北车站出发，搭上自强号往花莲。列车沿着台湾东侧前行。海在远处铺开，颜色从浅到深一段段延伸；中央山脉几乎贴着轨道升起，绿意从树林一路往上延伸到山体深处。',
+        '因为起得早，上车后不自觉地打了个盹。再睁眼时，视线正好落在窗外那一抹天蓝上——干净、明亮，几乎是从画面里直接跳出来的。虽然只是一闪而过的几秒，我便知道那是清水断崖。',
+      ]},
+      { type: 'texts', lines: [
+        '到达断崖时，云层刚好裂开一道口子。阳光完整地落下来，海面一下子亮了起来，从深蓝一路过渡到更浅的天蓝，边缘还透着一点亮。',
+        '我去过不少热带海岛。那里的海常常偏绿，颜色是明亮的、外放的，带着一种很直接的热情。清水断崖却不是这样。它不是扑面而来的热烈，而是一种让人愿意慢慢走近、慢慢停留的魅力。看着看着，人会不自觉地安静下来。',
+      ]},
+      { type: 'question',
+        text: '你更喜欢哪一种海？',
+        opts: [
+          { s: '热带那种——明亮、奔放，一眼就让你觉得值了', r: '那种美是直接的礼物。它不需要你慢下来，它主动扑过来。有时候人就是需要这种——直接告诉你，这一刻很好。' },
+          { s: '东海岸这种——静谧、深邃，要慢慢走近才感受得到', r: '这种美有一种耐心在里面。它不争，但它留得住。清水断崖就是这样，看久了会不想走。' },
+          { s: '说不清，不同的心情需要不同的海', r: '这个回答最诚实。有时候你需要被热烈接住，有时候你需要安静地待着。海知道。' },
+        ]
+      },
+      { type: 'texts', lines: [
+        '七星潭是一整片鹅卵石铺成的海滩。海浪拍上来时声音很实，而水退下去的那一刻，会带着一整片鹅卵石一起滑动，发出连续的窸窸窣窣声。听久了，人会慢慢跟上那个节拍。',
+        '我在这里待了将近两个小时。平躺在鹅卵石上，什么都不做。就躺着，听海。',
+        '躺在这里的时候，朱家尖忽然回来了。那是大学毕业时的一趟旅行——虽然出生在沿海地区，却是那一次，才真正见到海。那天傍晚，我在石滩上躺了很久。后来半夜睡不着，又走回海边，海浪一遍遍冲上来，带着整片鹅卵石滑动，那种声音，一直到现在都还记得。',
+      ]},
+      { type: 'question',
+        text: '此刻，你的记忆闪回是？',
+        opts: [
+          { s: '某一次旅行，某个具体的地方', r: '那个地方在你心里留了下来。也许不是因为它有多壮阔，而是因为你当时的状态，刚好和它对上了。' },
+          { s: '某个人，某段在一起的时光', r: '有些地方之所以被记住，是因为那里有个人。地方是容器，人才是内容。' },
+          { s: '某种感觉，说不清是哪里', r: '感觉比细节更诚实。那种说不清的，往往是真正留下来的东西。' },
+          { s: '什么都没有，脑子很空', r: '空也是一种状态。有时候什么都不想，就是最好的休息。' },
+        ]
+      },
+      { type: 'texts', lines: [
+        '时间其实已经过去很久了，十几年。我不太确定现在的自己，和当时是不是同一个人，也说不清那一部分还剩下多少。',
+      ]},
+      { type: 'quote', text: '只是在这里的时候，会隐约感觉到，\n有些东西并没有真的改变——\n面对还未发生的未来，\n仍然愿意相信，也仍然愿意好好生活。' },
+    ]
+  },
+  {
+    label: 'STATION 04 · 再上阳明',
+    title: '春和景明',
+    blocks: [
+      { type: 'texts', lines: [
+        '上周末第一次上阳明山，却被一场雾雨拦了下来。那天阳明山像被一只巨大的钟罩拢住，小油坑、擎天岗，全都隐没在白茫茫之中。风声、雨丝、朦胧的轮廓，仿佛一切都在，却又什么都看不真切。',
+        '那种到了，却只得凭想象勾勒，多少还是有些遗憾。',
+      ]},
+      { type: 'question',
+        text: '第一次没去成，你会怎么做？',
+        opts: [
+          { s: '马上计划第二次，一定要去到', r: '这种执念有时候是一种礼物。它说明那个地方对你来说有重量，值得再试一次。' },
+          { s: '有点遗憾，但随缘，有机会再说', r: '随缘不是放弃，是另一种信任——相信合适的时机会来。' },
+          { s: '接受了，换下一个地方', r: '能放下也是一种能力。遗憾可以是出发的理由，也可以就这样搁着。' },
+        ]
+      },
+      { type: 'texts', lines: [
+        '于是在离开台北前最后一天，我决定再上一次阳明山。这天不算晴朗，但云雾似乎轻到足以被拨开。山脚下有光，是那种能穿透云层、但并不刺眼的亮。',
+        '擎天岗是一片起伏温和的山丘草原，没有突兀的高峰，也没有逼人的坡度，只是缓缓地铺展开来，像一张被风轻轻掀起边角的绿色毯子。环形步道在其间蜿蜒，偶尔有木栅栏将人和牛群分隔开来。牛安静地低头吃草，像是这片山的原住民，而人只是偶尔路过的访客。',
+        '走在这样的草坡上，会不自觉地想发出一些没什么意义的声音——比如"哞"一声。那种冲动来得很自然，好像身体会先于念头，对这片开阔作出一点回应。',
+        '人群被山丘自然地分散开来。远远看去，有人站在坡顶，有人缓慢下行，也有人在转弯处短暂停留。像蒲公英的种子，被风吹散在不同的高度上，各自落定。',
+        '在山丘间穿行的时候，不时会遇到一群牛在不远处吃草。站着听了一会儿，能听见它们拔草的声音——草从地面被扯起，再送入口中。那一刻，会忍不住去想，这样简单的食物，是怎么长成这样庞大的身体？',
+      ]},
+      { type: 'quote', text: '没有目标，没有时间限制，\n也没有什么需要完成的事情。\n只是自在地前行、停下、再前行。\n身体很轻，呼吸也很稳。' },
+      { type: 'texts', lines: [
+        '返程路上，窗外的山色渐渐退到身后。我忽然意识到，"再上阳明"这件事，其实有两层意思。',
+        '第一层是字面的——第一次被雨拦住，第二次终于看到了全貌。第二层，却是一个还没说出口的承诺。阳明山在心里留下了一个位置。不是因为它有多壮阔，而是因为它和朋友有关，和这片土地有关，和这趟花了十年才成行的旅程有关。',
+      ]},
+      { type: 'question',
+        text: '你怎么理解"再上阳明"？',
+        opts: [
+          { s: '字面的——第一次没看到，第二次去看', r: '这一层已经很好了。很多事情，就是需要再试一次。' },
+          { s: '是一个承诺——我还会回来', r: '这一层更深。"再上"不只是动作，是一种关系的延续。对一个地方，对一个人，都可以是这样。' },
+          { s: '是一种生活态度——值得的事，反复去做', r: '这个理解最开阔。阳明山只是一个入口，背后是你对生活的态度。' },
+        ]
+      },
+      { type: 'texts', lines: [
+        '有些地方，去过一次，便会在心里留下位置。不必时时想起，却会在某个时刻，忽然想再回去看看。',
+      ]},
+      { type: 'quote', text: '期待来日机缘恰好，\n春和景明之时，再上阳明。' },
+    ]
+  }
+
+];
+
+document.getElementById('btn0').addEventListener('click', function(){ goStory(0); });
+document.getElementById('btn1').addEventListener('click', function(){ goStory(1); });
+document.getElementById('btn2').addEventListener('click', function(){ goStory(2); });
+document.getElementById('btn3').addEventListener('click', function(){ goStory(3); });
+
+function showSelect() {
+  document.getElementById('select-page').style.display = 'block';
+  document.getElementById('story-page').style.display = 'none';
+  document.getElementById('hdr-back').href = 'train.html';
+  window.scrollTo(0, 0);
+}
+
+function goStory(idx) {
+  document.getElementById('select-page').style.display = 'none';
+  document.getElementById('story-page').style.display = 'block';
+  document.getElementById('hdr-back').href = '#';
+  document.getElementById('hdr-back').onclick = function(e){ e.preventDefault(); showSelect(); };
+  window.scrollTo(0, 0);
+  renderStory(idx);
+}
+
+function renderStory(idx) {
+  var wrap = document.getElementById('story-content');
+  wrap.innerHTML = '';
+  var st = STATIONS[idx];
+
+  var lbl = document.createElement('p');
+  lbl.className = 't-station-label';
+  lbl.textContent = st.label;
+  wrap.appendChild(lbl);
+
+  var ttl = document.createElement('h2');
+  ttl.className = 't-title';
+  ttl.textContent = st.title;
+  wrap.appendChild(ttl);
+
+  setTimeout(function(){ lbl.classList.add('show'); }, 100);
+  setTimeout(function(){ ttl.classList.add('show'); }, 400);
+
+  var steps = [];
+  st.blocks.forEach(function(block) {
+    if (block.type === 'texts') {
+      block.lines.forEach(function(line){ steps.push({type:'text', line:line}); });
+    } else {
+      steps.push(block);
+    }
+  });
+  steps.push({type:'end'});
+
+  var i = 0;
+  function next() {
+    if (i >= steps.length) return;
+    var s = steps[i++];
+    if (s.type === 'text') {
+      var p = document.createElement('p');
+      p.className = 't-body';
+      p.textContent = s.line;
+      wrap.appendChild(p);
+      setTimeout(function(){ p.classList.add('show'); p.scrollIntoView({behavior:'smooth',block:'nearest'}); setTimeout(next, 950); }, 80);
+    } else if (s.type === 'quote') {
+      var q = document.createElement('p');
+      q.className = 't-quote';
+      q.innerHTML = s.text.replace(/\n/g,'<br>');
+      wrap.appendChild(q);
+      setTimeout(function(){ q.classList.add('show'); q.scrollIntoView({behavior:'smooth',block:'nearest'}); setTimeout(next, 1200); }, 80);
+    } else if (s.type === 'photo') {
+      var img = document.createElement('img');
+      img.className = 't-photo'; img.src = s.src; img.alt = s.cap||'';
+      var cap = document.createElement('p');
+      cap.className = 't-caption'; cap.textContent = s.cap||'';
+      wrap.appendChild(img); wrap.appendChild(cap);
+      setTimeout(function(){ img.classList.add('show'); img.scrollIntoView({behavior:'smooth',block:'nearest'}); setTimeout(function(){ cap.classList.add('show'); setTimeout(next,800); },500); },80);
+    } else if (s.type === 'question') {
+      var qb = document.createElement('div'); qb.className = 'q-block';
+      renderQBlock(qb, s, wrap, next);
+      wrap.appendChild(qb);
+      setTimeout(function(){ qb.classList.add('show'); qb.scrollIntoView({behavior:'smooth',block:'nearest'}); },80);
+    } else if (s.type === 'end') {
+      renderEnd(wrap);
+    }
+  }
+  setTimeout(next, 900);
+}
+
+
+var LANG = 'zh';
+var UI = {
+  zh: {
+    back: '← 线路图',
+    selLabel: 'TAIWAN · 2026 SPRING',
+    selTitle: '想先去哪一站？',
+    selDesc: '十年的等待，一个一再被推迟的约定。<br>这趟列车有四站，随便从哪里开始。',
+    stations: [
+      { num: 'STATION 01', name: '抵达', tag: '关于十年的等待，和一个约定' },
+      { num: 'STATION 02', name: '旧与新', tag: '骑楼、早餐店、朋友的日常' },
+      { num: 'STATION 03', name: '绿与蓝', tag: '从北海岸到花莲' },
+      { num: 'STATION 04', name: '再上阳明', tag: '春和景明，心生欢喜' },
+    ],
+    endBack: '回到站点选择',
+    endPlanet: '回到好好生活星球',
+    endStation: '· 这一站到了 ·',
+    writeLabel: '· 有话想说 ·',
+    writeText: '这趟旅程触动了你什么？\n或者你也有类似的故事——',
+    writeBtn: '写给作者',
+    qDot: '· 此刻的你 ·',
+  },
+  en: {
+    back: '← Route map',
+    selLabel: 'TAIWAN · 2026 SPRING',
+    selTitle: 'Which stop first?',
+    selDesc: 'Ten years of waiting, a promise kept postponing.<br>Four stops on this train. Start anywhere.',
+    stations: [
+      { num: 'STATION 01', name: 'Arrival', tag: 'Ten years of waiting, a promise' },
+      { num: 'STATION 02', name: 'Old & New', tag: 'Arcades, breakfast, a friend\'s daily life' },
+      { num: 'STATION 03', name: 'Green & Blue', tag: 'From the North Coast to Hualien' },
+      { num: 'STATION 04', name: 'Back to Yangming', tag: 'Spring, clear skies, joy in the heart' },
+    ],
+    endBack: 'Back to station select',
+    endPlanet: 'Back to Good Life Planet',
+    endStation: '· End of this stop ·',
+    writeLabel: '· Something to say ·',
+    writeText: 'Did this journey touch something in you?\nOr maybe you have a similar story—',
+    writeBtn: 'Write to the author',
+    qDot: '· You, right now ·',
+  }
+};
+
+var Q_EN = {
+  "当提到台湾，你脑海里第一个浮现的是什么？": {
+    text: "When you think of Taiwan, what comes to mind first?",
+    opts: {
+      "邓丽君的歌声，或者某首旋律": { s: "Teresa Teng, or some melody", r: "A melody is a secret passage through time. It needs no reason to take you back." },
+      "课本里的日月潭和阿里山": { s: "Sun Moon Lake and Alishan from school textbooks", r: "Those words left behind a hazy sense of mystery — a place you could only imagine." },
+      "周杰伦、五月天，或者某部台偶剧": { s: "Jay Chou, Mayday, or a Taiwanese drama", r: "That wave of Taiwanese pop culture crossed the strait and landed in so many people's youth." },
+      "一个认识的台湾人": { s: "Someone from Taiwan I know", r: "One real person makes a place more real than any landscape." },
+      "其实，我对台湾没有太具体的记忆": { s: "Honestly, no strong memory of Taiwan", r: "That's okay. Some places are blank until a moment fills them in." }
+    }
+  },
+  "你有没有一个一直想去、却一再被推迟的地方？": {
+    text: "Is there a place you've always wanted to go — but kept putting off?",
+    opts: {
+      "有，而且还没去": { s: "Yes, and I still haven't gone", r: "That place is still waiting. Sometimes delay is its own preparation." },
+      "有，但最终去了": { s: "Yes, and I finally made it", r: "What was it like when you arrived? Sometimes the wait makes it heavier. Sometimes lighter." },
+      "暂时还没有这样的地方": { s: "Not really, not yet", r: "Maybe that place hasn't appeared yet. Some longings only begin the moment you meet them." }
+    }
+  },
+  "你多久没在老社区附近，吃一顿烟火气的早饭了？": {
+    text: "When did you last have a proper breakfast — unhurried, in an old neighborhood?",
+    opts: {
+      "已经不记得了，好像很久没好好吃过早饭": { s: "Can't remember — it's been a while", r: "That kind of morning is always available. Just ten minutes earlier, sit down, eat slowly." },
+      "偶尔会，但不是常态": { s: "Occasionally, but not often", r: "Occasionally is enough. One real breakfast can change the whole day's texture." },
+      "我很享受早饭这件事，从不将就": { s: "I take breakfast seriously — always", r: "That's a rare habit. People who don't rush breakfast usually don't rush life either." }
+    }
+  },
+  "你怀念校园时光吗？\n你怀念的是什么？": {
+    text: "Do you miss your school days? What do you miss most?",
+    opts: {
+      "怀念，那种没有太多压力的时光": { s: "Yes — that lightness, without too much pressure", r: "That lightness wasn't about being young. It was about not having too much to protect yet." },
+      "怀念，是那时候的朋友和关系": { s: "Yes — the friends and connections", r: "The most natural connections often happen in that window of time. They shaped who you are now." },
+      "怀念，是那时候对未来还有很多想象": { s: "Yes — all that imagination about the future", r: "Those imaginings didn't disappear. They just changed shape. What you're doing now may be one of them." },
+      "其实不太怀念，现在也挺好": { s: "Not really — now is good too", r: "That means your present life has its own weight and meaning. That's harder to come by than nostalgia." }
+    }
+  },
+  "如果不确定能不能看到，你还会去吗？": {
+    text: "If you weren't sure you'd see it — would you still go?",
+    opts: {
+      "会，不确定本身就是旅行的一部分": { s: "Yes — uncertainty is part of the journey", r: "That uncertainty is what gives arriving its weight. If everything goes to plan, it's execution, not travel." },
+      "要看情况，专程去又看不到会有点遗憾": { s: "Depends — I'd hate to go out of my way and miss it", r: "That's fair. Sometimes we need a reason. But some things only reveal themselves when you show up." },
+      "我更倾向于确定能看到的地方": { s: "I prefer places where I know what I'll see", r: "Certainty has its value. Though occasionally — leaving room for the unknown can surprise you." }
+    }
+  },
+  "你更喜欢哪一种海？": {
+    text: "Which kind of ocean do you prefer?",
+    opts: {
+      "热带那种——明亮、奔放，一眼就让你觉得值了": { s: "Tropical — bright, bold, immediately worth it", r: "That beauty is a direct gift. It doesn't ask you to slow down. It just tells you: this is good." },
+      "东海岸这种——静谧、深邃，要慢慢走近才感受得到": { s: "East Coast style — quiet, deep, asks you to approach slowly", r: "This kind of beauty has patience in it. It doesn't compete. But it stays." },
+      "说不清，不同的心情需要不同的海": { s: "Can't say — different moods need different seas", r: "The most honest answer. Sometimes you need warmth. Sometimes you need quiet." }
+    }
+  },
+  "此刻，你的记忆闪回是？": {
+    text: "Right now — what memory just surfaced?",
+    opts: {
+      "某一次旅行，某个具体的地方": { s: "A trip, a specific place", r: "That place stayed with you. Maybe not because of how grand it was — but because of who you were then." },
+      "某个人，某段在一起的时光": { s: "A person, a time spent together", r: "Places are containers. People are the content." },
+      "某种感觉，说不清是哪里": { s: "A feeling — hard to place", r: "Feelings are more honest than details. The ones you can't quite name are often the ones that stayed." },
+      "什么都没有，脑子很空": { s: "Nothing — my mind is empty", r: "Empty is a state too. Sometimes thinking nothing is the best rest." }
+    }
+  },
+  "第一次没去成，你会怎么做？": {
+    text: "If you couldn't make it the first time — what would you do?",
+    opts: {
+      "马上计划第二次，一定要去到": { s: "Plan a second attempt immediately", r: "That stubbornness is sometimes a gift. It means the place has weight for you." },
+      "有点遗憾，但随缘，有机会再说": { s: "A little regret, but let it go — maybe another time", r: "Letting go is its own kind of trust — that the right moment will come." },
+      "接受了，换下一个地方": { s: "Accept it and move on", r: "Letting go is also a skill. Regret can be a reason to go, or it can just sit there quietly." }
+    }
+  },
+  "你怎么理解\"再上阳明\"？": {
+    text: "How do you understand going back up Yangming?",
+    opts: {
+      "字面的——第一次没看到，第二次去看": { s: "Literally — didn't see it the first time, so go again", r: "That layer is already good. Many things just need one more try." },
+      "是一个承诺——我还会回来": { s: "A promise — I'll come back", r: "This layer goes deeper. Going back isn't just an action — it's a continuation of a relationship." },
+      "是一种生活态度——值得的事，反复去做": { s: "A way of living — do what's worth it, again and again", r: "This is the widest reading. Yangming is just a doorway. Behind it is how you approach life." }
+    }
+  }
+};
+
+function setLang(lang) {
+  LANG = lang;
+  document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  var u = UI[lang];
+
+  // header back
+  var back = document.getElementById('hdr-back');
+  if (back) back.textContent = u.back;
+
+  // select page
+  var sl = document.getElementById('sel-label');
+  var st = document.getElementById('sel-title');
+  var sd = document.getElementById('sel-desc');
+  if (sl) sl.textContent = u.selLabel;
+  if (st) st.textContent = u.selTitle;
+  if (sd) sd.innerHTML = u.selDesc;
+
+  u.stations.forEach(function(s, i) {
+    var n = document.getElementById('sc-num' + i);
+    var nm = document.getElementById('sc-name' + i);
+    var tg = document.getElementById('sc-tag' + i);
+    if (n) n.textContent = s.num;
+    if (nm) nm.textContent = s.name;
+    if (tg) tg.textContent = s.tag;
+  });
+}
+
+function getQEN(zhText) {
+  for (var k in Q_EN) {
+    if (k === zhText || k.replace(/\\n/g,'\n') === zhText) return Q_EN[k];
+  }
+  return null;
+}
+
+function renderQBlock(qb, s, wrap, next) {
+  var u = UI[LANG];
+  var qEN = getQEN(s.text);
+  var ql = document.createElement('p'); ql.className = 'q-dot'; ql.textContent = u.qDot;
+  var qt = document.createElement('p'); qt.className = 'q-text';
+  qt.innerHTML = (LANG === 'en' && qEN) ? qEN.text : s.text.replace(/\n/g,'<br>');
+  var qo = document.createElement('div');
+  var qr = document.createElement('div'); qr.className = 'q-resp';
+  var done = false;
+  s.opts.forEach(function(o){
+    var b = document.createElement('button'); b.className = 'q-opt';
+    var enOpt = (LANG === 'en' && qEN && qEN.opts[o.s]) ? qEN.opts[o.s] : null;
+    b.textContent = (LANG === 'en' && enOpt) ? enOpt.s : o.s;
+    b.addEventListener('click', function(){
+      if (done) return; done = true;
+      qo.querySelectorAll('.q-opt').forEach(function(x){ x.disabled=true; });
+      b.classList.add('chosen');
+      qr.textContent = (LANG === 'en' && enOpt) ? enOpt.r : o.r;
+      qr.style.display = 'block';
+      setTimeout(function(){ qr.scrollIntoView({behavior:'smooth',block:'nearest'}); setTimeout(next,1000); },400);
+    });
+    qo.appendChild(b);
+  });
+  qb.appendChild(ql); qb.appendChild(qt); qb.appendChild(qo); qb.appendChild(qr);
+}
+
+function renderEnd(wrap) {
+  var u = UI[LANG];
+  var end = document.createElement('div'); end.className = 'end-block';
+  var el = document.createElement('p'); el.className = 'end-label'; el.textContent = u.endStation;
+
+  // 写给作者
+  var wb = document.createElement('div'); wb.className = 'write-block';
+  var wl = document.createElement('p'); wl.className = 'write-label'; wl.textContent = u.writeLabel;
+  var wt = document.createElement('p'); wt.className = 'write-text'; wt.innerHTML = u.writeText.replace(/\n/g,'<br>');
+  var wa = document.createElement('a'); wa.className = 'write-btn';
+  wa.textContent = u.writeBtn;
+  wa.href = 'mailto:guchao815@gmail.com?subject=' + encodeURIComponent(LANG === 'en' ? 'From a reader of Taiwan · Scenic Train' : '来自台湾游记的读者');
+  wa.target = '_blank';
+  wb.appendChild(wl); wb.appendChild(wt); wb.appendChild(wa);
+
+  var eb = document.createElement('div'); eb.style.marginTop = '1.5rem';
+  var b1 = document.createElement('button'); b1.className = 'end-btn'; b1.textContent = u.endBack;
+  b1.addEventListener('click', showSelect);
+  var b2 = document.createElement('a'); b2.className = 'end-btn'; b2.style.cssText = 'text-decoration:none;display:inline-block;';
+  b2.textContent = u.endPlanet; b2.href = 'index.html';
+  eb.appendChild(b1); eb.appendChild(b2);
+
+  end.appendChild(el); end.appendChild(wb); end.appendChild(eb);
+  wrap.appendChild(end);
+  setTimeout(function(){ end.classList.add('show'); end.scrollIntoView({behavior:'smooth',block:'nearest'}); },80);
+}
+</script>
+</body>
+</html>
