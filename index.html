@@ -581,23 +581,23 @@
       </g>
 
       <!-- 观景号列车 · 待开放 -->
-      <g transform="translate(524, 108)" opacity="0.35" style="cursor:pointer;" onclick="showFacility('guanJingHaoLieChe')">
-        <ellipse cx="0" cy="20" rx="46" ry="13" fill="#88888822" stroke="#aaa" stroke-width="1" opacity="0.4"/>
-        <ellipse cx="0" cy="12" rx="46" ry="22" fill="#f0f0f0" stroke="#aaa" stroke-width="1.2"/>
-        <ellipse cx="0" cy="-8" rx="46" ry="22" fill="#f0f0f0" stroke="#aaa" stroke-width="1.2"/>
+      <g transform="translate(524, 108)" style="cursor:pointer;" onclick="window.location.href='train.html'">
+        <ellipse cx="0" cy="20" rx="46" ry="13" fill="#4a9a6822" stroke="#6aaa78" stroke-width="1" opacity="0.4"/>
+        <ellipse cx="0" cy="12" rx="46" ry="22" fill="#e8f4e8" stroke="#6aaa78" stroke-width="1.2"/>
+        <ellipse cx="0" cy="-8" rx="46" ry="22" fill="#e8f4e8" stroke="#6aaa78" stroke-width="1.2"/>
         <rect x="-46" y="-8" width="92" height="20" fill="#f0f0f0"/>
-        <rect x="-34" y="-4" width="52" height="20" rx="10" fill="#ddd" stroke="#aaa" stroke-width="1.2"/>
-        <circle cx="26" cy="6" r="16" fill="#e0e0e0" stroke="#aaa" stroke-width="1.2"/>
-        <circle cx="26" cy="6" r="10" fill="#ccc" stroke="#aaa" stroke-width="1"/>
-        <circle cx="26" cy="6" r="5" fill="#eee" stroke="#aaa" stroke-width="0.8"/>
-        <rect x="-28" y="-18" width="32" height="16" rx="3" fill="#e0e0e0" stroke="#aaa" stroke-width="1"/>
+        <rect x="-34" y="-4" width="52" height="20" rx="10" fill="#c8e8c8" stroke="#6aaa78" stroke-width="1.2"/>
+        <circle cx="26" cy="6" r="16" fill="#d8f0d8" stroke="#6aaa78" stroke-width="1.2"/>
+        <circle cx="26" cy="6" r="10" fill="#b8e0b8" stroke="#5a9a68" stroke-width="1"/>
+        <circle cx="26" cy="6" r="5" fill="#e8f4e8" stroke="#6aaa78" stroke-width="0.8"/>
+        <rect x="-28" y="-18" width="32" height="16" rx="3" fill="#d8f0d8" stroke="#6aaa78" stroke-width="1"/>
         <rect x="-24" y="-15" width="10" height="9" rx="1" fill="#ccc" opacity="0.85"/>
         <rect x="-10" y="-15" width="10" height="9" rx="1" fill="#ccc" opacity="0.85"/>
         <rect x="-34" y="4" width="8" height="16" rx="3" fill="#ccc" opacity="0.8"/>
-        <circle cx="-22" cy="18" r="9" fill="#ddd" stroke="#aaa" stroke-width="1.2"/>
-        <circle cx="-22" cy="18" r="5" fill="#eee" stroke="#aaa" stroke-width="0.8"/>
+        <circle cx="-22" cy="18" r="9" fill="#c8e8c8" stroke="#6aaa78" stroke-width="1.2"/>
+        <circle cx="-22" cy="18" r="5" fill="#e8f4e8" stroke="#6aaa78" stroke-width="0.8"/>
         <text x="0" y="40" text-anchor="middle" font-size="11" fill="#666" font-family="sans-serif" font-weight="500">观景号列车</text>
-        <text x="0" y="54" text-anchor="middle" font-size="10" fill="#999" font-family="sans-serif">⑥ 线 · 待开放</text>
+        <text x="0" y="54" text-anchor="middle" font-size="10" fill="#5a8a60" font-family="sans-serif">⑥ 线 · 待开放</text>
       </g>
 
       <circle cx="295" cy="72" r="2.5" fill="#d8c8b0" opacity="0.5"/>
@@ -728,8 +728,8 @@
       en: { line: 'Line 5 · Coming soon', title: 'Infinite Game Park', desc: 'Life is a game — finite games are played to win, infinite games are played to keep playing. Feel the difference here.', btn: 'I want to go here', btnDone: 'Registered ✓', isLive: false }
     },
     guanJingHaoLieChe: {
-      zh: { line: '⑥ 线 · 待开放', title: '观景号列车', desc: '坐上列车，慢慢进入一个真实的地方。不是vlog，是对一个地方的人文和环境的深度感受。', btn: '我想去这里', btnDone: '已登记 ✓', isLive: false },
-      en: { line: 'Line 6 · Coming soon', title: 'Scenic Train', desc: 'Board the train and slowly enter a real place. Not a vlog — a deep encounter with the people and spirit of somewhere.', btn: 'I want to go here', btnDone: 'Registered ✓', isLive: false }
+      zh: { line: '⑥ 线 · 已开放', title: '观景号列车', desc: '坐上列车，慢慢进入一个真实的地方。不是vlog，是对一个地方的人文和环境的深度感受。', btn: '进入体验 →', btnDone: '进入体验 →', isLive: true, link: 'train.html' },
+      en: { line: 'Line 6 · Now open', title: 'Scenic Train', desc: 'Board the train and slowly enter a real place. Not a vlog — a deep encounter with the people and spirit of somewhere.', btn: 'Enter →', btnDone: 'Enter →', isLive: true, link: 'train.html', dummy: 'Registered ✓', isLive: false }
     }
   };
 
